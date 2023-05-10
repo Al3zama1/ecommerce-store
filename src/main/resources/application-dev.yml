@@ -1,0 +1,10 @@
+spring:
+  devtools:
+    livereload:
+      enabled: true
+  datasource:
+    username: test
+    password: test
+    url: jdbc:postgresql://localhost:5432/ecommerce
+  jpa:
+    show-sql: true

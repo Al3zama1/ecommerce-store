@@ -1,8 +1,10 @@
 # Fullstack Ecommerce Application
 
-[![Unit Coverage](https://img.shields.io/badge/Unit%20Coverage-XX%25-brightgreen)](#)
-[![Integration Coverage](https://img.shields.io/badge/Integration%20Coverage-XX%25-brightgreen)](#)
-[![Test Results](https://img.shields.io/badge/Test%20Results-Passing-brightgreen)](#)
+[![Unit Coverage](.github/badges/unit.svg)](#)
+[![Unit Branch Coverage](.github/badges/unit-branch.svg)](#)
+
+[![Integration Coverage](.github/badges/integration.svg)](#)
+[![Integration Branch Coverage](.github/badges/integration-branch.svg)](#)
 
 Welcome to the Awesome Ecommerce Application! This full-stack ecommerce solution is built using Java, Spring Boot, Spring Security, Spring Data JPA, PostgreSQL, Flyway, Stripe payments, React JS, and TypeScript.
 

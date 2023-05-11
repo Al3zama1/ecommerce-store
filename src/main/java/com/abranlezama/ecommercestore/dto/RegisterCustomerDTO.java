@@ -15,7 +15,7 @@ public record RegisterCustomerDTO(
         @NotBlank String street,
         @NotBlank String city,
         @NotBlank String state,
-        @USPostalCode String postal_code,
+        @USPostalCode String postalCode,
         @Email String email,
         @Length(min = 8, max = 15) String password
 ) {

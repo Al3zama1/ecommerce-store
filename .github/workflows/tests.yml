@@ -20,7 +20,7 @@ jobs:
         run: mvn clean verify
 
       - name: Generate JaCoCo Badges for Unit Tests
-        id: jacoco
+        id: jacocoUnit
         uses: cicirello/jacoco-badge-generator@v2
         with:
           generate-branches-badge: true
@@ -31,7 +31,7 @@ jobs:
           branches-label: branches (unit tests)
 
       - name: Generate JaCoCo Badges for Integration tests
-        id: jacoco
+        id: jacocoIntegration
         uses: cicirello/jacoco-badge-generator@v2
         with:
           generate-branches-badge: true

@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface USPostalCode {
 
-    String message() default "Invalid US phone number";
+    String message() default "US postal code must be in format XXXXX or XXXXX-XXXX.";
 
     Class<?>[] groups() default {};
 

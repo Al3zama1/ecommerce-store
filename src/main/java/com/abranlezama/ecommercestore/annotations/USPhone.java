@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface USPhone {
 
-    String message() default "Invalid US phone number";
+    String message() default "Phone number must be in format XXX-XXX-XXXX";
 
     Class<?>[] groups() default {};
 

@@ -1,9 +1,10 @@
 # Fullstack Ecommerce Application
 
-[![Unit Coverage](https://github.com/stay-fcsd/fullstack-ecommerce-store/blob/dev/.github/badges/unit.svg)](#)
-[![Unit Branch Coverage](https://github.com/stay-fcsd/fullstack-ecommerce-store/blob/dev/.github/badges/unit-branch.svg)](#)
-[![Integration Coverage](https://github.com/stay-fcsd/fullstack-ecommerce-store/blob/dev/.github/badges/integration.svg)](#)
-[![Integration Branch Coverage](https://github.com/stay-fcsd/fullstack-ecommerce-store/blob/dev/.github/badges/integration-branch.svg)](#)
+[![Unit Coverage](.github/badges/unit.svg)](#)
+[![Unit Branch Coverage](.github/badges/unit-branch.svg)](#)
+
+[![Integration Coverage](.github/badges/integration.svg)](#)
+[![Integration Branch Coverage](.github/badges/integration-branch.svg)](#)
 
 Welcome to the Awesome Ecommerce Application! This full-stack ecommerce solution is built using Java, Spring Boot, Spring Security, Spring Data JPA, PostgreSQL, Flyway, Stripe payments, React JS, and TypeScript.
 

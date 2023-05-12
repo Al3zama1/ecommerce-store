@@ -4,7 +4,7 @@ import com.abranlezama.ecommercestore.model.Customer;
 
 public class CustomerMother {
 
-    static Customer.CustomerBuilder complete() {
+    public static Customer.CustomerBuilder complete() {
         return Customer.builder()
                 .firstName("Duke")
                 .lastName("Last")

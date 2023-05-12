@@ -157,6 +157,7 @@
                         <exclude>**/dto/*.class</exclude>
                         <exclude>**/model/*.class</exclude>
                         <exclude>**/exception/*.class</exclude>
+                        <exclude>**/config/*.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

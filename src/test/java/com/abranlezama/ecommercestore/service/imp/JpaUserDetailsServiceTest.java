@@ -1,5 +1,7 @@
 package com.abranlezama.ecommercestore.service.imp;
 
+import com.abranlezama.ecommercestore.exception.AuthenticationException;
+import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.model.User;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
 import com.abranlezama.ecommercestore.repository.UserRepository;
@@ -43,7 +45,8 @@ class JpaUserDetailsServiceTest {
 
         // When
         assertThatThrownBy(() -> cut.loadUserByUsername(userEmail))
-                .hasMessage("User not found");
+                .hasMessage(ExceptionMessages.AUTHENTICATION_FAILED)
+                .isInstanceOf(AuthenticationException.class);
     }
 
 

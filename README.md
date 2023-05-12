@@ -1,10 +1,9 @@
 # Fullstack Ecommerce Application
 
-| Line Coverage | Branch Coverage |
-|--|--------|
-| [![Unit Coverage](.github/badges/unit.svg)](#) | [![Unit Branch Coverage](.github/badges/unit-branch.svg)](#)       |
-| [![Integration Coverage](.github/badges/integration.svg)](#) | [![Integration Branch Coverage](.github/badges/integration-branch.svg)](#)       |
 
+[![Unit Coverage](.github/badges/unit.svg)](#) [![Unit Branch Coverage](.github/badges/unit-branch.svg)](#)
+
+[![Integration Coverage](.github/badges/integration.svg)](#) [![Integration Branch Coverage](.github/badges/integration-branch.svg)](#)
 
 Welcome to the Awesome Ecommerce Application!
 
@@ -13,8 +12,8 @@ Welcome to the Awesome Ecommerce Application!
 ## Development Process
 
 Developed the application following best practices to ensure high quality code and functionality across the different application layers.
-To adhere to industry standards and best practices, I decided to follow a ==test-driven development== approach, creating ==unit==,
-==integration==, and ==end-to-end tests==. My goal was to achieve a high test coverage percentage without sacrificing in code quality.
+To adhere to industry standards and best practices, I decided to follow a **test-driven development** approach, creating **unit**,
+**integration**, and **end-to-end tests**. My goal was to achieve a high test coverage percentage without sacrificing in code quality.
 Below is a list of further development approaches I took and the reason behind them.
 
 - **DTO Implementation:** Application makes use of data transfer objects to separate client data from business data and prevent exposure of sensitive data.

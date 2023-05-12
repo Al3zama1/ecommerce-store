@@ -18,7 +18,7 @@ To adhere to industry standards and best practices, I decided to follow a **test
 Below is a list of further development approaches I took and the reason behind them.
 
 - **DTO Implementation:** Application makes use of data transfer objects to separate client data from business data and prevent exposure of sensitive data.
-- **DTO Implementation:** @RestControllerAdvice is used to handle all application exceptions and provide the client consistent responses.
+- **Custom Exception Handling:** @RestControllerAdvice is used to handle all application exceptions and provide the client consistent responses.
   - [Reflectoring.io - Exception Handling Techniques](https://reflectoring.io/spring-boot-exception-handling/)
 - **Automated DTO conversion:** Used Mapstruct to automate conversion from DTOs to business objects and vice versa. All conversions were tested.
 - **Object Mother Design Pattern:** Implemented this pattern to get pre-defined objects to use in tests, have consistent objects across tests, reduce code for creation of objects in tests,

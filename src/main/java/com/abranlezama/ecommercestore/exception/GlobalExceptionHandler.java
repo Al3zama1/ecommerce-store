@@ -44,18 +44,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleAuthenticationException(AuthException ex, WebRequest request) {
+        return buildErrorResponse(ex, ExceptionMessages.AUTHENTICATION_FAILED, HttpStatus.UNAUTHORIZED, request);
     }
 
     @ExceptionHandler(DisabledException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Object> handleAccountDisabledException(DisabledException ex, WebRequest request) {
         return buildErrorResponse(ex,
                 "Account must be activated. Check your email for an account activation link.",
-                HttpStatus.FORBIDDEN,
+                HttpStatus.UNAUTHORIZED,
                 request);
     }
 

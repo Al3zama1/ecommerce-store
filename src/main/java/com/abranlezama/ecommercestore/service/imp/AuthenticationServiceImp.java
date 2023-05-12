@@ -4,6 +4,7 @@ import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
 import com.abranlezama.ecommercestore.model.Customer;
 import com.abranlezama.ecommercestore.model.User;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
@@ -23,14 +24,20 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     private final CustomerRepository customerRepository;
 
     @Override
-    public void registerCustomer(RegisterCustomerDTO registerCustomerDTO) {
+    public void registerCustomer(RegisterCustomerDTO registerDto) {
+        // verify password and verify password match
+        if (!registerDto.password().equals(registerDto.verifyPassword())) {
+            throw new UnequalPasswordsException(ExceptionMessages.DIFFERENT_PASSWORDS);
+        }
+
         // verify user with same email does not exit
-        boolean existsUser = userRepository.existsByEmail(registerCustomerDTO.email());
+        boolean existsUser = userRepository.existsByEmail(registerDto.email());
         if (existsUser) throw new EmailTakenException(ExceptionMessages.EMAIL_TAKEN);
 
         // generate user and customer from dto
-        User user = authenticationMapper.mapToUser(registerCustomerDTO);
-        Customer customer = authenticationMapper.mapToCustomer(registerCustomerDTO);
+        User user = authenticationMapper.mapToUser(registerDto);
+        Customer customer = authenticationMapper.mapToCustomer(registerDto);
+
 
         // save customer - user record will be persisted as well through cascading
         customer.setUser(user);

@@ -10,6 +10,7 @@ public class RegisterCustomerDTOMother {
                 .lastName("Last")
                 .email("duke.last@gmail.com")
                 .password("12345678")
+                .verifyPassword("12345678")
                 .phoneNumber("323-889-3333")
                 .street("7788 S 55ST")
                 .city("Los Angeles")

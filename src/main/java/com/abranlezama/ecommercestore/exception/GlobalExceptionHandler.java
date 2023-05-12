@@ -37,6 +37,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(ex, ex.getMessage(), HttpStatus.CONFLICT, request);
     }
 
+    @ExceptionHandler(UnequalPasswordsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleUnEqualPasswordsException(UnequalPasswordsException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+    }
+
     @Override
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,

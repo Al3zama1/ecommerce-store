@@ -17,6 +17,7 @@ public record RegisterCustomerDTO(
         @NotBlank String state,
         @USPostalCode String postalCode,
         @Email String email,
-        @Length(min = 8, max = 15) String password
+        @Length(min = 8, max = 15) String password,
+        @Length(min = 8, max = 15) String verifyPassword
 ) {
 }

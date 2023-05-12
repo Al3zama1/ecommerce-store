@@ -1,13 +1,11 @@
-package com.abranlezama.ecommercestore.dto.authentication;
+package com.abranlezama.ecommercestore.dto;
 
 import com.abranlezama.ecommercestore.annotations.USPhone;
 import com.abranlezama.ecommercestore.annotations.USPostalCode;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Builder;
-
+import org.hibernate.validator.constraints.Length;
 
 @Builder
 public record RegisterCustomerDTO(
@@ -19,7 +17,6 @@ public record RegisterCustomerDTO(
         @NotBlank String state,
         @USPostalCode String postalCode,
         @Email String email,
-        @NotNull @Size(min = 8, max = 15) String password,
-        @NotNull @Size(min = 8, max = 15) String verifyPassword
+        @Length(min = 8, max = 15) String password
 ) {
 }

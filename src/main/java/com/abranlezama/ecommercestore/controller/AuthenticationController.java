@@ -1,10 +1,10 @@
 package com.abranlezama.ecommercestore.controller;
 
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
-import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.dto.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +24,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody AuthenticationRequestDTO requestDTO) {
-        return authenticationService.authenticateUser(requestDTO);
+    public String login(@Valid @RequestBody RegisterCustomerDTO registerCustomerDTO) {
+//        return authenticationService.loginUser(registerDTO.email(), registerDTO.password());
+        return null;
     }
 }

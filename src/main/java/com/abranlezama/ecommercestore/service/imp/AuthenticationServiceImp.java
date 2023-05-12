@@ -3,6 +3,7 @@ package com.abranlezama.ecommercestore.service.imp;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
+import com.abranlezama.ecommercestore.exception.AuthenticationException;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
@@ -11,7 +12,11 @@ import com.abranlezama.ecommercestore.model.User;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
+import com.abranlezama.ecommercestore.service.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +30,8 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     private final AuthenticationMapper authenticationMapper;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
     @Override
     public void registerCustomer(RegisterCustomerDTO registerDto) {
@@ -51,6 +58,19 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
     @Override
     public String authenticateUser(AuthenticationRequestDTO dto) {
-        return null;
+        // Check if user exists
+        User user = userRepository.findByEmail(dto.email())
+                .orElseThrow(() -> new AuthenticationException(ExceptionMessages.AUTHENTICATION_FAILED));
+
+        // verify passwords match
+        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
+            throw new AuthenticationException(ExceptionMessages.AUTHENTICATION_FAILED);
+        }
+
+        // generate and return token
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(user, user.getAuthorities()));
+
+        return tokenService.generateJwt(authentication);
     }
 }

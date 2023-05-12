@@ -3,7 +3,7 @@ package com.abranlezama.ecommercestore.service.imp;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
-import com.abranlezama.ecommercestore.exception.AuthenticationException;
+import com.abranlezama.ecommercestore.exception.AuthException;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
@@ -19,7 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -107,9 +108,6 @@ class AuthenticationServiceImpTest {
         // Given
         AuthenticationRequestDTO dto = new AuthenticationRequestDTO("duke.last@gmail.com", "12345678");
 
-        given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(UserMother.complete().build()));
-        given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
-
         // When
         cut.authenticateUser(dto);
 
@@ -118,36 +116,16 @@ class AuthenticationServiceImpTest {
     }
 
     @Test
-    void shouldFailAuthenticationWhenUserWithEmailDoesNotExist() {
+    void shouldThrowAuthExceptionWhenEmailOrPasswordAreIncorrect() {
         // Given
         AuthenticationRequestDTO dto = new AuthenticationRequestDTO("duke.last@gmail.com", "12345678");
 
-        given(userRepository.findByEmail(dto.email())).willReturn(Optional.empty());
+        given(authenticationManager.authenticate(any())).willThrow(new UsernameNotFoundException("User not found"));
 
         // When
         assertThatThrownBy(() -> cut.authenticateUser(dto))
                 .hasMessage(ExceptionMessages.AUTHENTICATION_FAILED)
-                .isInstanceOf(AuthenticationException.class);
-
-        // Then
-        then(passwordEncoder).shouldHaveNoInteractions();
-    }
-
-    @Test
-    void shouldFailAuthenticationWhenPasswordsDoNotMatch() {
-        // Given
-        AuthenticationRequestDTO dto = new AuthenticationRequestDTO("duke.last@gmail.com", "12345678");
-
-        given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(UserMother.complete().build()));
-        given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
-
-        // When
-        assertThatThrownBy(() -> cut.authenticateUser(dto))
-                .hasMessage(ExceptionMessages.AUTHENTICATION_FAILED)
-                        .isInstanceOf(AuthenticationException.class);
-
-        // Then
-        then(tokenService).shouldHaveNoInteractions();
+                .isInstanceOf(AuthException.class);
     }
 
 }

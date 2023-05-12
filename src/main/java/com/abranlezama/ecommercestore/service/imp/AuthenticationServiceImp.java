@@ -3,7 +3,7 @@ package com.abranlezama.ecommercestore.service.imp;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
-import com.abranlezama.ecommercestore.exception.AuthenticationException;
+import com.abranlezama.ecommercestore.exception.AuthException;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
@@ -17,12 +17,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthenticationServiceImp  implements AuthenticationService {
 
@@ -46,6 +48,8 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
         // generate user and customer from dto
         User user = authenticationMapper.mapToUser(registerDto);
+        // TODO implement email activation
+        user.setEnabled(true);
         Customer customer = authenticationMapper.mapToCustomer(registerDto);
 
         // encrypt user/customer password
@@ -58,19 +62,15 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
     @Override
     public String authenticateUser(AuthenticationRequestDTO dto) {
-        // Check if user exists
-        User user = userRepository.findByEmail(dto.email())
-                .orElseThrow(() -> new AuthenticationException(ExceptionMessages.AUTHENTICATION_FAILED));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
+            );
 
-        // verify passwords match
-        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
-            throw new AuthenticationException(ExceptionMessages.AUTHENTICATION_FAILED);
+            return tokenService.generateJwt(authentication);
+
+        } catch (AuthenticationException ex) {
+            throw new AuthException(ExceptionMessages.AUTHENTICATION_FAILED);
         }
-
-        // generate and return token
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user, user.getAuthorities()));
-
-        return tokenService.generateJwt(authentication);
     }
 }

@@ -1,6 +1,7 @@
 package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -38,6 +40,7 @@ class AuthenticationControllerTest {
     @MockBean
     private JwtDecoder jwtDecoder;
 
+    // Customer registration
     @Test
     void shouldCallAuthenticationServiceToRegisterCustomer() throws Exception {
         // Given
@@ -74,5 +77,28 @@ class AuthenticationControllerTest {
         // Then
         then(authenticationService).should(never()).registerCustomer(any());
     }
+
+    // User authentication
+    @Test
+    void shouldCallAuthenticationServiceToAuthenticateUser() throws Exception {
+        // Given
+        AuthenticationRequestDTO dto = AuthenticationRequestDTO.builder()
+                .email("duke.last@gmail.com")
+                .password("12345678")
+                .build();
+
+        given(authenticationService.authenticateUser(dto)).willReturn("token");
+
+        // When
+        mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", Matchers.is("token")));
+
+        // Then
+        then(authenticationService).should().authenticateUser(dto);
+    }
+
 
 }

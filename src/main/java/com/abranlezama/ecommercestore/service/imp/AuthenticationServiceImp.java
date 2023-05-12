@@ -1,5 +1,6 @@
 package com.abranlezama.ecommercestore.service.imp;
 
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
@@ -46,5 +47,10 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         // save customer - user record will be persisted as well through cascading
         customer.setUser(user);
         customerRepository.save(customer);
+    }
+
+    @Override
+    public String authenticateUser(AuthenticationRequestDTO dto) {
+        return null;
     }
 }

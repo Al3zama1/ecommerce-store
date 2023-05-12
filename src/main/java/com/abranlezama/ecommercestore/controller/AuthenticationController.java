@@ -1,10 +1,9 @@
 package com.abranlezama.ecommercestore.controller;
 
-import com.abranlezama.ecommercestore.dto.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

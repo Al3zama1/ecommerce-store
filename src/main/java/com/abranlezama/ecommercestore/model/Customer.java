@@ -36,7 +36,7 @@ public class Customer {
     private String state;
 
     @Column(nullable = false)
-    private String postal_code;
+    private String postalCode;
 
     @OneToOne
     @JoinColumn(

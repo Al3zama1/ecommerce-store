@@ -1,4 +1,4 @@
-package com.abranlezama.ecommercestore.dto;
+package com.abranlezama.ecommercestore.dto.authentication;
 
 import com.abranlezama.ecommercestore.annotations.USPhone;
 import com.abranlezama.ecommercestore.annotations.USPostalCode;

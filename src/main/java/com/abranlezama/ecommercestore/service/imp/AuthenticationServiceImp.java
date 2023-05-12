@@ -11,6 +11,7 @@ import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -22,6 +23,7 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     private final UserRepository userRepository;
     private final AuthenticationMapper authenticationMapper;
     private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void registerCustomer(RegisterCustomerDTO registerDto) {
@@ -38,6 +40,8 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         User user = authenticationMapper.mapToUser(registerDto);
         Customer customer = authenticationMapper.mapToCustomer(registerDto);
 
+        // encrypt user/customer password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         // save customer - user record will be persisted as well through cascading
         customer.setUser(user);

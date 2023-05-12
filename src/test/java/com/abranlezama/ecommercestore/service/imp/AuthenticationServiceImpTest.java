@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,6 +34,8 @@ class AuthenticationServiceImpTest {
     private CustomerRepository customerRepository;
     @Mock
     private AuthenticationMapper authenticationMapper;
+    @Mock
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
     private AuthenticationServiceImp cut;
 
@@ -49,6 +52,7 @@ class AuthenticationServiceImpTest {
         cut.registerCustomer(dto);
 
         // Then
+        then(passwordEncoder).should().encode(dto.password());
         then(customerRepository).should().save(any());
     }
 

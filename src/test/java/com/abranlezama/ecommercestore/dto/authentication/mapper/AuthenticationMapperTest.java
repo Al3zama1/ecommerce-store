@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class AuthenticationMapperTest {
 
@@ -20,7 +19,7 @@ class AuthenticationMapperTest {
         RegisterCustomerDTO dto = RegisterCustomerDTO.builder().build();
 
         // When
-        User user = mapper.mapToEntity(dto);
+        User user = mapper.mapToUser(dto);
 
         // Then
         assertThat(user.getEmail()).isEqualTo(dto.email());

@@ -4,14 +4,12 @@ import com.abranlezama.ecommercestore.validators.USPhoneValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 @Constraint(validatedBy = USPhoneValidator.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface USPhone {
 
     String message() default "Phone number must be in format XXX-XXX-XXXX";

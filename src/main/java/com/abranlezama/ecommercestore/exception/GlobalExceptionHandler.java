@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String TRACE = "trace";
     @Value("${custom.stacktrace.trace}")
     private boolean printStackTrace;
+
+    @ExceptionHandler(EmailTakenException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Object> handleEmailTakenException(EmailTakenException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(UnequalPasswordsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleUnEqualPasswordsException(UnequalPasswordsException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleAuthenticationException(AuthException ex, WebRequest request) {
+        return buildErrorResponse(ex, ExceptionMessages.AUTHENTICATION_FAILED, HttpStatus.UNAUTHORIZED, request);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleAccountDisabledException(DisabledException ex, WebRequest request) {
+        return buildErrorResponse(ex,
+                "Account must be activated. Check your email for an account activation link.",
+                HttpStatus.UNAUTHORIZED,
+                request);
+    }
 
     @Override
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)

@@ -36,9 +36,9 @@ public class Customer {
     private String state;
 
     @Column(nullable = false)
-    private String postal_code;
+    private String postalCode;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",

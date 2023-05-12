@@ -38,7 +38,7 @@ public class Customer {
     @Column(nullable = false)
     private String postalCode;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",

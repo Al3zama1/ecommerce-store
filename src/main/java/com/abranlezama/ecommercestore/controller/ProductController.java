@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductService productService = null;
+    private final ProductService productService;
 
     @GetMapping
     public List<ProductResponseDTO> getProducts(@PositiveOrZero @RequestParam(value = "page", defaultValue = "0") int page,

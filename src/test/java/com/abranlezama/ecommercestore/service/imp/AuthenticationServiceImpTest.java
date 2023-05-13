@@ -7,6 +7,7 @@ import com.abranlezama.ecommercestore.exception.AuthException;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
+import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
@@ -106,7 +107,7 @@ class AuthenticationServiceImpTest {
     @Test
     void shouldAuthenticateUserWhenCredentialsAreCorrect() {
         // Given
-        AuthenticationRequestDTO dto = new AuthenticationRequestDTO("duke.last@gmail.com", "12345678");
+        AuthenticationRequestDTO dto = AuthenticationRequestDTOMother.complete().build();
 
         // When
         cut.authenticateUser(dto);
@@ -118,7 +119,7 @@ class AuthenticationServiceImpTest {
     @Test
     void shouldThrowAuthExceptionWhenEmailOrPasswordAreIncorrect() {
         // Given
-        AuthenticationRequestDTO dto = new AuthenticationRequestDTO("duke.last@gmail.com", "12345678");
+        AuthenticationRequestDTO dto = AuthenticationRequestDTOMother.complete().build();
 
         given(authenticationManager.authenticate(any())).willThrow(new UsernameNotFoundException("User not found"));
 

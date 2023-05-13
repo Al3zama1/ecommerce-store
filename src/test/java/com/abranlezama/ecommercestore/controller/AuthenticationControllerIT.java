@@ -3,6 +3,7 @@ package com.abranlezama.ecommercestore.controller;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
@@ -57,6 +58,11 @@ public class AuthenticationControllerIT {
         database.start();
     }
 
+    @AfterAll
+    static void afterAll() {
+        database.stop();
+    }
+
     @AfterEach
     void cleanUp() {
         customerRepository.deleteAll();
@@ -74,10 +80,7 @@ public class AuthenticationControllerIT {
     void shouldRegisterAndAuthenticateCustomer() throws Exception {
         // Given
         RegisterCustomerDTO registerDto = RegisterCustomerDTOMother.complete().build();
-        AuthenticationRequestDTO authDto = AuthenticationRequestDTO.builder()
-                        .email(registerDto.email())
-                        .password(registerDto.password())
-                        .build();
+        AuthenticationRequestDTO authDto = AuthenticationRequestDTOMother.complete().build();
 
         // When
         mockMvc.perform(post("/auth/customer")
@@ -101,10 +104,7 @@ public class AuthenticationControllerIT {
     @Test
     void shouldReturn401WhenAuthenticationCredentialsAreIncorrect() throws Exception{
         // Given
-        AuthenticationRequestDTO authDto = AuthenticationRequestDTO.builder()
-                .email("duke.last@gmail.com")
-                .password("12345678")
-                .build();
+        AuthenticationRequestDTO authDto = AuthenticationRequestDTOMother.complete().build();
 
         // When
         mockMvc.perform(post("/auth/login")

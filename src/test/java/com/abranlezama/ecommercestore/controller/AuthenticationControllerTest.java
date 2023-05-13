@@ -3,6 +3,7 @@ package com.abranlezama.ecommercestore.controller;
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,10 +83,7 @@ class AuthenticationControllerTest {
     @Test
     void shouldCallAuthenticationServiceToAuthenticateUser() throws Exception {
         // Given
-        AuthenticationRequestDTO dto = AuthenticationRequestDTO.builder()
-                .email("duke.last@gmail.com")
-                .password("12345678")
-                .build();
+        AuthenticationRequestDTO dto = AuthenticationRequestDTOMother.complete().build();
 
         given(authenticationService.authenticateUser(dto)).willReturn("token");
 

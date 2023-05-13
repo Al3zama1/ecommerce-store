@@ -1,10 +1,5 @@
 # Fullstack Ecommerce Application
 
-
-[![Unit Coverage](.github/badges/unit.svg)](#) [![Unit Branch Coverage](.github/badges/unit-branch.svg)](#)
-
-[![Integration Coverage](.github/badges/integration.svg)](#) [![Integration Branch Coverage](.github/badges/integration-branch.svg)](#)
-
 Welcome to the Awesome Ecommerce Application!
 
 

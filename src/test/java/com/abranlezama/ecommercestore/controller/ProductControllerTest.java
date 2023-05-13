@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
+import com.abranlezama.ecommercestore.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest
@@ -22,6 +24,8 @@ class ProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private ProductService productService;
     @MockBean
     private AuthenticationService authenticationService;
     @MockBean
@@ -32,15 +36,33 @@ class ProductControllerTest {
     @Test
     void shouldCallProductServiceToFetchProducts() throws Exception{
         // Given
-        String page = "0";
-        String pageSize = "20";
+        int page = 0;
+        int pageSize = 20;
 
         // When
         mockMvc.perform(MockMvcRequestBuilders.get("/products")
-                .param("page", page)
-                .param("pageSize", pageSize))
+                .param("page", String.valueOf(page))
+                .param("pageSize", String.valueOf(pageSize)))
                 .andExpect(status().isOk());
 
+        // Then
+        then(productService).should().getProducts(page, pageSize);
+    }
+
+    @Test
+    void shouldReturn422WhenInvalidPageParametersAreProvided() throws Exception{
+        // Given
+        int page = -1;
+        int pageSize = 20;
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.get("/products")
+                        .param("page", String.valueOf(page))
+                        .param("pageSize", String.valueOf(pageSize)))
+                .andExpect(status().isUnprocessableEntity());
+
+        // Then
+        then(productService).shouldHaveNoInteractions();
     }
 
 }

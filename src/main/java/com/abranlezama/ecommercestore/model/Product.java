@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -30,6 +31,14 @@ public class Product {
 
     @Column(nullable = false)
     private Integer stockQuantity;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = {@JoinColumn(name = "product_id")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id")}
+    )
+    private Set<Category> productCategories;
 
     @Override
     public boolean equals(Object o) {

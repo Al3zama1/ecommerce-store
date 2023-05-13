@@ -5,6 +5,7 @@ import com.abranlezama.ecommercestore.service.ProductService;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,8 @@ public class ProductController {
 
     @GetMapping
     public List<ProductResponseDTO> getProducts(@PositiveOrZero @RequestParam(value = "page", defaultValue = "0") int page,
-                                                @Positive @RequestParam(value = "pageSize", defaultValue = "20") int pageSize) {
+                                                @Positive @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                                @RequestParam("categories") List<String> categories) {
         return productService.getProducts(page, pageSize);
     }
 }

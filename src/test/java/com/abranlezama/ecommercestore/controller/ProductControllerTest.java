@@ -42,7 +42,8 @@ class ProductControllerTest {
         // When
         mockMvc.perform(MockMvcRequestBuilders.get("/products")
                 .param("page", String.valueOf(page))
-                .param("pageSize", String.valueOf(pageSize)))
+                .param("pageSize", String.valueOf(pageSize))
+                .param("categories", ""))
                 .andExpect(status().isOk());
 
         // Then
@@ -58,7 +59,8 @@ class ProductControllerTest {
         // When
         mockMvc.perform(MockMvcRequestBuilders.get("/products")
                         .param("page", String.valueOf(page))
-                        .param("pageSize", String.valueOf(pageSize)))
+                        .param("pageSize", String.valueOf(pageSize))
+                        .param("categories", ""))
                 .andExpect(status().isUnprocessableEntity());
 
         // Then

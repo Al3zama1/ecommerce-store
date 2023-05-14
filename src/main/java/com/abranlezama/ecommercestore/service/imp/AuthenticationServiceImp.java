@@ -7,9 +7,10 @@ import com.abranlezama.ecommercestore.exception.AuthException;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
-import com.abranlezama.ecommercestore.model.Customer;
-import com.abranlezama.ecommercestore.model.User;
+import com.abranlezama.ecommercestore.model.*;
+import com.abranlezama.ecommercestore.repository.CartRepository;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
+import com.abranlezama.ecommercestore.repository.RoleRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.TokenService;
@@ -22,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 
 @Service
 @Transactional
@@ -31,6 +34,8 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     private final UserRepository userRepository;
     private final AuthenticationMapper authenticationMapper;
     private final CustomerRepository customerRepository;
+    private final CartRepository cartRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
@@ -55,9 +60,19 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         // encrypt user/customer password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        // assign customer/user role of customer
+        assignRoleToUser(user, RoleType.CUSTOMER);
+
         // save customer - user record will be persisted as well through cascading
         customer.setUser(user);
+        customer.setCart(Cart.builder().totalCost(0F).build());
         customerRepository.save(customer);
+    }
+
+    private void assignRoleToUser(User user, RoleType roleType) {
+        Role role = roleRepository.findByRole(roleType)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        user.setRoles(Set.of(role));
     }
 
     @Override

@@ -7,7 +7,9 @@ CREATE TABLE customers(
     city VARCHAR(50) NOT NULL,
     state VARCHAR(50) NOT NULL,
     postal_code VARCHAR(10) NOT NULL,
+    cart_id BIGINT NOT NULL,
     user_id INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (cart_id) REFERENCES cart(id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     PRIMARY KEY (id)
 );

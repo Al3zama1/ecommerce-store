@@ -38,6 +38,9 @@ public class Customer {
     @Column(nullable = false)
     private String postalCode;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    public Cart cart;
+
     @OneToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(
             name = "user_id",

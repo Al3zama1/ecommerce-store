@@ -14,7 +14,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @Builder
-
 public class Role implements GrantedAuthority {
 
     @Id

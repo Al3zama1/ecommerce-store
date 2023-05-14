@@ -7,11 +7,14 @@ import com.abranlezama.ecommercestore.exception.AuthException;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
+import com.abranlezama.ecommercestore.model.Role;
+import com.abranlezama.ecommercestore.model.RoleType;
 import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
+import com.abranlezama.ecommercestore.repository.RoleRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
 import com.abranlezama.ecommercestore.service.TokenService;
 import org.junit.jupiter.api.Test;
@@ -50,6 +53,8 @@ class AuthenticationServiceImpTest {
     private AuthenticationManager authenticationManager;
     @Mock
     private TokenService tokenService;
+    @Mock
+    private RoleRepository roleRepository;
     @InjectMocks
     private AuthenticationServiceImp cut;
 
@@ -62,6 +67,7 @@ class AuthenticationServiceImpTest {
         given(userRepository.existsByEmail(dto.email())).willReturn(false);
         given(authenticationMapper.mapToUser(dto)).willReturn(UserMother.complete().build());
         given(authenticationMapper.mapToCustomer(dto)).willReturn(CustomerMother.complete().build());
+        given(roleRepository.findByRole(RoleType.CUSTOMER)).willReturn(Optional.of(new Role()));
 
         // When
         cut.registerCustomer(dto);

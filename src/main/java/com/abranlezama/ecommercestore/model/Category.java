@@ -2,6 +2,8 @@ package com.abranlezama.ecommercestore.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -11,4 +13,7 @@ public class Category {
 
     @Enumerated(EnumType.STRING)
     private CategoryType category;
+
+    @ManyToMany(mappedBy = "productCategories")
+    List<Product> products;
 }

@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ProductService {
 
-    List<ProductResponseDTO> getProducts(int page, int pageSize);
+    List<ProductResponseDTO> getProducts(int page, int pageSize, List<String> categories);
 }

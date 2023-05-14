@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,7 +49,7 @@ class ProductControllerTest {
                 .andExpect(status().isOk());
 
         // Then
-        then(productService).should().getProducts(page, pageSize);
+        then(productService).should().getProducts(page, pageSize, List.of());
     }
 
     @Test

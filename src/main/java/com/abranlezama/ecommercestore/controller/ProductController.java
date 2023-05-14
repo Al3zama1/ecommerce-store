@@ -26,6 +26,6 @@ public class ProductController {
     public List<ProductResponseDTO> getProducts(@PositiveOrZero @RequestParam(value = "page", defaultValue = "0") int page,
                                                 @Positive @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
                                                 @RequestParam("categories") List<String> categories) {
-        return productService.getProducts(page, pageSize);
+        return productService.getProducts(page, pageSize, categories);
     }
 }

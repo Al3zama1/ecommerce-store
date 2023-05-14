@@ -3,41 +3,42 @@ package com.abranlezama.ecommercestore.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
-@Table(name = "cart")
+@Table(name = "cart_items")
+@IdClass(CartItemId.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Getter
 @Setter
 @Builder
-public class Cart {
+public class CartItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @OneToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @Column(nullable = false)
-    private Float totalCost;
-
-    @OneToMany(mappedBy = "cart")
-    private Set<CartItem> cartItems;
+    private Integer quantity;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Cart cart = (Cart) o;
-        return Objects.equals(id, cart.id) && Objects.equals(totalCost, cart.totalCost);
+        CartItem cartItem = (CartItem) o;
+        return Objects.equals(product, cartItem.product) && Objects.equals(cart, cartItem.cart);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, totalCost);
+        return Objects.hash(product, cart);
     }
 }

@@ -7,14 +7,11 @@ import com.abranlezama.ecommercestore.exception.CustomerNotFound;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.*;
-import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
-import com.abranlezama.ecommercestore.objectmother.UserMother;
 import com.abranlezama.ecommercestore.repository.CartItemRepository;
 import com.abranlezama.ecommercestore.repository.CartRepository;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.ProductRepository;
-import com.abranlezama.ecommercestore.service.CartService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -29,59 +26,50 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class CartServiceImpTest {
 
     @Mock
-    private CustomerRepository customerRepository;
-    @Mock
     private ProductRepository productRepository;
-    @Mock
-    private CartItemRepository cartItemRepository;
     @Mock
     private CartRepository cartRepository;
     @Mock
     private CartMapper cartMapper;
     @Captor
     ArgumentCaptor<Cart> cartArgumentCaptor;
-    @Captor
-    ArgumentCaptor<CartItem> cartItemArgumentCaptor;
     @InjectMocks
     private CartServiceImp cut;
 
     @Test
     void shouldReturnCustomerCart() {
         // Given
-        User user = UserMother.complete().build();
+        String userEmail = "duke.last@gmail.com";
         Cart cart = Cart.builder().cartItems(Set.of()).build();
-        Customer customer = CustomerMother.complete()
-                .cart(cart)
-                .build();
 
-
-        given(customerRepository.findByUser_Email(user.getEmail())).willReturn(Optional.of(customer));
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
         given(cartMapper.mapCartToDto(cart)).willReturn(new CartDTO());
 
         // When
-        cut.getCustomerCart(user.getEmail());
+        cut.getCustomerCart(userEmail);
 
         // Then
-        then(cartMapper).should().mapCartToDto(customer.getCart());
+        then(cartMapper).should().mapCartToDto(cart);
     }
 
     @Test
     void shouldThrowCustomerNotFoundExceptionWhenUserIsNotACustomer() {
         // Given
-        User user = UserMother.complete().build();
+        String userEmail = "duke.last@gmail.com";
 
-        given(customerRepository.findByUser_Email(user.getEmail())).willReturn(Optional.empty());
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.empty());
 
         // When
-        assertThatThrownBy(() -> cut.getCustomerCart(user.getEmail()))
+        assertThatThrownBy(() -> cut.getCustomerCart(userEmail))
                 .hasMessage(ExceptionMessages.CUSTOMER_NOT_FOUND)
                 .isInstanceOf(CustomerNotFound.class);
 
@@ -90,18 +78,16 @@ class CartServiceImpTest {
     }
 
     // Tests for adding product to customers cart
-
     @Test
     void shouldAddProductToCustomerShoppingCart() {
         // Give
         Cart cart = Cart.builder().cartItems(new HashSet<>()).build();
-        Customer customer = CustomerMother.complete().cart(cart).build();
-        Product product = ProductMother.complete().id(1L).build();
+        Product product = ProductMother.complete().build();
         String userEmail = "duke.last@gmail.com";
         long productId = 1L;
         int quantity = 3;
 
-        given(customerRepository.findByUser_Email(userEmail)).willReturn(Optional.of(customer));
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
 
         // When
@@ -122,34 +108,35 @@ class CartServiceImpTest {
         CartItem cartItem = new CartItem(product, cart, 1);
         cart.setCartItems(Set.of(cartItem));
 
-        Customer customer = CustomerMother.complete().cart(cart).build();
-
         String userEmail = "duke.last@gmail.com";
         long productId = 1L;
         int quantity = 3;
 
-        given(customerRepository.findByUser_Email(userEmail)).willReturn(Optional.of(customer));
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
 
         // When
         cut.addProductToCart(userEmail, productId, quantity);
 
         // Then
-        then(cartItemRepository).should().save(cartItemArgumentCaptor.capture());
-        assertThat(cartItemArgumentCaptor.getValue().getProduct()).isEqualTo(product);
-        assertThat(cartItemArgumentCaptor.getValue().getQuantity()).isEqualTo(4);
+        then(cartRepository).should().save(cartArgumentCaptor.capture());
+
+        Cart savedCart = cartArgumentCaptor.getValue();
+        CartItem savedCartItem = savedCart.getCartItems().stream().findFirst().orElseThrow();
+
+        assertThat(savedCartItem.getProduct()).isEqualTo(product);
+        assertThat(savedCartItem.getQuantity()).isEqualTo(4);
+        assertThat(savedCart.getTotalCost()).isEqualTo(4 * product.getPrice());
     }
 
     @Test
     void shouldThrowProductNotFoundExceptionWhenAddingProductToCartThatDoesNotExist() {
         // Give
         Cart cart = Cart.builder().cartItems(Set.of()).build();
-        Customer customer = CustomerMother.complete().cart(cart).build();
-        Product product = ProductMother.complete().id(1L).build();
         String userEmail = "duke.last@gmail.com";
         long productId = 1L;
         int quantity = 3;
 
-        given(customerRepository.findByUser_Email(userEmail)).willReturn(Optional.of(customer));
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
         given(productRepository.findById(productId)).willReturn(Optional.empty());
 
         // When
@@ -158,7 +145,7 @@ class CartServiceImpTest {
                 .isInstanceOf(ProductNotFoundException.class);
 
         // Then
-        then(cartItemRepository).shouldHaveNoInteractions();
+        then(cartRepository).should(never()).save(any());
     }
 
     // tests to update cart product
@@ -174,9 +161,7 @@ class CartServiceImpTest {
         CartItem cartItem = CartItem.builder().cart(cart).product(product).quantity(3).build();
         cart.setCartItems(Set.of(cartItem));
 
-        Customer customer = CustomerMother.complete().cart(cart).build();
-
-        given(customerRepository.findByUser_Email(userEmail)).willReturn(Optional.of(customer));
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
 
         // When
         cut.updateCartProduct(userEmail, productId, quantity);
@@ -197,9 +182,8 @@ class CartServiceImpTest {
         int quantity = 3;
 
         Cart cart = Cart.builder().cartItems(Set.of()).build();
-        Customer customer = CustomerMother.complete().cart(cart).build();
 
-        given(customerRepository.findByUser_Email(userEmail)).willReturn(Optional.of(customer));
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
 
         // When
         assertThatThrownBy(() -> cut.updateCartProduct(userEmail, productId, quantity))
@@ -207,7 +191,7 @@ class CartServiceImpTest {
                 .isInstanceOf(ProductNotFoundException.class);
 
         // Then
-        then(cartRepository).shouldHaveNoInteractions();
+        then(cartRepository).should(never()).save(any());
     }
 
 }

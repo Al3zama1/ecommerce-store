@@ -25,7 +25,7 @@ public class Cart {
     @Column(nullable = false)
     private Float totalCost;
 
-    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<CartItem> cartItems;
 
     @Override

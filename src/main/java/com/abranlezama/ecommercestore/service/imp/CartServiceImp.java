@@ -16,8 +16,10 @@ import com.abranlezama.ecommercestore.repository.ProductRepository;
 import com.abranlezama.ecommercestore.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CartServiceImp implements CartService {
 
@@ -31,14 +33,7 @@ public class CartServiceImp implements CartService {
     public CartDTO getCustomerCart(String userEmail) {
         // Retrieve customer
         Customer customer = retrieveCustomer(userEmail);
-
-        CartDTO cartDto = cartMapper.mapCartToDto(customer.getCart());
-        float cartTotal  = customer.getCart().getCartItems().stream()
-                .map(item -> item.getQuantity() * item.getProduct().getPrice())
-                .reduce(0F, Float::sum);
-        cartDto.setCartTotal(cartTotal);
-
-        return cartDto;
+        return cartMapper.mapCartToDto(customer.getCart());
     }
 
     @Override
@@ -57,13 +52,15 @@ public class CartServiceImp implements CartService {
             cartItemRepository.save(cartItem);
             return;
         }
-        // add item to cart
+        // add new product to cart
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
 
+        // save cart item
         CartItem newCartItem = new CartItem(product, customer.getCart(), quantity);
-        cartItemRepository.save(newCartItem);
-
+        customer.getCart().getCartItems().add(newCartItem);
+        customer.getCart().setTotalCost(computeCartTotal(customer));
+        cartRepository.save(customer.getCart());
     }
 
     @Override

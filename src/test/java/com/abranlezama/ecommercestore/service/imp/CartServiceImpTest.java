@@ -23,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -93,7 +94,7 @@ class CartServiceImpTest {
     @Test
     void shouldAddProductToCustomerShoppingCart() {
         // Give
-        Cart cart = Cart.builder().cartItems(Set.of()).build();
+        Cart cart = Cart.builder().cartItems(new HashSet<>()).build();
         Customer customer = CustomerMother.complete().cart(cart).build();
         Product product = ProductMother.complete().id(1L).build();
         String userEmail = "duke.last@gmail.com";
@@ -107,10 +108,10 @@ class CartServiceImpTest {
         cut.addProductToCart(userEmail, productId, quantity);
 
         // Then
-        then(cartItemRepository).should().save(cartItemArgumentCaptor.capture());
-        assertThat(cartItemArgumentCaptor.getValue().getProduct()).isEqualTo(product);
-        assertThat(cartItemArgumentCaptor.getValue().getCart()).isEqualTo(cart);
-        assertThat(cartItemArgumentCaptor.getValue().getQuantity()).isEqualTo(quantity);
+        then(cartRepository).should().save(cartArgumentCaptor.capture());
+        Cart savedCart = cartArgumentCaptor.getValue();
+        assertThat(savedCart.getCartItems().size()).isEqualTo(1);
+        assertThat(cart.getTotalCost()).isEqualTo(product.getPrice() * quantity);
     }
 
     @Test

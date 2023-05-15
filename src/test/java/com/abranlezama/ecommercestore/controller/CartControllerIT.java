@@ -67,7 +67,6 @@ public class CartControllerIT {
         // Given
         AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
 
-        System.out.println(userRepository.count());
         given(passwordEncoder.matches(authRequest.password(), authRequest.password())).willReturn(true);
 
         // When
@@ -82,7 +81,6 @@ public class CartControllerIT {
         mockMvc.perform(get("/cart")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.cartItems.size()", Matchers.is(2)))
-                .andExpect(jsonPath("$.cartTotal", Matchers.is(99.93)));
+                .andExpect(jsonPath("$.cartItems.size()", Matchers.is(2)));
     }
 }

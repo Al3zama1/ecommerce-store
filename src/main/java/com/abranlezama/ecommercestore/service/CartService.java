@@ -7,4 +7,6 @@ public interface CartService {
     CartDTO getCustomerCart(String userEmail);
 
     void addProductToCart(String userEmail, long productId, int quantity);
+
+    void updateCartProduct(String userEmail, long productId, int quantity);
 }

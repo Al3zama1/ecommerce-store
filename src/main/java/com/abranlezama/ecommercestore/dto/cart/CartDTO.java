@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class CartDTO {
-    @Valid private Set<CartItemDTO> cartItems;
-    @PositiveOrZero private Float cartTotal;
-}
+public record CartDTO(
+        @Valid Set<CartItemDTO> cartItems,
+        @PositiveOrZero Float cartTotal
+) { }

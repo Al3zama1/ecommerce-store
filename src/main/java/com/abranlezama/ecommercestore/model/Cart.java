@@ -29,6 +29,7 @@ public class Cart {
     private Set<CartItem> cartItems;
 
     @OneToOne(mappedBy = "cart")
+    @ToString.Exclude
     private Customer customer;
 
     @Override

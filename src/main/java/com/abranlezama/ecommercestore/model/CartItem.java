@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items", uniqueConstraints = @UniqueConstraint(columnNames = {"product_id", "cart_id"}))
 @IdClass(CartItemId.class)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,8 +22,9 @@ public class CartItem {
     private Product product;
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
+    @ToString.Exclude
     private Cart cart;
 
     @Column(nullable = false)
@@ -34,11 +35,11 @@ public class CartItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CartItem cartItem = (CartItem) o;
-        return Objects.equals(product, cartItem.product) && Objects.equals(cart, cartItem.cart);
+        return Objects.equals(product, cartItem.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(product, cart);
+        return Objects.hash(product);
     }
 }

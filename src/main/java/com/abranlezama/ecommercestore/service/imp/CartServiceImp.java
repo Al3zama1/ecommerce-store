@@ -30,4 +30,9 @@ public class CartServiceImp implements CartService {
 
         return cartDto;
     }
+
+    @Override
+    public void addProductToCart(String userEmail, long productId, int quantity) {
+
+    }
 }

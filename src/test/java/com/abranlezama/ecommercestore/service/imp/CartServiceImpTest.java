@@ -52,7 +52,7 @@ class CartServiceImpTest {
         Cart cart = Cart.builder().cartItems(Set.of()).build();
 
         given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
-        given(cartMapper.mapCartToDto(cart)).willReturn(new CartDTO());
+        given(cartMapper.mapCartToDto(cart)).willReturn(CartDTO.builder().build());
 
         // When
         cut.getCustomerCart(userEmail);

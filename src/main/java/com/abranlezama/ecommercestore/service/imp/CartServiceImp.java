@@ -22,6 +22,12 @@ public class CartServiceImp implements CartService {
         Customer customer = customerRepository.findByUser_Email(userEmail)
                 .orElseThrow(() -> new CustomerNotFound(ExceptionMessages.CUSTOMER_NOT_FOUND));
 
-        return cartMapper.mapCartToDto(customer.getCart());
+        CartDTO cartDto = cartMapper.mapCartToDto(customer.getCart());
+        float cartTotal  = customer.getCart().getCartItems().stream()
+                .map(item -> item.getQuantity() * item.getProduct().getPrice())
+                .reduce(0F, Float::sum);
+        cartDto.setCartTotal(cartTotal);
+
+        return cartDto;
     }
 }

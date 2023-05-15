@@ -53,8 +53,8 @@ class CartMapperTest {
         CartDTO cartDto = mapper.mapCartToDto(cart);
 
         // Then
-        assertThat(cartDto.cartTotal()).isEqualTo(cart.getTotalCost());
-        assertThat(cartDto.cartItems().size()).isEqualTo(cart.getCartItems().size());
+        assertThat(cartDto.getCartTotal()).isEqualTo(cart.getTotalCost());
+        assertThat(cartDto.getCartItems().size()).isEqualTo(cart.getCartItems().size());
     }
 
 }

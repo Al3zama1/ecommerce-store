@@ -1,8 +1,11 @@
 package com.abranlezama.ecommercestore.service.imp;
 
+import com.abranlezama.ecommercestore.dto.cart.CartDTO;
 import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
 import com.abranlezama.ecommercestore.exception.CustomerNotFound;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.model.Cart;
+import com.abranlezama.ecommercestore.model.CartItem;
 import com.abranlezama.ecommercestore.model.Customer;
 import com.abranlezama.ecommercestore.model.User;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
@@ -16,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,9 +40,14 @@ class CartServiceImpTest {
     void shouldReturnCustomerCart() {
         // Given
         User user = UserMother.complete().build();
-        Customer customer = CustomerMother.complete().build();
+        Cart cart = Cart.builder().cartItems(Set.of()).build();
+        Customer customer = CustomerMother.complete()
+                .cart(cart)
+                .build();
+
 
         given(customerRepository.findByUser_Email(user.getEmail())).willReturn(Optional.of(customer));
+        given(cartMapper.mapCartToDto(cart)).willReturn(new CartDTO());
 
         // When
         cut.getCustomerCart(user.getEmail());

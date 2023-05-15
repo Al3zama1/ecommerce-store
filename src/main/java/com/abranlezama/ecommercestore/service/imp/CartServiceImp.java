@@ -5,10 +5,12 @@ import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
 import com.abranlezama.ecommercestore.exception.CustomerNotFound;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
+import com.abranlezama.ecommercestore.model.Cart;
 import com.abranlezama.ecommercestore.model.CartItem;
 import com.abranlezama.ecommercestore.model.Customer;
 import com.abranlezama.ecommercestore.model.Product;
 import com.abranlezama.ecommercestore.repository.CartItemRepository;
+import com.abranlezama.ecommercestore.repository.CartRepository;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.ProductRepository;
 import com.abranlezama.ecommercestore.service.CartService;
@@ -23,6 +25,7 @@ public class CartServiceImp implements CartService {
     private final CartItemRepository cartItemRepository;
     private final CartMapper cartMapper;
     private final ProductRepository productRepository;
+    private final CartRepository cartRepository;
 
     @Override
     public CartDTO getCustomerCart(String userEmail) {
@@ -65,7 +68,24 @@ public class CartServiceImp implements CartService {
 
     @Override
     public void updateCartProduct(String userEmail, long productId, int quantity) {
+        // get customer
+        Customer customer = retrieveCustomer(userEmail);
 
+        CartItem cartItem = customer.getCart().getCartItems().stream()
+                .filter(item -> item.getProduct().getId() == productId)
+                .findFirst()
+                .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
+
+        cartItem.setQuantity(quantity);
+        customer.getCart().setTotalCost(computeCartTotal(customer));
+
+        cartRepository.save(customer.getCart());
+    }
+
+    private float computeCartTotal(Customer customer) {
+        return customer.getCart().getCartItems().stream()
+                .map(item -> item.getQuantity() * item.getProduct().getPrice())
+                .reduce(0F, Float::sum);
     }
 
     private Customer retrieveCustomer(String userEmail) {

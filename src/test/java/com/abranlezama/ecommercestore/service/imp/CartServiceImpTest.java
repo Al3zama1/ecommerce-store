@@ -11,6 +11,7 @@ import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
 import com.abranlezama.ecommercestore.repository.CartItemRepository;
+import com.abranlezama.ecommercestore.repository.CartRepository;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.ProductRepository;
 import com.abranlezama.ecommercestore.service.CartService;
@@ -41,7 +42,11 @@ class CartServiceImpTest {
     @Mock
     private CartItemRepository cartItemRepository;
     @Mock
+    private CartRepository cartRepository;
+    @Mock
     private CartMapper cartMapper;
+    @Captor
+    ArgumentCaptor<Cart> cartArgumentCaptor;
     @Captor
     ArgumentCaptor<CartItem> cartItemArgumentCaptor;
     @InjectMocks
@@ -153,6 +158,55 @@ class CartServiceImpTest {
 
         // Then
         then(cartItemRepository).shouldHaveNoInteractions();
+    }
+
+    // tests to update cart product
+    @Test
+    void shouldUpdateCustomerCartProduct() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+        int quantity = 3;
+
+        Product product = ProductMother.complete().build();
+        Cart cart = Cart.builder().totalCost(product.getPrice()).build();
+        CartItem cartItem = CartItem.builder().cart(cart).product(product).quantity(3).build();
+        cart.setCartItems(Set.of(cartItem));
+
+        Customer customer = CustomerMother.complete().cart(cart).build();
+
+        given(customerRepository.findByUser_Email(userEmail)).willReturn(Optional.of(customer));
+
+        // When
+        cut.updateCartProduct(userEmail, productId, quantity);
+
+        // Then
+        then(cartRepository).should().save(cartArgumentCaptor.capture());
+        Cart savedCart = cartArgumentCaptor.getValue();
+
+        assertThat(savedCart.getTotalCost()).isEqualTo(3 * product.getPrice());
+        assertThat(savedCart.getCartItems().size()).isEqualTo(1);
+    }
+
+    @Test
+    void shouldThrowProductNotFoundExceptionWhenUpdatingProductNotInCustomerCart() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+        int quantity = 3;
+
+        Cart cart = Cart.builder().cartItems(Set.of()).build();
+        Customer customer = CustomerMother.complete().cart(cart).build();
+
+        given(customerRepository.findByUser_Email(userEmail)).willReturn(Optional.of(customer));
+
+        // When
+        assertThatThrownBy(() -> cut.updateCartProduct(userEmail, productId, quantity))
+                .hasMessage(ExceptionMessages.PRODUCT_NOT_FOUND)
+                .isInstanceOf(ProductNotFoundException.class);
+
+        // Then
+        then(cartRepository).shouldHaveNoInteractions();
     }
 
 }

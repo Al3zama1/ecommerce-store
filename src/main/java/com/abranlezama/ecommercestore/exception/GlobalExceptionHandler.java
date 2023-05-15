@@ -47,6 +47,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(ex, ex.getMessage(), HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(ProductNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.NOT_FOUND, request);
+    }
+
     @ExceptionHandler(UnequalPasswordsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleUnEqualPasswordsException(UnequalPasswordsException ex, WebRequest request) {

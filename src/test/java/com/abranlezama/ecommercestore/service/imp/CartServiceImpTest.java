@@ -5,6 +5,7 @@ import com.abranlezama.ecommercestore.dto.cart.CartDTO;
 import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
 import com.abranlezama.ecommercestore.exception.CustomerNotFound;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
@@ -130,6 +131,28 @@ class CartServiceImpTest {
         then(cartItemRepository).should().save(cartItemArgumentCaptor.capture());
         assertThat(cartItemArgumentCaptor.getValue().getProduct()).isEqualTo(product);
         assertThat(cartItemArgumentCaptor.getValue().getQuantity()).isEqualTo(4);
+    }
+
+    @Test
+    void shouldThrowProductNotFoundExceptionWhenAddingProductToCartThatDoesNotExist() {
+        // Give
+        Cart cart = Cart.builder().cartItems(Set.of()).build();
+        Customer customer = CustomerMother.complete().cart(cart).build();
+        Product product = ProductMother.complete().id(1L).build();
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+        int quantity = 3;
+
+        given(customerRepository.findByUser_Email(userEmail)).willReturn(Optional.of(customer));
+        given(productRepository.findById(productId)).willReturn(Optional.empty());
+
+        // When
+        assertThatThrownBy(() -> cut.addProductToCart(userEmail, productId, quantity))
+                .hasMessage(ExceptionMessages.PRODUCT_NOT_FOUND)
+                .isInstanceOf(ProductNotFoundException.class);
+
+        // Then
+        then(cartItemRepository).shouldHaveNoInteractions();
     }
 
 }

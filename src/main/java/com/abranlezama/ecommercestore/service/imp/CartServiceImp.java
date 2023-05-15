@@ -4,6 +4,7 @@ import com.abranlezama.ecommercestore.dto.cart.CartDTO;
 import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
 import com.abranlezama.ecommercestore.exception.CustomerNotFound;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.CartItem;
 import com.abranlezama.ecommercestore.model.Customer;
 import com.abranlezama.ecommercestore.model.Product;
@@ -55,7 +56,7 @@ public class CartServiceImp implements CartService {
         }
         // add item to cart
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found."));
+                .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
 
         CartItem newCartItem = new CartItem(product, customer.getCart(), quantity);
         cartItemRepository.save(newCartItem);

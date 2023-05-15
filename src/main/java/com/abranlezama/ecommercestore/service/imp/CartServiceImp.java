@@ -8,6 +8,7 @@ import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.Cart;
 import com.abranlezama.ecommercestore.model.CartItem;
 import com.abranlezama.ecommercestore.model.Product;
+import com.abranlezama.ecommercestore.repository.CartItemRepository;
 import com.abranlezama.ecommercestore.repository.CartRepository;
 import com.abranlezama.ecommercestore.repository.ProductRepository;
 import com.abranlezama.ecommercestore.service.CartService;
@@ -23,6 +24,7 @@ public class CartServiceImp implements CartService {
     private final CartMapper cartMapper;
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
 
     @Override
     public CartDTO getCustomerCart(String userEmail) {
@@ -70,6 +72,25 @@ public class CartServiceImp implements CartService {
         // update customer cart
         cartItem.setQuantity(quantity);
         cart.setTotalCost(computeCartTotal(cart));
+        cartRepository.save(cart);
+    }
+
+    @Override
+    public void removeCartProduct(String userEmail, long productId) {
+        // get customer cart
+        Cart cart = cartRepository.findByCustomer_User_Email(userEmail)
+                .orElseThrow(() -> new CustomerNotFound(ExceptionMessages.CUSTOMER_NOT_FOUND));
+
+        CartItem cartItem = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getId() == productId)
+                .findFirst()
+                .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
+
+        // remove cart item from customer cart
+        cart.getCartItems().remove(cartItem);
+        cart.setTotalCost(computeCartTotal(cart));
+        // persist changes
+        cartItemRepository.delete(cartItem);
         cartRepository.save(cart);
     }
 

@@ -25,8 +25,11 @@ public class Cart {
     @Column(nullable = false)
     private Float totalCost;
 
-    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<CartItem> cartItems;
+
+    @OneToOne(mappedBy = "cart")
+    private Customer customer;
 
     @Override
     public boolean equals(Object o) {

@@ -56,7 +56,7 @@ Below is a list of further development approaches I took and the reason behind t
 
 ## Application Database ER Diagram
 
-![Database ER Diagram](assets/er-diagram.png)
+![Database ER Diagram](assets/er-diagramv1.png)
 
 ## Getting Started
 

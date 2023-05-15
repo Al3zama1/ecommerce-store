@@ -111,4 +111,55 @@ class CartControllerTest {
         then(cartService).should()
                 .addProductToCart("duke.last@gmail.com", dto.productId(), dto.quantity());
     }
+
+    // Update cart item tests
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
+    void shouldUpdateCartProductQuantity() throws Exception {
+        // Given
+        long productId = 1L;
+        int quantity = 3;
+
+        // When
+        this.mockMvc.perform(patch("/cart")
+                .param("productId", String.valueOf(productId))
+                .param("quantity", String.valueOf(quantity)))
+                .andExpect(status().isNoContent());
+
+        // Then
+        then(cartService).should().updateCartProduct("duke.last@gmail.com", productId, quantity);
+    }
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
+    void shouldReturn422WhenParametersAreInvalid() throws Exception {
+        // Given
+        long productId = -1L;
+        int quantity = 0;
+
+        // When
+        this.mockMvc.perform(patch("/cart")
+                        .param("productId", String.valueOf(productId))
+                        .param("quantity", String.valueOf(quantity)))
+                .andExpect(status().isUnprocessableEntity());
+
+        // Then
+        then(cartService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
+    void shouldReturn400WhenRequestToUpdateCartIsMadeWithMissingParameters() throws Exception {
+        // Given
+        long productId = -1L;
+        int quantity = 0;
+
+        // When
+        this.mockMvc.perform(patch("/cart"))
+                .andExpect(status().isBadRequest());
+
+        // Then
+        then(cartService).shouldHaveNoInteractions();
+    }
 }

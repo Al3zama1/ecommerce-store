@@ -63,6 +63,11 @@ public class CartServiceImp implements CartService {
 
     }
 
+    @Override
+    public void updateCartProduct(String userEmail, long productId, int quantity) {
+
+    }
+
     private Customer retrieveCustomer(String userEmail) {
         return customerRepository.findByUser_Email(userEmail)
                 .orElseThrow(() -> new CustomerNotFound(ExceptionMessages.CUSTOMER_NOT_FOUND));

@@ -162,4 +162,22 @@ class CartControllerTest {
         // Then
         then(cartService).shouldHaveNoInteractions();
     }
+
+    // remove product from customer's cart
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
+    void shouldRemoveProductFromCustomerCart() throws Exception {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+
+        // When
+        this.mockMvc.perform(delete("/cart")
+                .param("productId", String.valueOf(productId)))
+                .andExpect(status().isNoContent());
+
+        // Then
+        then(cartService).should().removeCartProduct(userEmail, productId);
+    }
 }

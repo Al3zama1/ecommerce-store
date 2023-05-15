@@ -1,6 +1,5 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.dto.cart.AddItemToCartDto;
 import com.abranlezama.ecommercestore.dto.cart.CartDTO;
 import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
 import com.abranlezama.ecommercestore.exception.CustomerNotFound;
@@ -10,7 +9,6 @@ import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import com.abranlezama.ecommercestore.repository.CartItemRepository;
 import com.abranlezama.ecommercestore.repository.CartRepository;
-import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +36,8 @@ class CartServiceImpTest {
     private ProductRepository productRepository;
     @Mock
     private CartRepository cartRepository;
+    @Mock
+    private CartItemRepository cartItemRepository;
     @Mock
     private CartMapper cartMapper;
     @Captor
@@ -187,6 +187,71 @@ class CartServiceImpTest {
 
         // When
         assertThatThrownBy(() -> cut.updateCartProduct(userEmail, productId, quantity))
+                .hasMessage(ExceptionMessages.PRODUCT_NOT_FOUND)
+                .isInstanceOf(ProductNotFoundException.class);
+
+        // Then
+        then(cartRepository).should(never()).save(any());
+    }
+
+    // test removal of product from customer's shopping cart
+
+    @Test
+    void shouldRemoveProductFromCustomerShoppingCart() {
+        // Given
+        Product product = ProductMother.complete().id(1L).build();
+        Cart cart = Cart.builder().build();
+        CartItem cartItem = CartItem.builder().product(product).cart(cart).build();
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem);
+        cart.setCartItems(cartItems);
+
+
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
+
+        // When
+        cut.removeCartProduct(userEmail, productId);
+
+        // Then
+        then(cartRepository).should().save(cartArgumentCaptor.capture());
+        then(cartItemRepository).should().delete(cartItem);
+        Cart savedCart = cartArgumentCaptor.getValue();
+
+        assertThat(savedCart.getCartItems().size()).isEqualTo(0);
+        assertThat(savedCart.getTotalCost()).isEqualTo(0);
+    }
+
+    @Test
+    void shouldThrowCustomerNotFoundWhenUserIsNotCustomer() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.empty());
+
+        // When
+        assertThatThrownBy(() -> cut.removeCartProduct(userEmail, productId))
+                .hasMessage(ExceptionMessages.CUSTOMER_NOT_FOUND)
+                .hasMessage(ExceptionMessages.CUSTOMER_NOT_FOUND);
+
+        // Then
+        then(cartRepository).should(never()).save(any());
+    }
+
+    @Test
+    void shouldThrowProductNotFoundExceptionWhenRemovingProductNotInCart() {
+        // Given
+        Cart cart = Cart.builder().cartItems(Set.of()).build();
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
+
+        // When
+        assertThatThrownBy(() -> cut.removeCartProduct(userEmail, productId))
                 .hasMessage(ExceptionMessages.PRODUCT_NOT_FOUND)
                 .isInstanceOf(ProductNotFoundException.class);
 

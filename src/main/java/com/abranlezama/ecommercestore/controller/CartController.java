@@ -46,4 +46,11 @@ public class CartController {
                                   Authentication authentication) {
         cartService.updateCartProduct(authentication.getName(), productId, quantity);
     }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeCartProduct(@Positive @RequestParam("productId") Long productId,
+                                  Authentication authentication) {
+        cartService.removeCartProduct(authentication.getName(), productId);
+    }
 }

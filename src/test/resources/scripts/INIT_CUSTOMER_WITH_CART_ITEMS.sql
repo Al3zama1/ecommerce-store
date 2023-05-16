@@ -1,5 +1,5 @@
 INSERT INTO users (email, password, is_enabled)
-VALUES ('duke.last@gmail.com', '12345678', TRUE);
+VALUES ('john.last@gmail.com', '12345678', TRUE);
 
 INSERT INTO user_roles (user_id, role_id)
 VALUES (1, 1);

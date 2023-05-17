@@ -11,4 +11,6 @@ public interface ProductService {
     List<ProductResponseDTO> getProducts(int page, int pageSize, Set<String> categories);
 
     Long createProduct(String userEmail, AddProductRequestDTO requestDto);
+
+    void removeProduct(String userEmail, Long productId);
 }

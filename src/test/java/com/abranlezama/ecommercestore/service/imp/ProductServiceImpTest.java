@@ -1,6 +1,7 @@
 package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
@@ -146,6 +147,54 @@ class ProductServiceImpTest {
 
         // Then
         then(productRepository).should(never()).delete(any());
+    }
+
+    @Test
+    void shouldUpdateExistingProduct() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1;
+        Product product = ProductMother.complete().build();
+        UpdateProductRequestDTO requestDto = UpdateProductRequestDTO.builder()
+                .name("Soccer Ball")
+                .description("Next generation soccer ball")
+                .price(40F)
+                .stockQuantity(50)
+                .categories(Set.of("sports"))
+                .build();
+
+        // verify product exists
+        given(productRepository.findById(productId)).willReturn(Optional.of(product));
+
+        // When
+        cut.updateProduct(userEmail, productId, requestDto);
+
+        // Then
+        then(productRepository).should().save(productArgumentCaptor.capture());
+        Product savedProduct = productArgumentCaptor.getValue();
+        assertThat(savedProduct.getName()).isEqualTo(requestDto.name());
+        assertThat(savedProduct.getDescription()).isEqualTo(requestDto.description());
+        assertThat(savedProduct.getStockQuantity()).isEqualTo(requestDto.stockQuantity());
+        assertThat(savedProduct.getPrice()).isEqualTo(requestDto.price());
+    }
+
+    @Test
+    void shouldThrowProductNotFoundExceptionWhenUpdatingNonExistingProduct() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1;
+        UpdateProductRequestDTO requestDto = UpdateProductRequestDTO.builder().build();
+
+        // verify product exists
+        given(productRepository.findById(productId)).willReturn(Optional.empty());
+
+        // When
+        assertThatThrownBy(() -> cut.updateProduct(userEmail, productId, requestDto))
+                .hasMessage(ExceptionMessages.PRODUCT_NOT_FOUND)
+                .isInstanceOf(ProductNotFoundException.class);
+
+        // Then
+        then(productRepository).should(never()).save(any());
     }
 
 }

@@ -21,10 +21,6 @@ VALUES
     ('Product 19', 'Description 19', 189.99, 2),
     ('Product 20', 'Description 20', 199.99, 19);
 
-INSERT INTO categories (category)
-VALUES
-('EDUCATION'),
-('TECHNOLOGY');
 
 INSERT INTO product_categories (product_id, category_id)
 VALUES

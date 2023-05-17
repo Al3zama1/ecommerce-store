@@ -59,10 +59,10 @@ class ProductServiceImpTest {
         // Given
         int page = 0;
         int pageSize = 20;
-        List<String> categories = List.of("technology");
+        List<String> categories = List.of("electronics");
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        given(productRepository.findProductByCategory(pageable, List.of(CategoryType.TECHNOLOGY)))
+        given(productRepository.findProductByCategory(pageable, List.of(CategoryType.ELECTRONICS)))
                 .willReturn(Page.empty());
 
         // When

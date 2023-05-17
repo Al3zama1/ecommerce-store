@@ -19,6 +19,10 @@ Below is a list of further development approaches I took and the reason behind t
     and ensure that every test runs with fresh data.
   - [Reflectoring.io - Object Mother](https://reflectoring.io/objectmother-fluent-builder/)
   - [java-design-patterns.com - Object Mother](https://java-design-patterns.com/patterns/object-mother/)
+- **Testing:** Testcontainers were used to set up needed dependencies to carry out integration tests. Specifically, a container
+    containing an instance of PostgreSQL was used. Testcontainers make the process of setting up the needed dependencies to carry
+    out tests a lot easier and faster.
+  - https://www.testcontainers.org/
 
 
 ## Features

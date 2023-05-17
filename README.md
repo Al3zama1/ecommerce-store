@@ -1,4 +1,4 @@
-# Fullstack Ecommerce Application
+# Ecommerce CRUD Application
 
 Welcome to the Awesome Ecommerce Application!
 
@@ -8,7 +8,7 @@ Welcome to the Awesome Ecommerce Application!
 
 Developed the application following best practices to ensure high quality code and functionality across the different application layers.
 To adhere to industry standards and best practices, I decided to follow a **test-driven development** approach, creating **unit**,
-**integration**, and **end-to-end tests**. My goal was to achieve a high test coverage percentage without sacrificing in code quality.
+and **integration tests**. My goal was to achieve a high test coverage percentage without sacrificing in code quality.
 Below is a list of further development approaches I took and the reason behind them.
 
 - **DTO Implementation:** Application makes use of data transfer objects to separate client data from business data and prevent exposure of sensitive data.
@@ -27,7 +27,6 @@ Below is a list of further development approaches I took and the reason behind t
 - Shopping Cart: Customers can add products to their shopping cart and manage quantities.
 - Secure Checkout: Seamless and secure payment processing using the Stripe payment gateway.
 - Order History: Customers can view their order history and track the status of their deliveries.
-- Account Activation: Customer accounts are created but remain inactive until they activate via an email verification link.
 - User Roles: The application supports Customer, Employee and Admin roles.
     - Employees: Manage customer orders, update product inventory, and handle customer support.
     - Admins: Have all the capabilities of employees plus the ability to manage employees.
@@ -50,9 +49,6 @@ Below is a list of further development approaches I took and the reason behind t
   - AssertJ
   - Selenide
   - TestContainers
-- Frontend:
-    - React JS
-    - TypeScript
 
 ## Application Database ER Diagram
 
@@ -74,12 +70,3 @@ To run the application locally, follow these steps:
 
     - Build and run the Spring Boot application: `mvn spring-boot:run`
 
-3. Set up the frontend:
-
-    - Install Node.js and npm.
-
-    - Navigate to the frontend directory: `cd frontend`
-
-    - Install dependencies: `npm install`
-
-    - Start the frontend development server: `npm run dev`

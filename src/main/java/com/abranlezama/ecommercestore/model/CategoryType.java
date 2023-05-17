@@ -1,7 +1,9 @@
 package com.abranlezama.ecommercestore.model;
 
 public enum CategoryType {
-    TECHNOLOGY,
+    ELECTRONICS,
+    FASHION,
+    SPORTS,
     EDUCATION,
 
 }

@@ -1,10 +1,7 @@
 package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
-import com.abranlezama.ecommercestore.model.Category;
-import com.abranlezama.ecommercestore.model.Product;
-import com.abranlezama.ecommercestore.model.ProductCategory;
-import com.abranlezama.ecommercestore.model.ProductCategoryId;
+import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.CategoryMother;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import com.abranlezama.ecommercestore.repository.CategoryRepository;
@@ -104,17 +101,17 @@ public class ProductControllerIT {
         int pageSize = 20;
 
         Product product = productRepository.save(ProductMother.complete().build());
-        Category technology = categoryRepository.save(CategoryMother.technology().build());
-        Category education = categoryRepository.save(CategoryMother.education().build());
+        Category electronics = categoryRepository.findByCategory(CategoryType.ELECTRONICS).orElseThrow();
+        Category education = categoryRepository.findByCategory(CategoryType.EDUCATION).orElseThrow();
 
-        ProductCategoryId productTechnologyId = new ProductCategoryId(product.getId(), technology.getId());
+        ProductCategoryId productTechnologyId = new ProductCategoryId(product.getId(), electronics.getId());
         ProductCategory productTechnology = ProductCategory.builder()
                 .product(product)
-                .category(technology)
+                .category(electronics)
                 .id(productTechnologyId)
                 .build();
 
-        ProductCategoryId productEducationId = new ProductCategoryId(product.getId(), technology.getId());
+        ProductCategoryId productEducationId = new ProductCategoryId(product.getId(), education.getId());
         ProductCategory productEducation = ProductCategory.builder()
                 .product(product)
                 .category(education)

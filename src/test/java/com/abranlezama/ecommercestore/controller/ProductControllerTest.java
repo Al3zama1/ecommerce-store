@@ -4,6 +4,7 @@ import com.abranlezama.ecommercestore.config.SecurityConfiguration;
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.UpdateProductRequestDTOMOther;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -157,13 +158,7 @@ class ProductControllerTest {
         // Given
         String userEmail = "duke.last@gmail.com";
         long productId = 1;
-        UpdateProductRequestDTO requestDto = UpdateProductRequestDTO.builder()
-                .name("Soccer Ball")
-                .description("Next generation soccer ball")
-                .price(40F)
-                .stockQuantity(50)
-                .categories(Set.of("sports"))
-                .build();
+        UpdateProductRequestDTO requestDto = UpdateProductRequestDTOMOther.complete().build();
 
         // When
         this.mockMvc.perform(patch("/products")

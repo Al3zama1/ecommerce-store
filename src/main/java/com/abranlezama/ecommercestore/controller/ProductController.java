@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -40,5 +41,13 @@ public class ProductController {
                                               @Valid @RequestBody AddProductRequestDTO requestDto) {
         long productId = productService.createProduct(authentication.getName(), requestDto);
         return ResponseEntity.created(URI.create("/products/" + productId)).build();
+    }
+
+    @DeleteMapping
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeProduct(Authentication authentication,
+                              @Positive @RequestParam("productId") Long productId) {
+        productService.removeProduct(authentication.getName(), productId);
     }
 }

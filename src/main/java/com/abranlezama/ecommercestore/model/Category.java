@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "categories")
@@ -24,7 +25,7 @@ public class Category {
 
     @ManyToMany(mappedBy = "productCategories")
     @ToString.Exclude
-    List<Product> products;
+    Set<Product> products;
 
     @Override
     public boolean equals(Object o) {

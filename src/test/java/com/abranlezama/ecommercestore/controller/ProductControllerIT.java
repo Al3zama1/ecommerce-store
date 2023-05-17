@@ -1,19 +1,21 @@
 package com.abranlezama.ecommercestore.controller;
 
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
 import com.abranlezama.ecommercestore.model.*;
-import com.abranlezama.ecommercestore.objectmother.CategoryMother;
-import com.abranlezama.ecommercestore.objectmother.ProductMother;
-import com.abranlezama.ecommercestore.repository.CategoryRepository;
-import com.abranlezama.ecommercestore.repository.ProductCategoryRepository;
-import com.abranlezama.ecommercestore.repository.ProductRepository;
+import com.abranlezama.ecommercestore.objectmother.*;
+import com.abranlezama.ecommercestore.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -25,6 +27,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -57,15 +61,23 @@ public class ProductControllerIT {
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private ProductCategoryRepository productCategoryRepository;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private UserRepository userRepository;
 
+    @BeforeEach
+    void setUp() {
+        productRepository.deleteAll();
+    }
     @AfterEach
     void cleanUp() {
         productRepository.deleteAll();
-        categoryRepository.deleteAll();
-        productCategoryRepository.deleteAll();
     }
 
     @Test
@@ -74,17 +86,12 @@ public class ProductControllerIT {
         int page = 0;
         int pageSize = 20;
 
-        Product product = productRepository.save(ProductMother.complete().build());
-        Category technology = categoryRepository.save(CategoryMother.technology().build());
+        Category electronics = categoryRepository.findByCategory(CategoryType.ELECTRONICS).orElseThrow();
+        Product product = ProductMother.complete()
+                .productCategories(Set.of(electronics))
+                .build();
 
-        ProductCategoryId productTechnology = new ProductCategoryId(product.getId(), technology.getId());
-        ProductCategory productCategory = ProductCategory.builder()
-                        .product(product)
-                        .category(technology)
-                        .id(productTechnology)
-                        .build();
-
-        productCategoryRepository.save(productCategory);
+        productRepository.save(product);
 
         // When, Then
         mockMvc.perform(get("/products")
@@ -95,33 +102,19 @@ public class ProductControllerIT {
     }
 
     @Test
-    void shouldReturnNotReturnDuplicateProductsWhenFetchingByCategory() throws Exception {
+    void shouldNotReturnDuplicateProductsWhenFetchingByCategory() throws Exception {
         // Given
         int page = 0;
         int pageSize = 20;
 
-        Product product = productRepository.save(ProductMother.complete().build());
-        Category electronics = categoryRepository.findByCategory(CategoryType.ELECTRONICS).orElseThrow();
-        Category education = categoryRepository.findByCategory(CategoryType.EDUCATION).orElseThrow();
+        Set<Category> categories  = categoryRepository
+                .findAllByCategoryIn(Set.of(CategoryType.EDUCATION, CategoryType.ELECTRONICS));
 
-        ProductCategoryId productTechnologyId = new ProductCategoryId(product.getId(), electronics.getId());
-        ProductCategory productTechnology = ProductCategory.builder()
-                .product(product)
-                .category(electronics)
-                .id(productTechnologyId)
+        Product product = ProductMother.complete()
+                .productCategories(categories)
                 .build();
 
-        ProductCategoryId productEducationId = new ProductCategoryId(product.getId(), education.getId());
-        ProductCategory productEducation = ProductCategory.builder()
-                .product(product)
-                .category(education)
-                .id(productEducationId)
-                .build();
-
-
-        productCategoryRepository.save(productTechnology);
-        productCategoryRepository.save(productEducation);
-
+        product = productRepository.save(product);
 
         // When
         MvcResult result = mockMvc.perform(get("/products")
@@ -130,15 +123,67 @@ public class ProductControllerIT {
                 .param("categories", "technology")
                 .param("categories", "education"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", Matchers.is(1)))
+                .andExpect(jsonPath("$[0].id", Matchers.is(product.getId().intValue())))
+                .andReturn();
+    }
+
+    // Test creation of new products
+    @Test
+    void shouldCreateNewProduct() throws Exception {
+        // Given
+        registerEmployee();
+        AddProductRequestDTO createRequest = AddProductRequestDTOMother
+                .create()
+                .categories(Set.of("electronics", "education"))
+                .build();
+        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+
+        String token = obtainToken(authRequest);
+
+        // When
+        MvcResult result = this.mockMvc.perform(post("/products")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
                 .andReturn();
 
         // Then
-        ProductResponseDTO[] products = objectMapper
-                .readValue(result.getResponse().getContentAsString(), ProductResponseDTO[].class);
+        String[] location = Objects.requireNonNull(result.getResponse().getHeader("Location")).split("/");
+        // retrieve product created from the id located in Location header
+        Product product = productRepository
+                .findById(Long.valueOf(location[location.length - 1]))
+                .orElseThrow();
+        // compare passed in categories with the ones added to product
+        boolean categoriesMatch = product.getProductCategories().stream()
+                .allMatch(category -> createRequest.categories()
+                        .contains(category.getCategory().name().toLowerCase()));
 
-        assertThat(products.length).isEqualTo(1);
-        assertThat(Arrays.stream(products)
-                .filter(p -> p.id() == 1).toList().size())
-                .isEqualTo(1);
+        // make assertions to verify correctness
+        assertThat(product.getProductCategories().size()).isEqualTo(2);
+        assertThat(categoriesMatch).isTrue();
+        assertThat(product.getName()).isEqualTo(createRequest.name());
+        assertThat(product.getDescription()).isEqualTo(createRequest.description());
+        assertThat(product.getStockQuantity()).isEqualTo(createRequest.stockQuantity());
+        assertThat(product.getPrice()).isEqualTo(createRequest.price());
+    }
+
+
+    private void registerEmployee() {
+        Role role = roleRepository.findByRole(RoleType.EMPLOYEE).orElseThrow();
+        User user = UserMother.complete().isEnabled(true).roles(Set.of(role)).build();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
+
+    private String obtainToken(AuthenticationRequestDTO authRequest) throws Exception {
+        MvcResult result = this.mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return result.getResponse().getContentAsString();
     }
 }

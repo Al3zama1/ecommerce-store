@@ -118,4 +118,36 @@ class ProductControllerTest {
         then(productService).shouldHaveNoInteractions();
     }
 
+    // test product removal
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "EMPLOYEE")
+    void shouldCallProductServiceToRemoveProduct() throws Exception {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1;
+
+        // When
+        this.mockMvc.perform(delete("/products")
+                .param("productId", String.valueOf(productId)))
+                .andExpect(status().isNoContent());
+
+        // Then
+        then(productService).should().removeProduct(userEmail, productId);
+    }
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "EMPLOYEE")
+    void shouldThrow422WhenMalformedProductIdIsGiven() throws Exception {
+        // Given
+        long productId = -1;
+
+        // When
+        this.mockMvc.perform(delete("/products")
+                        .param("productId", String.valueOf(productId)))
+                .andExpect(status().isUnprocessableEntity());
+
+        // Then
+        then(productService).shouldHaveNoInteractions();
+    }
+
 }

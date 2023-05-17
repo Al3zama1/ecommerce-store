@@ -2,6 +2,8 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
+import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.CategoryType;
 import com.abranlezama.ecommercestore.model.Product;
 import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
@@ -21,9 +23,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -108,6 +112,40 @@ class ProductServiceImpTest {
 
         // Then
         then(productRepository).should().save(product);
+    }
+
+    // test removal of product
+    @Test
+    void shouldRemoveProduct() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+        Product product = ProductMother.complete().build();
+
+        given(productRepository.findById(productId)).willReturn(Optional.of(product));
+
+        // When
+        cut.removeProduct(userEmail, productId);
+
+        // Then
+        then(productRepository).should().delete(product);
+    }
+
+    @Test
+    void shouldThrowProductNotFoundExceptionWhenDeletingNonExistingProduct() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1L;
+
+        given(productRepository.findById(productId)).willReturn(Optional.empty());
+
+        // When
+        assertThatThrownBy(() -> cut.removeProduct(userEmail, productId))
+                .hasMessage(ExceptionMessages.PRODUCT_NOT_FOUND)
+                .isInstanceOf(ProductNotFoundException.class);
+
+        // Then
+        then(productRepository).should(never()).delete(any());
     }
 
 }

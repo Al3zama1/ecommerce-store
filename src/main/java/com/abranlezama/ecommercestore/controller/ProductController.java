@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/products")
@@ -29,7 +30,7 @@ public class ProductController {
     public List<ProductResponseDTO> getProducts(
             @PositiveOrZero @RequestParam(value = "page", defaultValue = "0") int page,
             @Positive @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
-            @RequestParam(value = "categories", defaultValue = "") List<String> categories) {
+            @RequestParam(value = "categories", defaultValue = "") Set<String> categories) {
         return productService.getProducts(page, pageSize, categories);
     }
 

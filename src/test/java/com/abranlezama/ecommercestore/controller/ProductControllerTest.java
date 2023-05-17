@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +56,7 @@ class ProductControllerTest {
                 .andExpect(status().isOk());
 
         // Then
-        then(productService).should().getProducts(page, pageSize, List.of());
+        then(productService).should().getProducts(page, pageSize, Set.of());
     }
 
     @Test
@@ -105,12 +106,7 @@ class ProductControllerTest {
     @WithMockUser(roles = "CUSTOMER")
     void shouldBlockUnauthorizedUsersFromAccessingCreateProductEndpoint() throws Exception {
         // GIVEN
-        AddProductRequestDTO requestDto = new AddProductRequestDTO(
-                "Xbox",
-                "Next gen console",
-                600f,
-                200,
-                Set.of("electronics"));
+        AddProductRequestDTO requestDto = AddProductRequestDTOMother.create().build();
 
         // When
         this.mockMvc.perform(post("/products")

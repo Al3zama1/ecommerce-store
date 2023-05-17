@@ -3,6 +3,7 @@ package com.abranlezama.ecommercestore.controller;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.*;
 import com.abranlezama.ecommercestore.repository.*;
@@ -29,6 +30,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -97,7 +99,7 @@ public class ProductControllerIT {
                 .param("page", String.valueOf(page))
                 .param("pageSize", String.valueOf(pageSize)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", Matchers.is(1)));
+                .andExpect(jsonPath("$.size()", is(1)));
     }
 
     @Test
@@ -122,8 +124,8 @@ public class ProductControllerIT {
                 .param("categories", "technology")
                 .param("categories", "education"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", Matchers.is(1)))
-                .andExpect(jsonPath("$[0].id", Matchers.is(product.getId().intValue())))
+                .andExpect(jsonPath("$.size()", is(1)))
+                .andExpect(jsonPath("$[0].id", is(product.getId().intValue())))
                 .andReturn();
     }
 
@@ -169,6 +171,7 @@ public class ProductControllerIT {
         assertThat(product.getPrice()).isEqualTo(createRequest.price());
     }
 
+    // test removal of products
     @Test
     void shouldRemoveProduct() throws Exception {
         // Given
@@ -191,6 +194,48 @@ public class ProductControllerIT {
         // Then
         Optional<Product> productOptional = productRepository.findById(productId);
         assertThat(productOptional.isEmpty()).isTrue();
+    }
+
+    // test product updates
+    @Test
+    void shouldUpdateExistingProduct() throws Exception {
+        // Given
+        Set<CategoryType> categoryTypes = Set.of(CategoryType.EDUCATION);
+        Set<Category> categories = categoryRepository.findAllByCategoryIn(categoryTypes);
+        Product product = ProductMother.complete().productCategories(categories).build();
+        product = productRepository.save(product);
+
+        // register employee and obtain token
+        registerEmployee();
+        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        String token = obtainToken(authRequest);
+
+        // request with category of sports
+        UpdateProductRequestDTO updateRequest = UpdateProductRequestDTOMOther.complete().build();
+
+        // When
+        this.mockMvc.perform(patch("/products")
+                .header("Authorization", "Bearer " + token)
+                .param("productId", String.valueOf(product.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(product.getId().intValue())))
+                .andExpect(jsonPath("$.name", is(updateRequest.name())))
+                .andExpect(jsonPath("$.description", is(updateRequest.description())))
+                .andExpect(jsonPath("$.price", is(updateRequest.price().doubleValue())));
+
+        // Then
+        // verify that the product categories were updated
+        product = productRepository.findById(product.getId()).orElseThrow();
+        boolean allMatch = product.getProductCategories()
+                .stream()
+                .allMatch(category -> updateRequest
+                        .categories().contains(category.getCategory().name().toLowerCase()));
+
+        assertThat(product.getProductCategories().size()).isEqualTo(1);
+        assertThat(allMatch).isTrue();
+
     }
 
 

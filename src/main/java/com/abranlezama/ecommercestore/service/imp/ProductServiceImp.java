@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
@@ -9,6 +10,7 @@ import com.abranlezama.ecommercestore.model.Category;
 import com.abranlezama.ecommercestore.model.CategoryType;
 import com.abranlezama.ecommercestore.model.Product;
 import com.abranlezama.ecommercestore.repository.CategoryRepository;
+import com.abranlezama.ecommercestore.repository.ProductCategoryRepository;
 import com.abranlezama.ecommercestore.repository.ProductRepository;
 import com.abranlezama.ecommercestore.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class ProductServiceImp implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
+    private final ProductCategoryRepository productCategoryRepository;
 
     @Override
     public List<ProductResponseDTO> getProducts(int page, int pageSize, Set<String> categories) {
@@ -68,6 +71,28 @@ public class ProductServiceImp implements ProductService {
                 .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
 
         productRepository.delete(product);
+    }
+
+    @Override
+    public ProductResponseDTO updateProduct(String userEmail, long productId, UpdateProductRequestDTO requestDto) {
+        // verify existence of product
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
+
+        Set<CategoryType> categoryTypes = getCategoryTypes(requestDto.categories());
+        Set<Category> categories = categoryRepository.findAllByCategoryIn(categoryTypes);
+
+        // update product fields, except key
+        product.setName(requestDto.name());
+        product.setDescription(requestDto.description());
+        product.setPrice(requestDto.price());
+        product.setStockQuantity(requestDto.stockQuantity());
+        product.setProductCategories(categories);
+
+        // save product with updated fields
+        product = productRepository.save(product);
+
+        return productMapper.mapProductToDTO(product);
     }
 
     private Set<CategoryType> getCategoryTypes(Set<String> categories) {

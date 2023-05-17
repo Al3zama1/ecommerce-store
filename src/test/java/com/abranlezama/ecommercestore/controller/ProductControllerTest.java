@@ -2,7 +2,9 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.UpdateProductRequestDTOMOther;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -148,6 +150,25 @@ class ProductControllerTest {
 
         // Then
         then(productService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "EMPLOYEE")
+    void shouldCallProductServiceToUpdateProduct() throws Exception {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1;
+        UpdateProductRequestDTO requestDto = UpdateProductRequestDTOMOther.complete().build();
+
+        // When
+        this.mockMvc.perform(patch("/products")
+                .param("productId", String.valueOf(productId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
+
+        // Then
+        then(productService).should().updateProduct(userEmail, productId, requestDto);
     }
 
 }

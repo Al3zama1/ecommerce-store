@@ -3,3 +3,10 @@ CREATE TABLE categories(
     category VARCHAR(50) NOT NULL,
     PRIMARY KEY (id)
 );
+
+INSERT INTO categories(category)
+VALUES
+('EDUCATION'),
+('ELECTRONICS'),
+('SPORTS'),
+('FASHION');

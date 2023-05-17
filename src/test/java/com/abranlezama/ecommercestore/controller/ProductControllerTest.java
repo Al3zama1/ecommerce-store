@@ -1,23 +1,27 @@
 package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
+import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
@@ -26,6 +30,8 @@ class ProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
     private ProductService productService;
     @MockBean
@@ -42,7 +48,7 @@ class ProductControllerTest {
         int pageSize = 20;
 
         // When
-        mockMvc.perform(MockMvcRequestBuilders.get("/products")
+        mockMvc.perform(get("/products")
                 .param("page", String.valueOf(page))
                 .param("pageSize", String.valueOf(pageSize))
                 .param("categories", ""))
@@ -59,11 +65,58 @@ class ProductControllerTest {
         int pageSize = 20;
 
         // When
-        mockMvc.perform(MockMvcRequestBuilders.get("/products")
+        mockMvc.perform(get("/products")
                         .param("page", String.valueOf(page))
                         .param("pageSize", String.valueOf(pageSize))
                         .param("categories", ""))
                 .andExpect(status().isUnprocessableEntity());
+
+        // Then
+        then(productService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "EMPLOYEE")
+    void shouldCallProductServiceToAddNewProduct() throws Exception {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        AddProductRequestDTO requestDto = new AddProductRequestDTO(
+                "Xbox",
+                "Next gen console",
+                600f,
+                200,
+                Set.of("electronics"));
+
+        given(productService.createProduct(userEmail, requestDto)).willReturn(1L);
+
+        // When
+        this.mockMvc.perform(post("/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
+                .andExpect(header().string("Location", String.valueOf("/products/1")));
+
+        // Then
+        then(productService).should().createProduct(userEmail, requestDto);
+    }
+
+    @Test
+    @WithMockUser(roles = "CUSTOMER")
+    void shouldBlockUnauthorizedUsersFromAccessingCreateProductEndpoint() throws Exception {
+        // GIVEN
+        AddProductRequestDTO requestDto = new AddProductRequestDTO(
+                "Xbox",
+                "Next gen console",
+                600f,
+                200,
+                Set.of("electronics"));
+
+        // When
+        this.mockMvc.perform(post("/products")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isForbidden());
 
         // Then
         then(productService).shouldHaveNoInteractions();

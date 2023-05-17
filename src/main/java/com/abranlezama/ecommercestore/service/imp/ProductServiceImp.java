@@ -1,5 +1,6 @@
 package com.abranlezama.ecommercestore.service.imp;
 
+import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
 import com.abranlezama.ecommercestore.model.CategoryType;
@@ -36,5 +37,10 @@ public class ProductServiceImp implements ProductService {
                 .stream()
                 .map(productMapper::mapProductToDTO)
                 .toList();
+    }
+
+    @Override
+    public Long createProduct(String userEmail, AddProductRequestDTO requestDto) {
+        return null;
     }
 }

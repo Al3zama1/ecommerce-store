@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
@@ -68,6 +69,11 @@ public class ProductServiceImp implements ProductService {
                 .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
 
         productRepository.delete(product);
+    }
+
+    @Override
+    public ProductResponseDTO updateProduct(String userEmail, long productId, UpdateProductRequestDTO requestDto) {
+        return null;
     }
 
     private Set<CategoryType> getCategoryTypes(Set<String> categories) {

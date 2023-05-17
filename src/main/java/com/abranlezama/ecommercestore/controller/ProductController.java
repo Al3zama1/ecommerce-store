@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -49,5 +50,13 @@ public class ProductController {
     public void removeProduct(Authentication authentication,
                               @Positive @RequestParam("productId") Long productId) {
         productService.removeProduct(authentication.getName(), productId);
+    }
+
+    @PatchMapping
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
+    public ProductResponseDTO updateProduct(Authentication authentication,
+                                            @Valid @RequestBody UpdateProductRequestDTO requestDto,
+                                            @Positive @RequestParam("productId") Long productId) {
+        return productService.updateProduct(authentication.getName(),  productId, requestDto);
     }
 }

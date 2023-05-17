@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.ProductService;
@@ -148,6 +149,31 @@ class ProductControllerTest {
 
         // Then
         then(productService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "EMPLOYEE")
+    void shouldCallProductServiceToUpdateProduct() throws Exception {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        long productId = 1;
+        UpdateProductRequestDTO requestDto = UpdateProductRequestDTO.builder()
+                .name("Soccer Ball")
+                .description("Next generation soccer ball")
+                .price(40F)
+                .stockQuantity(50)
+                .categories(Set.of("sports"))
+                .build();
+
+        // When
+        this.mockMvc.perform(patch("/products")
+                .param("productId", String.valueOf(productId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
+
+        // Then
+        then(productService).should().updateProduct(userEmail, productId, requestDto);
     }
 
 }

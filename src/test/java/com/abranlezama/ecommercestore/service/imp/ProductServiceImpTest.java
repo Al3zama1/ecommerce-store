@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,7 +63,7 @@ class ProductServiceImpTest {
         List<String> categories = List.of("electronics");
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        given(productRepository.findProductByCategory(pageable, List.of(CategoryType.ELECTRONICS)))
+        given(productRepository.findProductByCategory(pageable, Set.of(CategoryType.ELECTRONICS)))
                 .willReturn(Page.empty());
 
         // When

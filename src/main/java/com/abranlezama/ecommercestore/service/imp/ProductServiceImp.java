@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +31,9 @@ public class ProductServiceImp implements ProductService {
                     .toList();
         }
 
-        List<CategoryType> categoryTypes = Arrays.stream(CategoryType.values())
+        Set<CategoryType> categoryTypes = Arrays.stream(CategoryType.values())
                 .filter(type -> categories.contains(type.name().toLowerCase()))
-                .toList();
+                .collect(Collectors.toSet());
 
         return productRepository.findProductByCategory(pageRequest, categoryTypes)
                 .stream()

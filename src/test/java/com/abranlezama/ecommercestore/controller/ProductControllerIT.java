@@ -170,6 +170,7 @@ public class ProductControllerIT {
         assertThat(product.getPrice()).isEqualTo(createRequest.price());
     }
 
+
     private void registerEmployee() {
         Role role = roleRepository.findByRole(RoleType.EMPLOYEE).orElseThrow();
         User user = UserMother.complete().isEnabled(true).roles(Set.of(role)).build();

@@ -1,11 +1,17 @@
 package com.abranlezama.ecommercestore.service.imp;
 
+import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
 import com.abranlezama.ecommercestore.model.CategoryType;
 import com.abranlezama.ecommercestore.model.Product;
+import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.ProductMother;
+import com.abranlezama.ecommercestore.repository.CategoryRepository;
 import com.abranlezama.ecommercestore.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,6 +39,10 @@ class ProductServiceImpTest {
 
     @Mock
     private ProductMapper productMapper;
+    @Mock
+    private CategoryRepository categoryRepository;
+    @Captor
+    private ArgumentCaptor<Product> productArgumentCaptor;
 
     @InjectMocks
     private ProductServiceImp cut;
@@ -42,7 +53,7 @@ class ProductServiceImpTest {
         // Given
         int page = 0;
         int pageSize = 20;
-        List<String> categories = List.of();
+        Set<String> categories = Set.of();
         Pageable pageable = PageRequest.of(page, pageSize);
 
         given(productRepository.findAll(pageable)).willReturn(Page.empty());
@@ -60,7 +71,7 @@ class ProductServiceImpTest {
         // Given
         int page = 0;
         int pageSize = 20;
-        List<String> categories = List.of("electronics");
+        Set<String> categories = Set.of("electronics");
         Pageable pageable = PageRequest.of(page, pageSize);
 
         given(productRepository.findProductByCategory(pageable, Set.of(CategoryType.ELECTRONICS)))
@@ -71,6 +82,32 @@ class ProductServiceImpTest {
 
         // Then
         then(productRepository).should(never()).findAll(pageable);
+    }
+
+    // test creation of product
+    @Test
+    void shouldCreateNewProduct() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+        Set<String> productCategories = Set.of("electronics", "education");
+        Product product = ProductMother.complete().build();
+        AddProductRequestDTO requestDto = AddProductRequestDTOMother.create()
+                .categories(productCategories)
+                .build();
+
+        given(productMapper.mapAddProductRequestToEntity(requestDto))
+                .willReturn(product);
+        given(productRepository.save(product)).willAnswer(invocation -> {
+            Product temp = invocation.getArgument(0);
+            temp.setId(1L);
+            return temp;
+        });
+
+        // When
+        cut.createProduct(userEmail, requestDto);
+
+        // Then
+        then(productRepository).should().save(product);
     }
 
 }

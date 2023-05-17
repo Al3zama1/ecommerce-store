@@ -32,7 +32,7 @@ public class Product {
     @Column(nullable = false)
     private Integer stockQuantity;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "product_categories",
             joinColumns = {@JoinColumn(name = "product_id")},

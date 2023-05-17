@@ -26,9 +26,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -78,6 +76,7 @@ public class ProductControllerIT {
     @AfterEach
     void cleanUp() {
         productRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -168,6 +167,30 @@ public class ProductControllerIT {
         assertThat(product.getDescription()).isEqualTo(createRequest.description());
         assertThat(product.getStockQuantity()).isEqualTo(createRequest.stockQuantity());
         assertThat(product.getPrice()).isEqualTo(createRequest.price());
+    }
+
+    @Test
+    void shouldRemoveProduct() throws Exception {
+        // Given
+        registerEmployee();
+        Set<CategoryType> categoryTypes = Set.of(CategoryType.EDUCATION, CategoryType.ELECTRONICS);
+        Set<Category> categories = categoryRepository.findAllByCategoryIn(categoryTypes);
+        Product product = ProductMother.complete().productCategories(categories).build();
+        product = productRepository.save(product);
+        long productId = product.getId();
+
+        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        String token = obtainToken(authRequest);
+
+        // When
+        this.mockMvc.perform(delete("/products")
+                .header("Authorization", "Bearer " + token)
+                .param("productId", String.valueOf(productId)))
+                .andExpect(status().isNoContent());
+
+        // Then
+        Optional<Product> productOptional = productRepository.findById(productId);
+        assertThat(productOptional.isEmpty()).isTrue();
     }
 
 

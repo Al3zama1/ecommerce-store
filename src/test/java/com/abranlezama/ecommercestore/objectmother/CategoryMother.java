@@ -7,7 +7,7 @@ public class CategoryMother {
 
     public static Category.CategoryBuilder technology() {
         return Category.builder()
-                .category(CategoryType.TECHNOLOGY);
+                .category(CategoryType.ELECTRONICS);
     }
 
     public static Category.CategoryBuilder education() {

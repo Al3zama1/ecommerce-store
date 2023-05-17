@@ -3,6 +3,8 @@ package com.abranlezama.ecommercestore.service.imp;
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
+import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.Category;
 import com.abranlezama.ecommercestore.model.CategoryType;
 import com.abranlezama.ecommercestore.model.Product;
@@ -57,6 +59,15 @@ public class ProductServiceImp implements ProductService {
         product.setProductCategories(categories);
         product = productRepository.save(product);
         return product.getId();
+    }
+
+    @Override
+    public void removeProduct(String userEmail, Long productId) {
+        // fetch product
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
+
+        productRepository.delete(product);
     }
 
     private Set<CategoryType> getCategoryTypes(Set<String> categories) {

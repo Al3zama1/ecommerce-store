@@ -3,6 +3,7 @@ package com.abranlezama.ecommercestore.service.imp;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
+import com.abranlezama.ecommercestore.event.UserActivationDetails;
 import com.abranlezama.ecommercestore.exception.AuthException;
 import com.abranlezama.ecommercestore.exception.EmailTakenException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
@@ -12,9 +13,11 @@ import com.abranlezama.ecommercestore.repository.CartRepository;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.RoleRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
+import com.abranlezama.ecommercestore.service.AccountActivationService;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
+import java.util.UUID;
 
 
 @Service
@@ -39,6 +43,8 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final AccountActivationService  accountActivationService;
 
     @Override
     public void registerCustomer(RegisterCustomerDTO registerDto) {
@@ -67,6 +73,9 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         customer.setUser(user);
         customer.setCart(Cart.builder().totalCost(0F).build());
         customerRepository.save(customer);
+
+        // send email with account activation token
+        applicationEventPublisher.publishEvent(new UserActivationDetails(user.getEmail(), customer.getFirstName(), UUID.randomUUID().toString()));
     }
 
     private void assignRoleToUser(User user, RoleType roleType) {

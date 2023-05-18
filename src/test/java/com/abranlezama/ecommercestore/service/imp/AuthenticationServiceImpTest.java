@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -51,6 +52,8 @@ class AuthenticationServiceImpTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private AuthenticationManager authenticationManager;
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
     @Mock
     private TokenService tokenService;
     @Mock

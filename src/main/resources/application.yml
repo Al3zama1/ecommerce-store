@@ -8,6 +8,9 @@ spring:
   web:
     resources:
       add-mappings: false
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
 
 server:
   error:

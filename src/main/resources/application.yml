@@ -11,6 +11,18 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+  mail:
+    host: smtp.sendgrid.net
+    port: 587
+    username: apikey
+    password: ${SENDGRID_API_KEY}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
   error:

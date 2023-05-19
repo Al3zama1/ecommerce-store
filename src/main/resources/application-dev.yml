@@ -22,5 +22,5 @@ server:
 
 custom:
   stacktrace.trace: true
-  application.domain: http://http://localhost:8080
+  application.domain: http://localhost:8080
   account.activation.endpoint: /auth/activate

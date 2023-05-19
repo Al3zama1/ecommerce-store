@@ -2,15 +2,11 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.event.UserActivationDetails;
 import com.abranlezama.ecommercestore.service.AccountActivationService;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -20,9 +16,10 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class TwilioAccountActivationService implements AccountActivationService {
+public class AccountActivationServiceImp implements AccountActivationService {
 
     private final TemplateEngine templateEngine;
+    private final JavaMailSender javaMailSender;
 
     @Value("${custom.application.domain}")
     private String domain;
@@ -33,22 +30,16 @@ public class TwilioAccountActivationService implements AccountActivationService 
     @EventListener
     @Override
     public void sendActivationEmail(UserActivationDetails event) throws IOException {
-        // email details
-        Email from = new Email("project@abranlezama.com");
-        Email to = new Email(event.userEmail());
-        String subject = "Account activation token";
+        SimpleMailMessage mail = new SimpleMailMessage();
 
-        Content content = new Content("text/html", generateEmailContent(event));
-        Mail mail = new Mail(from, subject, to, content);
+        mail.setFrom("project@abranlezama.com");
+        mail.setTo("ha1838979@gmail.com");
+        mail.setSubject("Ecommerce account activation link");
 
-        SendGrid sendGrid = new SendGrid(System.getenv("SENDGRID_API_KEY"));
-        Request request =  new Request();
+        String emailContent = generateEmailContent(event);
+        mail.setText(emailContent);
 
-        request.setMethod(Method.POST);
-        request.setEndpoint("mail/send");
-        request.setBody(mail.build());
-
-        sendGrid.api(request);
+        javaMailSender.send(mail);
     }
 
     private String generateEmailContent(UserActivationDetails event) {

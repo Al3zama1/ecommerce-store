@@ -1,5 +1,6 @@
 package com.abranlezama.ecommercestore.controller;
 
+import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -36,34 +38,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("dev")
+@Import(PostgresContainerConfig.class)
 @AutoConfigureMockMvc
-@Testcontainers
 public class ProductControllerIT {
-
-    @Container
-    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15.1")
-            .withDatabaseName("ecommerce")
-            .withPassword("test")
-            .withUsername("tes");
-
-    @DynamicPropertySource
-    static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", database::getJdbcUrl);
-        registry.add("spring.datasource.password", database::getPassword);
-        registry.add("spring.datasource.username", database::getUsername);
-    }
 
     @Autowired
     MockMvc mockMvc;
-
     @Autowired
     private ProductRepository productRepository;
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private ProductCategoryRepository productCategoryRepository;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired

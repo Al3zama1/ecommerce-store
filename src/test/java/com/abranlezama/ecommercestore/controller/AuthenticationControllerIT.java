@@ -1,5 +1,6 @@
 package com.abranlezama.ecommercestore.controller;
 
+import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -44,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("dev")
+@Import(PostgresContainerConfig.class)
 @AutoConfigureMockMvc
 public class AuthenticationControllerIT {
 
@@ -56,34 +59,13 @@ public class AuthenticationControllerIT {
     @Autowired
     JwtDecoder jwtDecoder;
 
-    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15.1")
-            .withDatabaseName("ecommerce")
-            .withPassword("test")
-            .withUsername("tes");
     @Autowired
     private CustomerRepository customerRepository;
-
-    @BeforeAll
-    static void beforeAll() {
-        database.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        database.stop();
-    }
 
     @AfterEach
     void cleanUp() {
         customerRepository.deleteAll();
         userRepository.deleteAll();
-    }
-
-    @DynamicPropertySource
-    static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", database::getJdbcUrl);
-        registry.add("spring.datasource.password", database::getPassword);
-        registry.add("spring.datasource.username", database::getUsername);
     }
 
     @RegisterExtension

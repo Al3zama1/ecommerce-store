@@ -3,18 +3,18 @@ package com.abranlezama.ecommercestore.service.imp;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
-import com.abranlezama.ecommercestore.exception.AuthException;
-import com.abranlezama.ecommercestore.exception.EmailTakenException;
-import com.abranlezama.ecommercestore.exception.ExceptionMessages;
-import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
+import com.abranlezama.ecommercestore.exception.*;
 import com.abranlezama.ecommercestore.model.Role;
 import com.abranlezama.ecommercestore.model.RoleType;
+import com.abranlezama.ecommercestore.model.User;
+import com.abranlezama.ecommercestore.model.UserActivation;
 import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.repository.RoleRepository;
+import com.abranlezama.ecommercestore.repository.UserActivationRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
 import com.abranlezama.ecommercestore.service.TokenService;
 import org.junit.jupiter.api.Test;
@@ -30,13 +30,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-
+import static org.mockito.Mockito.never;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +59,8 @@ class AuthenticationServiceImpTest {
     private TokenService tokenService;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private UserActivationRepository userActivationRepository;
     @InjectMocks
     private AuthenticationServiceImp cut;
 
@@ -136,6 +139,41 @@ class AuthenticationServiceImpTest {
         assertThatThrownBy(() -> cut.authenticateUser(dto))
                 .hasMessage(ExceptionMessages.AUTHENTICATION_FAILED)
                 .isInstanceOf(AuthException.class);
+    }
+
+    @Test
+    void shouldActivateUserAccount() {
+        // Given
+        UUID token = UUID.randomUUID();
+        User user = UserMother.complete().build();
+        UserActivation userActivation = UserActivation.builder().user(user).token(token).build();
+
+        given(userActivationRepository.findById(token)).willReturn(Optional.of(userActivation));
+
+        // When
+        cut.activateUserAccount(token.toString());
+
+        // Then
+        then(userActivationRepository).should().delete(userActivation);
+        then(userRepository).should().save(user);
+    }
+
+    @Test
+    void shouldThrowAccountActivationExceptionWhenTokenIsInvalid() {
+        // Given
+        UUID token = UUID.randomUUID();
+        UserActivation userActivation = UserActivation.builder().token(token).build();
+
+        given(userActivationRepository.findById(token)).willReturn(Optional.empty());
+
+        // When
+        assertThatThrownBy(() -> cut.activateUserAccount(token.toString()))
+                .hasMessage(ExceptionMessages.INVALID_ACTIVATION_TOKEN)
+                        .isInstanceOf(AccountActivationException.class);
+
+        // Then
+        then(userRepository).shouldHaveNoInteractions();
+        then(userActivationRepository).should(never()).delete(any());
     }
 
 }

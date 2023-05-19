@@ -4,15 +4,9 @@ import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDT
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
 import com.abranlezama.ecommercestore.event.UserActivationDetails;
-import com.abranlezama.ecommercestore.exception.AuthException;
-import com.abranlezama.ecommercestore.exception.EmailTakenException;
-import com.abranlezama.ecommercestore.exception.ExceptionMessages;
-import com.abranlezama.ecommercestore.exception.UnequalPasswordsException;
+import com.abranlezama.ecommercestore.exception.*;
 import com.abranlezama.ecommercestore.model.*;
-import com.abranlezama.ecommercestore.repository.CartRepository;
-import com.abranlezama.ecommercestore.repository.CustomerRepository;
-import com.abranlezama.ecommercestore.repository.RoleRepository;
-import com.abranlezama.ecommercestore.repository.UserRepository;
+import com.abranlezama.ecommercestore.repository.*;
 import com.abranlezama.ecommercestore.service.AccountActivationService;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.TokenService;
@@ -45,6 +39,7 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     private final TokenService tokenService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final AccountActivationService  accountActivationService;
+    private final UserActivationRepository userActivationRepository;
 
     @Override
     public void registerCustomer(RegisterCustomerDTO registerDto) {
@@ -105,6 +100,16 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
     @Override
     public void activateUserAccount(String token) {
+        // Verify existence of token
+        UserActivation userActivation = userActivationRepository
+                .findById(UUID.fromString(token)).orElseThrow(() -> new AccountActivationException(ExceptionMessages.INVALID_ACTIVATION_TOKEN));
 
+        // set user enabled to true
+        User user = userActivation.getUser();
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        // remove token
+        userActivationRepository.delete(userActivation);
     }
 }

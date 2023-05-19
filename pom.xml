@@ -40,18 +40,14 @@
             <artifactId>flyway-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sendgrid</groupId>
-            <artifactId>sendgrid-java</artifactId>
-            <version>4.4.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         <dependency>
             <groupId>com.icegreen</groupId>
             <artifactId>greenmail-junit5</artifactId>
-            <version>1.6.4</version>
+            <version>2.0.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -242,12 +238,8 @@
                     <excludes>
                         <exclude>**/*II.java</exclude>
                     </excludes>
-                    <properties>
-                        <configurationParameters>
-<!--                            junit.jupiter.execution.parallel.enabled = true-->
-<!--                            junit.jupiter.execution.parallel.default = concurrent-->
-                        </configurationParameters>
-                    </properties>
+                    <parallel>methods</parallel>
+                    <threadCount>4</threadCount>
                 </configuration>
             </plugin>
             <plugin>
@@ -262,6 +254,8 @@
                         </goals>
                         <configuration>
                             <argLine>${failsafeArgLine}</argLine>
+                            <parallel>none</parallel>
+                            <threadCount>1</threadCount>
                         </configuration>
                     </execution>
                 </executions>

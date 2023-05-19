@@ -8,4 +8,6 @@ public interface AuthenticationService {
     void registerCustomer(RegisterCustomerDTO registerCustomerDTO);
 
     String authenticateUser(AuthenticationRequestDTO dto);
+
+    void activateUserAccount(String token);
 }

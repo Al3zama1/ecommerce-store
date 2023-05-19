@@ -102,4 +102,9 @@ public class AuthenticationServiceImp  implements AuthenticationService {
             throw new AuthException(ExceptionMessages.AUTHENTICATION_FAILED);
         }
     }
+
+    @Override
+    public void activateUserAccount(String token) {
+
+    }
 }

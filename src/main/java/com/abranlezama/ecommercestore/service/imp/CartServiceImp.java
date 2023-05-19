@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -63,11 +65,8 @@ public class CartServiceImp implements CartService {
     public void updateCartProduct(String userEmail, long productId, int quantity) {
         // get customer cart
         Cart cart = retrieveCustomerCart(userEmail);
-
-        CartItem cartItem = cart.getCartItems().stream()
-                .filter(item -> item.getProduct().getId() == productId)
-                .findFirst()
-                .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
+        // get cart product to be updated
+        CartItem cartItem = retrieveCartItem(cart.getCartItems(), productId);
 
         // update customer cart
         cartItem.setQuantity(quantity);
@@ -81,10 +80,7 @@ public class CartServiceImp implements CartService {
         Cart cart = cartRepository.findByCustomer_User_Email(userEmail)
                 .orElseThrow(() -> new CustomerNotFound(ExceptionMessages.CUSTOMER_NOT_FOUND));
 
-        CartItem cartItem = cart.getCartItems().stream()
-                .filter(item -> item.getProduct().getId() == productId)
-                .findFirst()
-                .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
+        CartItem cartItem = retrieveCartItem(cart.getCartItems(), productId);
 
         // remove cart item from customer cart
         cart.getCartItems().remove(cartItem);
@@ -92,6 +88,13 @@ public class CartServiceImp implements CartService {
         // persist changes
         cartItemRepository.delete(cartItem);
         cartRepository.save(cart);
+    }
+
+    private CartItem retrieveCartItem(Set<CartItem> cartItems, long productId) {
+        return cartItems.stream()
+                .filter(item -> item.getProduct().getId() == productId)
+                .findFirst()
+                .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));
     }
 
     private float computeCartTotal(Cart cart) {

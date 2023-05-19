@@ -8,8 +8,11 @@ import com.abranlezama.ecommercestore.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -32,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("dev")
 @Testcontainers
+@AutoConfigureTestEntityManager
 @AutoConfigureMockMvc
 public class CartControllerIT {
 
@@ -67,12 +71,12 @@ public class CartControllerIT {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    @AfterEach
-    void cleanUp() {
-        productRepository.deleteAll();
-        cartRepository.deleteAll();
-        customerRepository.deleteAll();
-        userRepository.deleteAll();
+    @BeforeEach
+    void setUp() {
+        this.cartRepository.deleteAll();
+        this.customerRepository.deleteAll();
+        this.userRepository.deleteAll();
+        this.productRepository.deleteAll();
     }
 
     @Test
@@ -94,9 +98,8 @@ public class CartControllerIT {
         // Given
         generateTestInfrastructure();
         AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
-        AddItemToCartDto addItemToCartDto = new AddItemToCartDto(1L, 4);
-
-        Product product = productRepository.save(ProductMother.complete().build());
+        Product product = productRepository.save(ProductMother.complete().id(null).build());
+        AddItemToCartDto addItemToCartDto = new AddItemToCartDto(product.getId(), 4);
         String token = obtainToken(authRequest);
 
         // When
@@ -123,8 +126,7 @@ public class CartControllerIT {
         generateTestInfrastructure();
         AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
 
-        Product product = productRepository.save(ProductMother.complete().build());
-
+        Product product = productRepository.save(ProductMother.complete().id(null).build());
         Cart cart = cartRepository.findByCustomer_User_Email(authRequest.email()).orElseThrow();
         cartItemRepository.save(CartItem.builder().cart(cart).product(product).quantity(1).build());
         String token = obtainToken(authRequest);
@@ -153,8 +155,7 @@ public class CartControllerIT {
         generateTestInfrastructure();
         AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
 
-        Product product = productRepository.save(ProductMother.complete().build());
-
+        Product product = productRepository.save(ProductMother.complete().id(null).build());
         Cart cart = cartRepository.findByCustomer_User_Email(authRequest.email()).orElseThrow();
         cartItemRepository.save(CartItem.builder().cart(cart).product(product).quantity(1).build());
         String token = obtainToken(authRequest);

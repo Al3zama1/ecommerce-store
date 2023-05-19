@@ -19,6 +19,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -98,5 +100,45 @@ class AuthenticationControllerTest {
         then(authenticationService).should().authenticateUser(dto);
     }
 
+    // user account activation
+    @Test
+    void shouldCallAuthenticationServiceToActiveUserAccount() throws Exception {
+        // Given
+        String token = UUID.randomUUID().toString();
+
+        // When
+        this.mockMvc.perform(get("/auth/activate")
+                .param("token", token))
+                .andExpect(status().isOk());
+
+        // Then
+        then(authenticationService).should().activateUserAccount(token);
+    }
+
+    @Test
+    void shouldReturn400WhenCallingUserActivationAccountEndpointWithoutToken() throws Exception {
+        // Given
+
+        // When
+        this.mockMvc.perform(get("/auth/activate"))
+                .andExpect(status().isBadRequest());
+
+        // Then
+        then(authenticationService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void shouldReturn422WhenCallingUserAuthenticationEndpointWithMalformedToken() throws Exception {
+        // Given
+        String token = "tsflsjl45l3jwlkjlsnfksjflsjflsj";
+
+        // When
+        this.mockMvc.perform(get("/auth/activate")
+                        .param("token", token))
+                .andExpect(status().isUnprocessableEntity());
+
+        // Then
+        then(authenticationService).shouldHaveNoInteractions();
+    }
 
 }

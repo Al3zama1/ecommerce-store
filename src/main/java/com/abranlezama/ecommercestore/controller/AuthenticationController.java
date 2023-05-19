@@ -4,14 +4,18 @@ import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDT
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
 @RestController
 @RequestMapping("/auth")
+@Validated
 @RequiredArgsConstructor
 public class AuthenticationController {
 
@@ -26,5 +30,10 @@ public class AuthenticationController {
     @PostMapping("/login")
     public String login(@Valid @RequestBody AuthenticationRequestDTO requestDTO) {
         return authenticationService.authenticateUser(requestDTO);
+    }
+
+    @GetMapping("/activate")
+    public void activateUserAccount(@Size(min = 36, max = 36) @RequestParam("token") String token) {
+        this.authenticationService.activateUserAccount(token);
     }
 }

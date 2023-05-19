@@ -48,7 +48,7 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
     @Override
     public void registerCustomer(RegisterCustomerDTO registerDto) {
-        // verify password and verify password match
+        // ensure password and verify password match
         if (!registerDto.password().equals(registerDto.verifyPassword())) {
             throw new UnequalPasswordsException(ExceptionMessages.DIFFERENT_PASSWORDS);
         }
@@ -75,7 +75,12 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         customerRepository.save(customer);
 
         // send email with account activation token
-        applicationEventPublisher.publishEvent(new UserActivationDetails(user.getEmail(), customer.getFirstName(), UUID.randomUUID().toString()));
+        UserActivationDetails emailDetails = UserActivationDetails.builder()
+                        .userEmail(user.getEmail())
+                        .name(customer.getFirstName())
+                        .token(UUID.randomUUID().toString())
+                        .build();
+        applicationEventPublisher.publishEvent(emailDetails);
     }
 
     private void assignRoleToUser(User user, RoleType roleType) {

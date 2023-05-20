@@ -3,7 +3,6 @@ package com.abranlezama.ecommercestore.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 

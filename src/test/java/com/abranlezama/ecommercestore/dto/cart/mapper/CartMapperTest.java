@@ -7,13 +7,11 @@ import com.abranlezama.ecommercestore.model.CartItem;
 import com.abranlezama.ecommercestore.model.Product;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class CartMapperTest {
 

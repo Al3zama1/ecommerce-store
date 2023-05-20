@@ -1,6 +1,5 @@
 package com.abranlezama.ecommercestore.annotations;
 
-import com.abranlezama.ecommercestore.validators.USPhoneValidator;
 import com.abranlezama.ecommercestore.validators.USPostalCodeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

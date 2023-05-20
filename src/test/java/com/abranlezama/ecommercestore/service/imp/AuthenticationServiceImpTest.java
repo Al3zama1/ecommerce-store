@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +31,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,6 +67,10 @@ class AuthenticationServiceImpTest {
     private RoleRepository roleRepository;
     @Mock
     private UserActivationRepository userActivationRepository;
+    @Mock
+    private Clock clock;
+    @Mock
+    private UserActivation userActivation;
     @InjectMocks
     private AuthenticationServiceImp cut;
 
@@ -69,14 +79,31 @@ class AuthenticationServiceImpTest {
     void ShouldCreateRecordForUserAndCustomerFromRegisterCustomerDTO() {
         // Given
         RegisterCustomerDTO dto = RegisterCustomerDTOMother.complete().build();
+        User user = UserMother.complete().build();
+        UUID uuidToken = UUID.randomUUID();
+        LocalDateTime defaultDatetime = LocalDateTime.now();
+        Clock fixedclock = Clock.fixed(defaultDatetime.toInstant(ZoneOffset.UTC), ZoneId.of("UTC"));
+
+        UserActivation userActivation = UserActivation.builder()
+                .createdDate(defaultDatetime)
+                .user(user)
+                .build();
 
         given(userRepository.existsByEmail(dto.email())).willReturn(false);
-        given(authenticationMapper.mapToUser(dto)).willReturn(UserMother.complete().build());
+        given(authenticationMapper.mapToUser(dto)).willReturn(user);
         given(authenticationMapper.mapToCustomer(dto)).willReturn(CustomerMother.complete().build());
         given(roleRepository.findByRole(RoleType.CUSTOMER)).willReturn(Optional.of(new Role()));
+        given(clock.instant()).willReturn(fixedclock.instant());
+        given(clock.getZone()).willReturn(fixedclock.getZone());
+        given(userActivationRepository.save(userActivation)).willAnswer(invocation -> {
+            UserActivation savedUserActivation = invocation.getArgument(0);
+            savedUserActivation.setToken(uuidToken);
+            return savedUserActivation;
+        });
 
         // When
         cut.registerCustomer(dto);
+
 
         // Then
         then(passwordEncoder).should().encode(dto.password());

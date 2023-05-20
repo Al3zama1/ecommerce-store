@@ -4,9 +4,15 @@ import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.model.Role;
+import com.abranlezama.ecommercestore.model.RoleType;
+import com.abranlezama.ecommercestore.model.User;
 import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
+import com.abranlezama.ecommercestore.objectmother.UserMother;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
+import com.abranlezama.ecommercestore.repository.RoleRepository;
+import com.abranlezama.ecommercestore.repository.UserActivationRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icegreen.greenmail.configuration.GreenMailConfiguration;
@@ -39,6 +45,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.time.Duration;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -55,16 +62,22 @@ public class AuthenticationControllerIT {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     JwtDecoder jwtDecoder;
-
+    @Autowired
+    private UserActivationRepository userActivationRepository;
+    @Autowired
+    private RoleRepository roleRepository;
     @Autowired
     private CustomerRepository customerRepository;
 
     @AfterEach
     void cleanUp() {
         customerRepository.deleteAll();
+        userActivationRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -74,7 +87,7 @@ public class AuthenticationControllerIT {
             .withPerMethodLifecycle(false); // not create new lifecycle per test
 
     @Test
-    void shouldRegisterAndAuthenticateCustomer() throws Exception {
+    void shouldRegisterCustomer() throws Exception {
         // Given
         RegisterCustomerDTO registerDto = RegisterCustomerDTOMother.complete().email("ha1838970@gmail.com").build();
         AuthenticationRequestDTO authDto = AuthenticationRequestDTOMother.complete().email("ha1838970@gmail.com").build();
@@ -87,15 +100,11 @@ public class AuthenticationControllerIT {
                 .andExpect(header().exists("Location"))
                 .andExpect(header().string("Location", "/auth/login"));
 
-        MvcResult result = mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(authDto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isUnauthorized())
                 .andReturn();
-
-        // Then
-        Jwt jwt = jwtDecoder.decode(result.getResponse().getContentAsString());
-        assertThat(jwt.getClaim("sub").toString()).isEqualTo(authDto.email());
 
         Awaitility.given()
                 .await().atMost(Duration.ofSeconds(5))
@@ -106,6 +115,27 @@ public class AuthenticationControllerIT {
                     MimeMessage message = receivedMessages[0];
                     assertThat(message.getSubject()).isEqualTo("Ecommerce account activation link");
                 });
+    }
+
+    @Test
+    void shouldAuthenticateUserAndReturnJWTToken() throws Exception{
+        // Given
+        Role role = roleRepository.findByRole(RoleType.CUSTOMER).orElseThrow();
+        User user = UserMother.complete().isEnabled(true).roles(Set.of(role)).build();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+
+        userRepository.save(user);
+
+        // Whe
+        MvcResult result = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Jwt jwt = jwtDecoder.decode(result.getResponse().getContentAsString());
+        assertThat(jwt.getClaim("sub").toString()).isEqualTo(authRequest.email());
     }
 
     @Test

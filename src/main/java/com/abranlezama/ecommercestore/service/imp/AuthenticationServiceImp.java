@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -40,6 +42,7 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final AccountActivationService  accountActivationService;
     private final UserActivationRepository userActivationRepository;
+    private final Clock clock;
 
     @Override
     public void registerCustomer(RegisterCustomerDTO registerDto) {
@@ -54,8 +57,6 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
         // generate user and customer from dto
         User user = authenticationMapper.mapToUser(registerDto);
-        // TODO implement email activation
-        user.setEnabled(true);
         Customer customer = authenticationMapper.mapToCustomer(registerDto);
 
         // encrypt user/customer password
@@ -69,12 +70,24 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         customer.setCart(Cart.builder().totalCost(0F).build());
         customerRepository.save(customer);
 
-        // send email with account activation token
+        // generate and send account activation event
+        sendAccountActivationEmail(user, customer);
+    }
+
+    private void sendAccountActivationEmail(User user, Customer customer) {
+        // Generate and save token
+        UserActivation userActivation = UserActivation.builder()
+                .user(user)
+                .createdDate(LocalDateTime.now(clock))
+                .build();
+        userActivation = userActivationRepository.save(userActivation);
+
+        // send event to mailService
         UserActivationDetails emailDetails = UserActivationDetails.builder()
-                        .userEmail(user.getEmail())
-                        .name(customer.getFirstName())
-                        .token(UUID.randomUUID().toString())
-                        .build();
+                .userEmail(user.getEmail())
+                .name(customer.getFirstName())
+                .token(userActivation.getToken().toString())
+                .build();
         applicationEventPublisher.publishEvent(emailDetails);
     }
 

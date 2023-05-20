@@ -20,12 +20,12 @@ import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import jakarta.mail.internet.MimeMessage;
+import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -33,9 +33,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
+import org.springframework.test.web.reactive.server.FluxExchangeResult;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -43,18 +42,14 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 @Import(PostgresContainerConfig.class)
-@AutoConfigureMockMvc
 public class AuthenticationControllerIT {
 
     @Autowired
-    private MockMvc mockMvc;
+    WebTestClient webTestClient;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -89,18 +84,15 @@ public class AuthenticationControllerIT {
         AuthenticationRequestDTO authDto = AuthenticationRequestDTOMother.complete().email("ha1838970@gmail.com").build();
 
         // When
-        mockMvc.perform(post("/auth/customer")
+        this.webTestClient
+                .post()
+                .uri("/auth/customer")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(registerDto)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"))
-                .andExpect(header().string("Location", "/auth/login"));
-
-        mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(authDto)))
-                .andExpect(status().isUnauthorized())
-                .andReturn();
+                .bodyValue(objectMapper.writeValueAsString(registerDto))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().exists("Location")
+                .expectHeader().value("Location", Matchers.is("/auth/login"));
 
         Awaitility.given()
                 .await().atMost(Duration.ofSeconds(5))
@@ -114,6 +106,23 @@ public class AuthenticationControllerIT {
     }
 
     @Test
+    void shouldBlockLoginAttemptForAccountsNotEnabled() throws Exception {
+        // Given
+        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        User user = UserMother.complete().build();
+        userRepository.save(user);
+
+        // When, Then
+        this.webTestClient
+                .post()
+                .uri("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(authRequest))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
     void shouldAuthenticateUserAndReturnJWTToken() throws Exception{
         // Given
         Role role = roleRepository.findByRole(RoleType.CUSTOMER).orElseThrow();
@@ -124,13 +133,16 @@ public class AuthenticationControllerIT {
         userRepository.save(user);
 
         // Whe
-        MvcResult result = mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().isOk())
-                .andReturn();
+        FluxExchangeResult<String> response = this.webTestClient
+                .post()
+                .uri("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(authRequest))
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(String.class);
 
-        Jwt jwt = jwtDecoder.decode(result.getResponse().getContentAsString());
+        Jwt jwt = jwtDecoder.decode(response.getResponseBody().blockFirst());
         assertThat(jwt.getClaim("sub").toString()).isEqualTo(authRequest.email());
     }
 
@@ -139,19 +151,21 @@ public class AuthenticationControllerIT {
         // Given
         AuthenticationRequestDTO authDto = AuthenticationRequestDTOMother.complete().build();
 
-        // When
-        mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authDto)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message", Matchers.is(ExceptionMessages.AUTHENTICATION_FAILED)));
+        // When, Then
+        this.webTestClient
+                .post()
+                .uri("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(authDto))
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectBody()
+                .jsonPath("$.message", Matchers.is(ExceptionMessages.AUTHENTICATION_FAILED));
     }
 
     @Test
     void shouldActivateUserAccount() throws Exception{
         // Given
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
-
         Role role = roleRepository.findByRole(RoleType.CUSTOMER).orElseThrow();
         User user = UserMother.complete().roles(Set.of(role)).build();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -161,9 +175,11 @@ public class AuthenticationControllerIT {
         userActivation = userActivationRepository.save(userActivation);
 
         // When
-        mockMvc.perform(get("/auth/activate-account")
-                        .param("token", userActivation.getToken().toString()))
-                .andExpect(status().isOk());
+        this.webTestClient
+                .get()
+                .uri("/auth/activate-account?token={token}", userActivation.getToken().toString())
+                .exchange()
+                .expectStatus().isOk();
 
         // Then
         user = userRepository.findByEmail(user.getEmail()).orElseThrow();

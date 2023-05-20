@@ -7,6 +7,7 @@ import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.model.Role;
 import com.abranlezama.ecommercestore.model.RoleType;
 import com.abranlezama.ecommercestore.model.User;
+import com.abranlezama.ecommercestore.model.UserActivation;
 import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
@@ -37,9 +38,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -141,6 +145,31 @@ public class AuthenticationControllerIT {
                         .content(objectMapper.writeValueAsString(authDto)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message", Matchers.is(ExceptionMessages.AUTHENTICATION_FAILED)));
+    }
 
+    @Test
+    void shouldActivateUserAccount() throws Exception{
+        // Given
+        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+
+        Role role = roleRepository.findByRole(RoleType.CUSTOMER).orElseThrow();
+        User user = UserMother.complete().roles(Set.of(role)).build();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+
+        UserActivation userActivation = UserActivation.builder().user(user).createdDate(LocalDateTime.now()).build();
+        userActivation = userActivationRepository.save(userActivation);
+
+        // When
+        mockMvc.perform(get("/auth/activate")
+                        .param("token", userActivation.getToken().toString()))
+                .andExpect(status().isOk());
+
+        // Then
+        user = userRepository.findByEmail(user.getEmail()).orElseThrow();
+        Optional<UserActivation> userActivationOptional = userActivationRepository.findById(userActivation.getToken());
+
+        assertThat(user.isEnabled()).isTrue();
+        assertThat(userActivationOptional.isEmpty()).isTrue();
     }
 }

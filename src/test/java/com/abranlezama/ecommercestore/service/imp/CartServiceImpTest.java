@@ -2,7 +2,7 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.cart.CartDTO;
 import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
-import com.abranlezama.ecommercestore.exception.CustomerNotFound;
+import com.abranlezama.ecommercestore.exception.UserNotFound;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.*;
@@ -70,8 +70,8 @@ class CartServiceImpTest {
 
         // When
         assertThatThrownBy(() -> cut.getCustomerCart(userEmail))
-                .hasMessage(ExceptionMessages.CUSTOMER_NOT_FOUND)
-                .isInstanceOf(CustomerNotFound.class);
+                .hasMessage(ExceptionMessages.USER_NOT_FOUND)
+                .isInstanceOf(UserNotFound.class);
 
         // Then
         then(cartMapper).shouldHaveNoInteractions();
@@ -234,8 +234,8 @@ class CartServiceImpTest {
 
         // When
         assertThatThrownBy(() -> cut.removeCartProduct(userEmail, productId))
-                .hasMessage(ExceptionMessages.CUSTOMER_NOT_FOUND)
-                .hasMessage(ExceptionMessages.CUSTOMER_NOT_FOUND);
+                .hasMessage(ExceptionMessages.USER_NOT_FOUND)
+                .hasMessage(ExceptionMessages.USER_NOT_FOUND);
 
         // Then
         then(cartRepository).should(never()).save(any());

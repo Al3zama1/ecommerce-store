@@ -3,6 +3,7 @@ package com.abranlezama.ecommercestore.controller;
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
 import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
@@ -139,6 +140,22 @@ class AuthenticationControllerTest {
 
         // Then
         then(authenticationService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void shouldCallAuthenticationServiceToResendAccountActivationToken() throws Exception {
+        // Given
+        RequestActivationTokenDTO request = new RequestActivationTokenDTO("duke.last@gmail.com");
+
+        // When
+        this.mockMvc.perform(get("/auth/resend-activation-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+
+        // Then
+        then(authenticationService).should().resendAccountActivationToken(request);
+
     }
 
 }

@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -34,5 +35,10 @@ public class AuthenticationController {
     @GetMapping("/activate-account")
     public void activateUserAccount(@Size(min = 36, max = 36) @RequestParam("token") String token) {
         this.authenticationService.activateUserAccount(token);
+    }
+
+    @GetMapping("/resend-activation-token")
+    public String resendAccountActivationToken(@Valid @RequestBody RequestActivationTokenDTO requestDto) {
+        return authenticationService.resendAccountActivationToken(requestDto);
     }
 }

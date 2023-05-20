@@ -2,7 +2,7 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.cart.CartDTO;
 import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
-import com.abranlezama.ecommercestore.exception.CustomerNotFound;
+import com.abranlezama.ecommercestore.exception.UserNotFound;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.Cart;
@@ -78,7 +78,7 @@ public class CartServiceImp implements CartService {
     public void removeCartProduct(String userEmail, long productId) {
         // get customer cart
         Cart cart = cartRepository.findByCustomer_User_Email(userEmail)
-                .orElseThrow(() -> new CustomerNotFound(ExceptionMessages.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFound(ExceptionMessages.USER_NOT_FOUND));
 
         CartItem cartItem = retrieveCartItem(cart.getCartItems(), productId);
 
@@ -105,7 +105,7 @@ public class CartServiceImp implements CartService {
 
     private Cart retrieveCustomerCart(String userEmail) {
         return cartRepository.findByCustomer_User_Email(userEmail)
-                .orElseThrow(() -> new CustomerNotFound(ExceptionMessages.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFound(ExceptionMessages.USER_NOT_FOUND));
     }
 
 }

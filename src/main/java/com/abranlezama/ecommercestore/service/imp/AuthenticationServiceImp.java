@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
 import com.abranlezama.ecommercestore.event.UserActivationDetails;
 import com.abranlezama.ecommercestore.exception.*;
@@ -10,6 +11,7 @@ import com.abranlezama.ecommercestore.repository.*;
 import com.abranlezama.ecommercestore.service.AccountActivationService;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.TokenService;
+import com.abranlezama.ecommercestore.utils.ResponseMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -71,22 +73,25 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         customerRepository.save(customer);
 
         // generate and send account activation event
-        sendAccountActivationEmail(user, customer);
+        String token = generateAccountActivationToken(user);
+        sendAccountActivationEmail(user, customer, token);
     }
 
-    private void sendAccountActivationEmail(User user, Customer customer) {
-        // Generate and save token
+    private String generateAccountActivationToken(User user) {
         UserActivation userActivation = UserActivation.builder()
                 .user(user)
                 .createdDate(LocalDateTime.now(clock))
                 .build();
         userActivation = userActivationRepository.save(userActivation);
+        return userActivation.getToken().toString();
+    }
 
+    private void sendAccountActivationEmail(User user, Customer customer, String token) {
         // send event to mailService
         UserActivationDetails emailDetails = UserActivationDetails.builder()
                 .userEmail(user.getEmail())
                 .name(customer.getFirstName())
-                .token(userActivation.getToken().toString())
+                .token(token)
                 .build();
         applicationEventPublisher.publishEvent(emailDetails);
     }
@@ -124,5 +129,19 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
         // remove token
         userActivationRepository.delete(userActivation);
+    }
+
+    @Override
+    public String resendAccountActivationToken(RequestActivationTokenDTO requestDto) {
+        // retrieve user
+        Customer customer = customerRepository.findByUser_Email(requestDto.userEmail())
+                .orElseThrow(() -> new UserNotFound(ExceptionMessages.USER_NOT_FOUND));
+        User user = customer.getUser();
+
+        // verify user is not enabled
+        if (user.isEnabled()) return ResponseMessages.USER_IS_ENABLED;
+
+        sendAccountActivationEmail(customer.getUser(), customer, user.getUserActivation().getToken().toString());
+        return ResponseMessages.ACTIVATION_TOKEN_SENT;
     }
 }

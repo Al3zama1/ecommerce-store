@@ -2,7 +2,6 @@ package com.abranlezama.ecommercestore.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -33,6 +32,9 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private boolean isEnabled;
+
+    @OneToOne(mappedBy = "user")
+    private UserActivation userActivation;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

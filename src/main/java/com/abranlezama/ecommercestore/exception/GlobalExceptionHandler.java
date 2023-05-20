@@ -46,9 +46,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(ex, ex.getMessage(), HttpStatus.CONFLICT, request);
     }
 
-    @ExceptionHandler(CustomerNotFound.class)
+    @ExceptionHandler(UserNotFound.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Object> handleCustomerNotFoundException(CustomerNotFound ex, WebRequest request) {
+    public ResponseEntity<Object> handleCustomerNotFoundException(UserNotFound ex, WebRequest request) {
         return buildErrorResponse(ex, ex.getMessage(), HttpStatus.NOT_FOUND, request);
     }
 

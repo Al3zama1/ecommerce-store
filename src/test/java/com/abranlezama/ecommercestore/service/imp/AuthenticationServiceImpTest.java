@@ -2,12 +2,10 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
 import com.abranlezama.ecommercestore.exception.*;
-import com.abranlezama.ecommercestore.model.Role;
-import com.abranlezama.ecommercestore.model.RoleType;
-import com.abranlezama.ecommercestore.model.User;
-import com.abranlezama.ecommercestore.model.UserActivation;
+import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
@@ -17,6 +15,7 @@ import com.abranlezama.ecommercestore.repository.RoleRepository;
 import com.abranlezama.ecommercestore.repository.UserActivationRepository;
 import com.abranlezama.ecommercestore.repository.UserRepository;
 import com.abranlezama.ecommercestore.service.TokenService;
+import com.abranlezama.ecommercestore.utils.ResponseMessages;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +33,7 @@ import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -196,6 +196,24 @@ class AuthenticationServiceImpTest {
         // Then
         then(userRepository).shouldHaveNoInteractions();
         then(userActivationRepository).should(never()).delete(any());
+    }
+
+    @Test
+    void shouldResendAccountActivationToken() {
+        // Given
+        RequestActivationTokenDTO request = new RequestActivationTokenDTO("duke.last@gmail.com");
+        User user = UserMother.complete().isEnabled(false).build();
+        UserActivation userActivation = UserActivation.builder().token(UUID.randomUUID()).build();
+        user.setUserActivation(userActivation);
+        Customer customer = CustomerMother.complete().user(user).build();
+
+        given(customerRepository.findByUser_Email(request.userEmail())).willReturn(Optional.of(customer));
+
+        // When
+        String response = cut.resendAccountActivationToken(request);
+
+        // Then
+        assertThat(response).isEqualTo(ResponseMessages.ACTIVATION_TOKEN_SENT);
     }
 
 }

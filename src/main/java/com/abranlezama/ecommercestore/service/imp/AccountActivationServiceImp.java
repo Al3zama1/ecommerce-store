@@ -3,6 +3,7 @@ package com.abranlezama.ecommercestore.service.imp;
 import com.abranlezama.ecommercestore.event.UserActivationDetails;
 import com.abranlezama.ecommercestore.service.AccountActivationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.mail.SimpleMailMessage;
@@ -15,6 +16,7 @@ import org.thymeleaf.context.Context;
 import java.io.IOException;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AccountActivationServiceImp implements AccountActivationService {
 
@@ -45,6 +47,7 @@ public class AccountActivationServiceImp implements AccountActivationService {
     private String generateEmailContent(UserActivationDetails event) {
        // generate activation link
         String activationLink = domain + activationEndpoint + "?token=" + event.token();
+        log.info(activationLink);
 
         Context context = new Context();
         context.setVariable("userName", event.name());

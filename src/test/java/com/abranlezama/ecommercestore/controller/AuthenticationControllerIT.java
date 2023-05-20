@@ -161,7 +161,7 @@ public class AuthenticationControllerIT {
         userActivation = userActivationRepository.save(userActivation);
 
         // When
-        mockMvc.perform(get("/auth/activate")
+        mockMvc.perform(get("/auth/activate-account")
                         .param("token", userActivation.getToken().toString()))
                 .andExpect(status().isOk());
 

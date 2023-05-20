@@ -107,7 +107,7 @@ class AuthenticationControllerTest {
         String token = UUID.randomUUID().toString();
 
         // When
-        this.mockMvc.perform(get("/auth/activate")
+        this.mockMvc.perform(get("/auth/activate-account")
                 .param("token", token))
                 .andExpect(status().isOk());
 
@@ -120,7 +120,7 @@ class AuthenticationControllerTest {
         // Given
 
         // When
-        this.mockMvc.perform(get("/auth/activate"))
+        this.mockMvc.perform(get("/auth/activate-account"))
                 .andExpect(status().isBadRequest());
 
         // Then
@@ -133,7 +133,7 @@ class AuthenticationControllerTest {
         String token = "tsflsjl45l3jwlkjlsnfksjflsjflsj";
 
         // When
-        this.mockMvc.perform(get("/auth/activate")
+        this.mockMvc.perform(get("/auth/activate-account")
                         .param("token", token))
                 .andExpect(status().isUnprocessableEntity());
 

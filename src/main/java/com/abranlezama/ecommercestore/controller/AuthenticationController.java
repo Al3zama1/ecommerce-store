@@ -31,7 +31,7 @@ public class AuthenticationController {
         return authenticationService.authenticateUser(requestDTO);
     }
 
-    @GetMapping("/activate")
+    @GetMapping("/activate-account")
     public void activateUserAccount(@Size(min = 36, max = 36) @RequestParam("token") String token) {
         this.authenticationService.activateUserAccount(token);
     }

@@ -33,7 +33,7 @@ public class AccountActivationServiceImp implements AccountActivationService {
         SimpleMailMessage mail = new SimpleMailMessage();
 
         mail.setFrom("project@abranlezama.com");
-        mail.setTo("ha1838979@gmail.com");
+        mail.setTo(event.userEmail());
         mail.setSubject("Ecommerce account activation link");
 
         String emailContent = generateEmailContent(event);

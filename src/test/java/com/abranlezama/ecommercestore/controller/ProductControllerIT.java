@@ -6,12 +6,8 @@ import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.*;
-import com.abranlezama.ecommercestore.repository.CategoryRepository;
-import com.abranlezama.ecommercestore.repository.ProductRepository;
-import com.abranlezama.ecommercestore.repository.RoleRepository;
-import com.abranlezama.ecommercestore.repository.UserRepository;
+import com.abranlezama.ecommercestore.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +49,12 @@ public class ProductControllerIT {
     private RoleRepository roleRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @BeforeEach
     void setUp() {
-        productRepository.deleteAll();
-    }
-    @AfterEach
-    void cleanUp() {
+        customerRepository.deleteAll();
         productRepository.deleteAll();
         userRepository.deleteAll();
     }

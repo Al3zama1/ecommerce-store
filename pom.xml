@@ -243,8 +243,6 @@
                     <excludes>
                         <exclude>**/*II.java</exclude>
                     </excludes>
-                    <parallel>methods</parallel>
-                    <threadCount>4</threadCount>
                 </configuration>
             </plugin>
             <plugin>
@@ -259,8 +257,6 @@
                         </goals>
                         <configuration>
                             <argLine>${failsafeArgLine}</argLine>
-                            <parallel>none</parallel>
-                            <threadCount>1</threadCount>
                         </configuration>
                     </execution>
                 </executions>

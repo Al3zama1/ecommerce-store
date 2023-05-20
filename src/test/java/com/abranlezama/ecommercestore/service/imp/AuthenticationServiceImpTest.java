@@ -216,4 +216,35 @@ class AuthenticationServiceImpTest {
         assertThat(response).isEqualTo(ResponseMessages.ACTIVATION_TOKEN_SENT);
     }
 
+    @Test
+    void shouldThrowUserNotFoundWhenRequestToResendActivationTokenDoesNotBelongAToUser() {
+        // Given
+        RequestActivationTokenDTO request = new RequestActivationTokenDTO("duke.last@gmail.com");
+
+        given(customerRepository.findByUser_Email(request.userEmail())).willReturn(Optional.empty());
+
+        // When
+        assertThatThrownBy(() -> cut.resendAccountActivationToken(request))
+                .hasMessage(ExceptionMessages.USER_NOT_FOUND)
+                .isInstanceOf(UserNotFound.class);
+
+        // Then
+    }
+
+    @Test
+    void shouldReturnWhenRequestToActivateAccountIsForAnActivatedAccount() {
+        // Given
+        RequestActivationTokenDTO request = new RequestActivationTokenDTO("duke.last@gmail.com");
+        User user = UserMother.complete().isEnabled(true).build();
+        Customer customer = CustomerMother.complete().user(user).build();
+
+        given(customerRepository.findByUser_Email(request.userEmail())).willReturn(Optional.of(customer));
+
+        // When
+        String response = cut.resendAccountActivationToken(request);
+
+        // Then
+        assertThat(response).isEqualTo(ResponseMessages.USER_IS_ENABLED);
+    }
+
 }

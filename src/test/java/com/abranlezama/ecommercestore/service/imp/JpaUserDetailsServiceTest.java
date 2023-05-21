@@ -1,6 +1,5 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.exception.AuthException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.model.User;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
 
@@ -46,7 +46,7 @@ class JpaUserDetailsServiceTest {
         // When
         assertThatThrownBy(() -> cut.loadUserByUsername(userEmail))
                 .hasMessage(ExceptionMessages.AUTHENTICATION_FAILED)
-                .isInstanceOf(AuthException.class);
+                .isInstanceOf(UsernameNotFoundException.class);
     }
 
 

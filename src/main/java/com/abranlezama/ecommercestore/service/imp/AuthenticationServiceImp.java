@@ -7,8 +7,10 @@ import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMa
 import com.abranlezama.ecommercestore.event.UserActivationDetails;
 import com.abranlezama.ecommercestore.exception.*;
 import com.abranlezama.ecommercestore.model.*;
-import com.abranlezama.ecommercestore.repository.*;
-import com.abranlezama.ecommercestore.service.AccountActivationService;
+import com.abranlezama.ecommercestore.repository.CustomerRepository;
+import com.abranlezama.ecommercestore.repository.RoleRepository;
+import com.abranlezama.ecommercestore.repository.UserActivationRepository;
+import com.abranlezama.ecommercestore.repository.UserRepository;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.TokenService;
 import com.abranlezama.ecommercestore.utils.ResponseMessages;
@@ -17,7 +19,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,13 +37,11 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     private final UserRepository userRepository;
     private final AuthenticationMapper authenticationMapper;
     private final CustomerRepository customerRepository;
-    private final CartRepository cartRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final AccountActivationService  accountActivationService;
     private final UserActivationRepository userActivationRepository;
     private final Clock clock;
 
@@ -77,43 +76,13 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         sendAccountActivationEmail(user, customer, token);
     }
 
-    private String generateAccountActivationToken(User user) {
-        UserActivation userActivation = UserActivation.builder()
-                .user(user)
-                .createdDate(LocalDateTime.now(clock))
-                .build();
-        userActivation = userActivationRepository.save(userActivation);
-        return userActivation.getToken().toString();
-    }
-
-    private void sendAccountActivationEmail(User user, Customer customer, String token) {
-        // send event to mailService
-        UserActivationDetails emailDetails = UserActivationDetails.builder()
-                .userEmail(user.getEmail())
-                .name(customer.getFirstName())
-                .token(token)
-                .build();
-        applicationEventPublisher.publishEvent(emailDetails);
-    }
-
-    private void assignRoleToUser(User user, RoleType roleType) {
-        Role role = roleRepository.findByRole(roleType)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-        user.setRoles(Set.of(role));
-    }
-
     @Override
     public String authenticateUser(AuthenticationRequestDTO dto) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
-            );
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
+        );
 
-            return tokenService.generateJwt(authentication);
-
-        } catch (AuthenticationException ex) {
-            throw new AuthException(ExceptionMessages.AUTHENTICATION_FAILED);
-        }
+        return tokenService.generateJwt(authentication);
     }
 
     @Override
@@ -143,5 +112,30 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
         sendAccountActivationEmail(customer.getUser(), customer, user.getUserActivation().getToken().toString());
         return ResponseMessages.ACTIVATION_TOKEN_SENT;
+    }
+
+    private String generateAccountActivationToken(User user) {
+        UserActivation userActivation = UserActivation.builder()
+                .user(user)
+                .createdDate(LocalDateTime.now(clock))
+                .build();
+        userActivation = userActivationRepository.save(userActivation);
+        return userActivation.getToken().toString();
+    }
+
+    private void sendAccountActivationEmail(User user, Customer customer, String token) {
+        // send event to mailService
+        UserActivationDetails emailDetails = UserActivationDetails.builder()
+                .userEmail(user.getEmail())
+                .name(customer.getFirstName())
+                .token(token)
+                .build();
+        applicationEventPublisher.publishEvent(emailDetails);
+    }
+
+    private void assignRoleToUser(User user, RoleType roleType) {
+        Role role = roleRepository.findByRole(roleType)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        user.setRoles(Set.of(role));
     }
 }

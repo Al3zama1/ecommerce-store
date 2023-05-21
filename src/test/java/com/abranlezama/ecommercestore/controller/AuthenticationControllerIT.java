@@ -4,6 +4,7 @@ import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.exception.ExceptionResponse;
 import com.abranlezama.ecommercestore.model.Role;
 import com.abranlezama.ecommercestore.model.RoleType;
 import com.abranlezama.ecommercestore.model.User;
@@ -106,6 +107,46 @@ public class AuthenticationControllerIT {
     }
 
     @Test
+    void shouldFailAuthenticationWhenEmailProvidedDoesNotMatch() throws Exception{
+        // Given
+        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().email("lol@gmail.com").build();
+        User user = UserMother.complete().isEnabled(true).build();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+
+        // When, Then
+        this.webTestClient
+                .post()
+                .uri("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(authRequest))
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectBody(ExceptionResponse.class)
+                .value(ExceptionResponse::getMessage, Matchers.is(ExceptionMessages.AUTHENTICATION_FAILED));
+    }
+
+    @Test
+    void shouldFailAuthenticationWhenPasswordProvidedDoesNotMatch() throws Exception{
+        // Given
+        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().password("123456789").build();
+        User user = UserMother.complete().isEnabled(true).build();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+
+        // When, Then
+        this.webTestClient
+                .post()
+                .uri("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(authRequest))
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectBody(ExceptionResponse.class)
+                .value(ExceptionResponse::getMessage, Matchers.is(ExceptionMessages.AUTHENTICATION_FAILED));
+    }
+
+    @Test
     void shouldBlockLoginAttemptForAccountsNotEnabled() throws Exception {
         // Given
         AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
@@ -119,7 +160,9 @@ public class AuthenticationControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(objectMapper.writeValueAsString(authRequest))
                 .exchange()
-                .expectStatus().isUnauthorized();
+                .expectStatus().isUnauthorized()
+                .expectBody(ExceptionResponse.class)
+                .value(ExceptionResponse::getMessage, Matchers.is(ExceptionMessages.ACTIVATE_ACCOUNT));
     }
 
     @Test
@@ -159,8 +202,8 @@ public class AuthenticationControllerIT {
                 .bodyValue(objectMapper.writeValueAsString(authDto))
                 .exchange()
                 .expectStatus().isUnauthorized()
-                .expectBody()
-                .jsonPath("$.message", Matchers.is(ExceptionMessages.AUTHENTICATION_FAILED));
+                .expectBody(ExceptionResponse.class)
+                .value(ExceptionResponse::getMessage, Matchers.is(ExceptionMessages.AUTHENTICATION_FAILED));
     }
 
     @Test

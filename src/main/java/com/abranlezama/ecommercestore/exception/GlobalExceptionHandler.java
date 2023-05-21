@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -64,19 +66,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(AuthException.class)
+    @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<Object> handleAuthenticationException(AuthException ex, WebRequest request) {
+    public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.UNAUTHORIZED, request);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
         return buildErrorResponse(ex, ExceptionMessages.AUTHENTICATION_FAILED, HttpStatus.UNAUTHORIZED, request);
     }
 
     @ExceptionHandler(DisabledException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Object> handleAccountDisabledException(DisabledException ex, WebRequest request) {
-        return buildErrorResponse(ex,
-                "Account must be activated. Check your email for an account activation link.",
-                HttpStatus.UNAUTHORIZED,
-                request);
+        return buildErrorResponse(ex, ExceptionMessages.ACTIVATE_ACCOUNT, HttpStatus.UNAUTHORIZED, request);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

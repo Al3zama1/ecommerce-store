@@ -155,12 +155,13 @@ class AuthenticationServiceImpTest {
         // Given
         AuthenticationRequestDTO dto = AuthenticationRequestDTOMother.complete().build();
 
-        given(authenticationManager.authenticate(any())).willThrow(new UsernameNotFoundException("User not found"));
+        given(authenticationManager.authenticate(any()))
+                .willThrow(new UsernameNotFoundException(ExceptionMessages.AUTHENTICATION_FAILED));
 
         // When
         assertThatThrownBy(() -> cut.authenticateUser(dto))
                 .hasMessage(ExceptionMessages.AUTHENTICATION_FAILED)
-                .isInstanceOf(AuthException.class);
+                .isInstanceOf(UsernameNotFoundException.class);
     }
 
     @Test

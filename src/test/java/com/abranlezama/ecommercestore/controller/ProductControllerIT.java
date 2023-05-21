@@ -3,40 +3,37 @@ package com.abranlezama.ecommercestore.controller;
 import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.*;
 import com.abranlezama.ecommercestore.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 @Import(PostgresContainerConfig.class)
-@AutoConfigureMockMvc
 public class ProductControllerIT {
 
     @Autowired
-    MockMvc mockMvc;
+    private WebTestClient webTestClient;
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -73,11 +70,13 @@ public class ProductControllerIT {
         productRepository.save(product);
 
         // When, Then
-        mockMvc.perform(get("/products")
-                .param("page", String.valueOf(page))
-                .param("pageSize", String.valueOf(pageSize)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(1)));
+        this.webTestClient
+                .get()
+                .uri("/products")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ProductResponseDTO.class)
+                .hasSize(1);
     }
 
     @Test
@@ -96,15 +95,15 @@ public class ProductControllerIT {
         product = productRepository.save(product);
 
         // When
-        MvcResult result = mockMvc.perform(get("/products")
-                .param("page", String.valueOf(page))
-                .param("pageSize", String.valueOf(pageSize))
-                .param("categories", "technology")
-                .param("categories", "education"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(1)))
-                .andExpect(jsonPath("$[0].id", is(product.getId().intValue())))
-                .andReturn();
+        this.webTestClient
+                .get()
+                .uri("/products?page={page}&pageSize={pageSize}&categories={categories}&categories={categories}",
+                        page, pageSize, "technology", "education")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ProductResponseDTO.class)
+                .hasSize(1)
+                .value(products -> products.get(0).id(), Matchers.is(product.getId()));
     }
 
     // Test creation of new products
@@ -121,20 +120,27 @@ public class ProductControllerIT {
         String token = obtainToken(authRequest);
 
         // When
-        MvcResult result = this.mockMvc.perform(post("/products")
+        EntityExchangeResult<String> response = this.webTestClient
+                .post()
+                .uri("/products")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createRequest)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"))
-                .andReturn();
+                .bodyValue(objectMapper.writeValueAsString(createRequest))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().exists("Location")
+                .expectBody(String.class)
+                .returnResult();
 
         // Then
-        String[] location = Objects.requireNonNull(result.getResponse().getHeader("Location")).split("/");
+        String[] location = Objects.
+                requireNonNull(response.getResponseHeaders().get("Location")).get(0).split("/");
+
         // retrieve product created from the id located in Location header
         Product product = productRepository
                 .findById(Long.valueOf(location[location.length - 1]))
                 .orElseThrow();
+
         // compare passed in categories with the ones added to product
         boolean categoriesMatch = product.getProductCategories().stream()
                 .allMatch(category -> createRequest.categories()
@@ -164,10 +170,12 @@ public class ProductControllerIT {
         String token = obtainToken(authRequest);
 
         // When
-        this.mockMvc.perform(delete("/products")
+        this.webTestClient
+                .delete()
+                .uri("/products?productId={productId}", productId)
                 .header("Authorization", "Bearer " + token)
-                .param("productId", String.valueOf(productId)))
-                .andExpect(status().isNoContent());
+                .exchange()
+                .expectStatus().isNoContent();
 
         // Then
         Optional<Product> productOptional = productRepository.findById(productId);
@@ -192,16 +200,19 @@ public class ProductControllerIT {
         UpdateProductRequestDTO updateRequest = UpdateProductRequestDTOMOther.complete().build();
 
         // When
-        this.mockMvc.perform(patch("/products")
+        this.webTestClient
+                .patch()
+                .uri("/products?productId={productId}", product.getId())
                 .header("Authorization", "Bearer " + token)
-                .param("productId", String.valueOf(product.getId()))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(product.getId().intValue())))
-                .andExpect(jsonPath("$.name", is(updateRequest.name())))
-                .andExpect(jsonPath("$.description", is(updateRequest.description())))
-                .andExpect(jsonPath("$.price", is(updateRequest.price().doubleValue())));
+                .bodyValue(objectMapper.writeValueAsString(updateRequest))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ProductResponseDTO.class)
+                .value(ProductResponseDTO::id, Matchers.is(product.getId()))
+                .value(ProductResponseDTO::name, Matchers.is(updateRequest.name()))
+                .value(ProductResponseDTO::description, Matchers.is(updateRequest.description()))
+                .value(ProductResponseDTO::price, Matchers.is(updateRequest.price()));
 
         // Then
         // verify that the product categories were updated
@@ -225,11 +236,15 @@ public class ProductControllerIT {
     }
 
     private String obtainToken(AuthenticationRequestDTO authRequest) throws Exception {
-        MvcResult result = this.mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return result.getResponse().getContentAsString();
+        return this.webTestClient
+                .post()
+                .uri("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(authRequest))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class)
+                .returnResult()
+                .getResponseBody();
     }
 }

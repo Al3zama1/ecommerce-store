@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
-import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
+import com.abranlezama.ecommercestore.dto.product.ProductDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
@@ -32,7 +32,7 @@ public class ProductServiceImp implements ProductService {
     private final ProductCategoryRepository productCategoryRepository;
 
     @Override
-    public List<ProductResponseDTO> getProducts(int page, int pageSize, Set<String> categories) {
+    public List<ProductDTO> getProducts(int page, int pageSize, Set<String> categories) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
         if (categories.size() == 0) {
             return productRepository.findAll(pageRequest)
@@ -74,7 +74,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ProductResponseDTO updateProduct(String userEmail, long productId, UpdateProductRequestDTO requestDto) {
+    public ProductDTO updateProduct(String userEmail, long productId, UpdateProductRequestDTO requestDto) {
         // verify existence of product
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(ExceptionMessages.PRODUCT_NOT_FOUND));

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Builder;
 
 @Builder
-public record ProductResponseDTO(
+public record ProductDTO(
     Long id,
     @NotBlank String name,
     @NotBlank String description,

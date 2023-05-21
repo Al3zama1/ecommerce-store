@@ -3,7 +3,7 @@ package com.abranlezama.ecommercestore.controller;
 import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
-import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
+import com.abranlezama.ecommercestore.dto.product.ProductDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.*;
@@ -75,7 +75,7 @@ public class ProductControllerIT {
                 .uri("/products")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(ProductResponseDTO.class)
+                .expectBodyList(ProductDTO.class)
                 .hasSize(1);
     }
 
@@ -101,7 +101,7 @@ public class ProductControllerIT {
                         page, pageSize, "technology", "education")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(ProductResponseDTO.class)
+                .expectBodyList(ProductDTO.class)
                 .hasSize(1)
                 .value(products -> products.get(0).id(), Matchers.is(product.getId()));
     }
@@ -208,11 +208,11 @@ public class ProductControllerIT {
                 .bodyValue(objectMapper.writeValueAsString(updateRequest))
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(ProductResponseDTO.class)
-                .value(ProductResponseDTO::id, Matchers.is(product.getId()))
-                .value(ProductResponseDTO::name, Matchers.is(updateRequest.name()))
-                .value(ProductResponseDTO::description, Matchers.is(updateRequest.description()))
-                .value(ProductResponseDTO::price, Matchers.is(updateRequest.price()));
+                .expectBody(ProductDTO.class)
+                .value(ProductDTO::id, Matchers.is(product.getId()))
+                .value(ProductDTO::name, Matchers.is(updateRequest.name()))
+                .value(ProductDTO::description, Matchers.is(updateRequest.description()))
+                .value(ProductDTO::price, Matchers.is(updateRequest.price()));
 
         // Then
         // verify that the product categories were updated

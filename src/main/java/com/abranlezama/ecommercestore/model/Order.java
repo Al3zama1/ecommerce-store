@@ -26,9 +26,11 @@ public class Order {
     private LocalDateTime dateReceived;
     @OneToOne
     private OrderStatus orderStatus;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
+    @OneToMany(mappedBy = "order")
+    @ToString.Exclude
     private Set<OrderItem> orderItems;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Customer customer;
 
     @Override

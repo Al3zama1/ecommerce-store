@@ -3,6 +3,9 @@ package com.abranlezama.ecommercestore.controller;
 import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.cart.AddItemToCartDto;
+import com.abranlezama.ecommercestore.dto.cart.CartDTO;
+import com.abranlezama.ecommercestore.dto.cart.CartItemDTO;
+import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
@@ -14,29 +17,27 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.Set;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 @Import(PostgresContainerConfig.class)
-@AutoConfigureMockMvc
 public class CartControllerIT {
 
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
+    @Autowired
+    private CartMapper cartMapper;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -70,10 +71,14 @@ public class CartControllerIT {
         String token = obtainToken(authRequest);
 
         // When, Then
-        mockMvc.perform(get("/cart")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.cartItems.size()", Matchers.is(0)));
+        this.webTestClient
+                .get()
+                .uri("/cart")
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CartDTO.class)
+                .value(CartDTO::cartItems, Matchers.hasSize(0));
     }
 
     @Test
@@ -86,21 +91,26 @@ public class CartControllerIT {
         String token = obtainToken(authRequest);
 
         // When
-        this.mockMvc.perform(post("/cart")
+        this.webTestClient
+                .post()
+                .uri("/cart")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(addItemToCartDto)))
-                .andExpect(status().isOk());
+                .bodyValue(objectMapper.writeValueAsString(addItemToCartDto))
+                .exchange()
+                .expectStatus().isOk();
 
         // Then
-        this.mockMvc.perform(get("/cart")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.cartItems.size()", Matchers.is(1)))
-                .andExpect(jsonPath("$.cartItems[0].name", Matchers.is(product.getName())))
-                .andExpect(jsonPath("$.cartItems[0].quantity", Matchers.is(4)))
-                .andExpect(jsonPath("$.cartItems[0].productId", Matchers.is(product.getId().intValue())))
-                .andReturn();
+        Cart cart = cartRepository.findByCustomer_User_Email("duke.last@gmail.com").orElseThrow();
+        CartDTO cartDto = cartMapper.mapCartToDto(cart);
+        CartItemDTO cartItemDto = cartDto.cartItems().stream().findFirst().get();
+
+        assertThat(cartDto.cartItems().size()).isEqualTo(1);
+        assertThat(cartItemDto.productId()).isEqualTo(addItemToCartDto.productId());
+        assertThat(cartItemDto.name()).isEqualTo(product.getName());
+        assertThat(cartItemDto.quantity()).isEqualTo(addItemToCartDto.quantity());
+        assertThat(cartItemDto.price()).isEqualTo(product.getPrice());
+        assertThat(cartDto.cartTotal()).isEqualTo(product.getPrice() * addItemToCartDto.quantity());
     }
 
     @Test
@@ -108,28 +118,30 @@ public class CartControllerIT {
         // Given
         generateTestInfrastructure();
         AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
-
+        int updatedQuantity = 3;
         Product product = productRepository.save(ProductMother.complete().id(null).build());
         Cart cart = cartRepository.findByCustomer_User_Email(authRequest.email()).orElseThrow();
         cartItemRepository.save(CartItem.builder().cart(cart).product(product).quantity(1).build());
         String token = obtainToken(authRequest);
 
         // When
-        this.mockMvc.perform(patch("/cart")
-                        .header("Authorization", "Bearer " + token)
-                        .param("productId", String.valueOf(product.getId()))
-                        .param("quantity", String.valueOf(3)))
-                .andExpect(status().isNoContent());
+        this.webTestClient
+                .patch()
+                .uri("/cart?productId={productId}&quantity={quantity}", product.getId(), updatedQuantity)
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isNoContent();
 
         // Then
-        this.mockMvc.perform(get("/cart")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.cartItems.size()", Matchers.is(1)))
-                .andExpect(jsonPath("$.cartItems[0].name", Matchers.is(product.getName())))
-                .andExpect(jsonPath("$.cartItems[0].quantity", Matchers.is(3)))
-                .andExpect(jsonPath("$.cartItems[0].productId", Matchers.is(product.getId().intValue())))
-                .andReturn();
+        cart = cartRepository.findByCustomer_User_Email("duke.last@gmail.com").orElseThrow();
+        CartDTO cartDto = cartMapper.mapCartToDto(cart);
+        CartItemDTO cartItemDto = cartDto.cartItems().stream().findFirst().get();
+
+        assertThat(cartDto.cartItems().size()).isEqualTo(1);
+        assertThat(cartItemDto.name()).isEqualTo(product.getName());
+        assertThat(cartItemDto.quantity()).isEqualTo(3);
+        assertThat(cartItemDto.productId()).isEqualTo(product.getId());
+        assertThat(cartDto.cartTotal()).isEqualTo(product.getPrice() * updatedQuantity);
     }
 
     @Test
@@ -144,26 +156,33 @@ public class CartControllerIT {
         String token = obtainToken(authRequest);
 
         // When
-        this.mockMvc.perform(delete("/cart")
-                        .header("Authorization", "Bearer " + token)
-                        .param("productId", String.valueOf(product.getId())))
-                .andExpect(status().isNoContent());
+        this.webTestClient
+                .delete()
+                .uri("/cart?productId={productId}", product.getId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isNoContent();
 
         // Then
-        this.mockMvc.perform(get("/cart")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.cartItems.size()", Matchers.is(0)))
-                .andReturn();
+        cart = cartRepository.findByCustomer_User_Email("duke.last@gmail.com").orElseThrow();
+        CartDTO cartDto = cartMapper.mapCartToDto(cart);
+
+        assertThat(cartDto.cartItems().size()).isEqualTo(0);
+        assertThat(cartDto.cartTotal()).isEqualTo(0);
     }
 
     private String obtainToken(AuthenticationRequestDTO authRequest) throws Exception {
-        MvcResult result = this.mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return result.getResponse().getContentAsString();
+        EntityExchangeResult<String> response = this.webTestClient
+                .post()
+                .uri("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(authRequest))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class)
+                .returnResult();
+
+        return response.getResponseBody();
     }
 
     private void generateTestInfrastructure() {

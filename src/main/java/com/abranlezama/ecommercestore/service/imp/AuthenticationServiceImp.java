@@ -89,7 +89,8 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     public void activateUserAccount(String token) {
         // Verify existence of token
         UserActivation userActivation = userActivationRepository
-                .findById(UUID.fromString(token)).orElseThrow(() -> new AccountActivationException(ExceptionMessages.INVALID_ACTIVATION_TOKEN));
+                .findById(UUID.fromString(token))
+                .orElseThrow(() -> new AccountActivationException(ExceptionMessages.INVALID_ACTIVATION_TOKEN));
 
         // set user enabled to true
         User user = userActivation.getUser();

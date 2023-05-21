@@ -1,10 +1,10 @@
 package com.abranlezama.ecommercestore.service;
 
-import com.abranlezama.ecommercestore.event.UserActivationDetails;
+import com.abranlezama.ecommercestore.event.UserActivationDTO;
 
 import java.io.IOException;
 
 public interface AccountActivationService {
 
-    void sendActivationEmail(UserActivationDetails event) throws IOException;
+    void sendActivationEmail(UserActivationDTO event) throws IOException;
 }

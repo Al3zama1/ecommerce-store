@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.event.UserActivationDetails;
+import com.abranlezama.ecommercestore.event.UserActivationDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,7 +34,7 @@ class AccountActivationServiceImpTest {
     @Test
     void shouldGenerateEmailContent() throws IOException {
         // given
-        UserActivationDetails activationDetails = UserActivationDetails.builder()
+        UserActivationDTO activationDetails = UserActivationDTO.builder()
                 .userEmail("duke.last@gmail.com")
                 .token(UUID.randomUUID().toString())
                 .name("Duke")

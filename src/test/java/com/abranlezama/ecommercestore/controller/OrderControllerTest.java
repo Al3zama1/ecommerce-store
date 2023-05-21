@@ -35,13 +35,17 @@ class OrderControllerTest {
     @WithMockUser(username = USER_EMAIL, roles = "CUSTOMER")
     void shouldCallOrderServiceToCreateCustomerOrder() throws Exception {
         // Given
+        int page = 0;
+        int pageSize = 20;
 
         // When
-        this.mockMvc.perform(get("/orders"))
+        this.mockMvc.perform(get("/orders")
+                .param("page", String.valueOf(page))
+                .param("pageSize", String.valueOf(pageSize)))
                 .andExpect(status().isOk());
 
         // Then
-        then(orderService).should().getCustomerOrders(USER_EMAIL);
+        then(orderService).should().getCustomerOrders(USER_EMAIL, page, pageSize);
     }
 
 }

@@ -6,5 +6,5 @@ import java.util.Set;
 
 public interface OrderService {
 
-    Set<OrderResponseDTO> getCustomerOrders(String userEmail);
+    Set<OrderResponseDTO> getCustomerOrders(String userEmail, int page, int pageSize);
 }

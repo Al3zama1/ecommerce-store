@@ -23,7 +23,7 @@ public class Order {
     private Float totalCost;
     private LocalDateTime datePlaced;
     private LocalDateTime dateShipped;
-    private LocalDateTime dateReceived;
+    private LocalDateTime dateDelivered;
     @OneToOne
     private OrderStatus orderStatus;
     @OneToMany(mappedBy = "order")

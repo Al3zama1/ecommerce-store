@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.event.UserActivationDetails;
+import com.abranlezama.ecommercestore.event.UserActivationDTO;
 import com.abranlezama.ecommercestore.service.AccountActivationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class AccountActivationServiceImp implements AccountActivationService {
     @Async
     @EventListener
     @Override
-    public void sendActivationEmail(UserActivationDetails event) throws IOException {
+    public void sendActivationEmail(UserActivationDTO event) throws IOException {
         SimpleMailMessage mail = new SimpleMailMessage();
 
         mail.setFrom("project@abranlezama.com");
@@ -44,7 +44,7 @@ public class AccountActivationServiceImp implements AccountActivationService {
         javaMailSender.send(mail);
     }
 
-    private String generateEmailContent(UserActivationDetails event) {
+    private String generateEmailContent(UserActivationDTO event) {
        // generate activation link
         String activationLink = domain + activationEndpoint + "?token=" + event.token();
         log.info(activationLink);

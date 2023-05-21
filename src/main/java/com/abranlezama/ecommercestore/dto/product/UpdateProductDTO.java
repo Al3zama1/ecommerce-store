@@ -8,7 +8,7 @@ import lombok.Builder;
 import java.util.Set;
 
 @Builder
-public record UpdateProductRequestDTO(
+public record UpdateProductDTO(
         @NotBlank String name,
         String description,
         @Positive Float price,

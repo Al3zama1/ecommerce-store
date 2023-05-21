@@ -6,7 +6,7 @@ import lombok.Builder;
 
 
 @Builder
-public record UserActivationDetails(
+public record UserActivationDTO(
         @Email String userEmail,
         @NotBlank String name,
         @NotBlank String token

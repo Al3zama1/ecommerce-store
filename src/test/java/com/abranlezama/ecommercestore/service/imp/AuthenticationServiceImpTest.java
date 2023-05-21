@@ -1,12 +1,12 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
 import com.abranlezama.ecommercestore.exception.*;
 import com.abranlezama.ecommercestore.model.*;
-import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.AuthenticationDTOMother;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
@@ -141,7 +141,7 @@ class AuthenticationServiceImpTest {
     @Test
     void shouldAuthenticateUserWhenCredentialsAreCorrect() {
         // Given
-        AuthenticationRequestDTO dto = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO dto = AuthenticationDTOMother.complete().build();
 
         // When
         cut.authenticateUser(dto);
@@ -153,7 +153,7 @@ class AuthenticationServiceImpTest {
     @Test
     void shouldThrowAuthExceptionWhenEmailOrPasswordAreIncorrect() {
         // Given
-        AuthenticationRequestDTO dto = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO dto = AuthenticationDTOMother.complete().build();
 
         given(authenticationManager.authenticate(any()))
                 .willThrow(new UsernameNotFoundException(ExceptionMessages.AUTHENTICATION_FAILED));

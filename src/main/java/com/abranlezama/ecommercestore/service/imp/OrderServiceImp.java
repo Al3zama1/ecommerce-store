@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.dto.order.OrderResponseDTO;
+import com.abranlezama.ecommercestore.dto.order.OrderDTO;
 import com.abranlezama.ecommercestore.dto.order.mapper.OrderMapper;
 import com.abranlezama.ecommercestore.model.Order;
 import com.abranlezama.ecommercestore.repository.OrderRepository;
@@ -21,7 +21,7 @@ public class OrderServiceImp implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
-    public Set<OrderResponseDTO> getCustomerOrders(String userEmail, int page, int pageSize) {
+    public Set<OrderDTO> getCustomerOrders(String userEmail, int page, int pageSize) {
         Page<Order> orders = orderRepository
                 .findAllByCustomer_User_Email(PageRequest.of(page, pageSize), userEmail);
 

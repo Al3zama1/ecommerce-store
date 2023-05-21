@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.dto.order.mapper;
 
-import com.abranlezama.ecommercestore.dto.order.OrderResponseDTO;
+import com.abranlezama.ecommercestore.dto.order.OrderDTO;
 import com.abranlezama.ecommercestore.model.Order;
 import com.abranlezama.ecommercestore.model.OrderStatus;
 import com.abranlezama.ecommercestore.model.OrderStatusType;
@@ -28,7 +28,7 @@ class OrderMapperTest {
                 .build();
 
         // When
-        OrderResponseDTO orderDto = mapper.mapOrderToDto(order);
+        OrderDTO orderDto = mapper.mapOrderToDto(order);
 
         // When
         assertThat(orderDto.id()).isEqualTo(order.getId());

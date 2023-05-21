@@ -1,13 +1,13 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
-import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
 import com.abranlezama.ecommercestore.model.CategoryType;
 import com.abranlezama.ecommercestore.model.Product;
-import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.AddProductDTOMother;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import com.abranlezama.ecommercestore.repository.CategoryRepository;
 import com.abranlezama.ecommercestore.repository.ProductRepository;
@@ -92,7 +92,7 @@ class ProductServiceImpTest {
         String userEmail = "duke.last@gmail.com";
         Set<String> productCategories = Set.of("electronics", "education");
         Product product = ProductMother.complete().build();
-        AddProductRequestDTO requestDto = AddProductRequestDTOMother.create()
+        AddProductDTO requestDto = AddProductDTOMother.create()
                 .categories(productCategories)
                 .build();
 
@@ -151,7 +151,7 @@ class ProductServiceImpTest {
         String userEmail = "duke.last@gmail.com";
         long productId = 1;
         Product product = ProductMother.complete().build();
-        UpdateProductRequestDTO requestDto = UpdateProductRequestDTO.builder()
+        UpdateProductDTO requestDto = UpdateProductDTO.builder()
                 .name("Soccer Ball")
                 .description("Next generation soccer ball")
                 .price(40F)
@@ -179,7 +179,7 @@ class ProductServiceImpTest {
         // Given
         String userEmail = "duke.last@gmail.com";
         long productId = 1;
-        UpdateProductRequestDTO requestDto = UpdateProductRequestDTO.builder().build();
+        UpdateProductDTO requestDto = UpdateProductDTO.builder().build();
 
         // verify product exists
         given(productRepository.findById(productId)).willReturn(Optional.empty());

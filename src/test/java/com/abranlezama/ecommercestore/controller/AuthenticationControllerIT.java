@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ExceptionResponse;
@@ -9,7 +9,7 @@ import com.abranlezama.ecommercestore.model.Role;
 import com.abranlezama.ecommercestore.model.RoleType;
 import com.abranlezama.ecommercestore.model.User;
 import com.abranlezama.ecommercestore.model.UserActivation;
-import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.AuthenticationDTOMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
@@ -82,7 +82,7 @@ public class AuthenticationControllerIT {
     void shouldRegisterCustomer() throws Exception {
         // Given
         RegisterCustomerDTO registerDto = RegisterCustomerDTOMother.complete().email("ha1838970@gmail.com").build();
-        AuthenticationRequestDTO authDto = AuthenticationRequestDTOMother.complete().email("ha1838970@gmail.com").build();
+        AuthenticationDTO authDto = AuthenticationDTOMother.complete().email("ha1838970@gmail.com").build();
 
         // When
         this.webTestClient
@@ -109,7 +109,7 @@ public class AuthenticationControllerIT {
     @Test
     void shouldFailAuthenticationWhenEmailProvidedDoesNotMatch() throws Exception{
         // Given
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().email("lol@gmail.com").build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().email("lol@gmail.com").build();
         User user = UserMother.complete().isEnabled(true).build();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -129,7 +129,7 @@ public class AuthenticationControllerIT {
     @Test
     void shouldFailAuthenticationWhenPasswordProvidedDoesNotMatch() throws Exception{
         // Given
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().password("123456789").build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().password("123456789").build();
         User user = UserMother.complete().isEnabled(true).build();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -149,7 +149,7 @@ public class AuthenticationControllerIT {
     @Test
     void shouldBlockLoginAttemptForAccountsNotEnabled() throws Exception {
         // Given
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
         User user = UserMother.complete().build();
         userRepository.save(user);
 
@@ -171,7 +171,7 @@ public class AuthenticationControllerIT {
         Role role = roleRepository.findByRole(RoleType.CUSTOMER).orElseThrow();
         User user = UserMother.complete().isEnabled(true).roles(Set.of(role)).build();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
 
         userRepository.save(user);
 
@@ -192,7 +192,7 @@ public class AuthenticationControllerIT {
     @Test
     void shouldReturn401WhenAuthenticationCredentialsAreIncorrect() throws Exception{
         // Given
-        AuthenticationRequestDTO authDto = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authDto = AuthenticationDTOMother.complete().build();
 
         // When, Then
         this.webTestClient

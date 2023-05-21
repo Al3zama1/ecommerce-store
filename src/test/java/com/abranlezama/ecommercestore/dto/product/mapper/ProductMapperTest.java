@@ -1,9 +1,9 @@
 package com.abranlezama.ecommercestore.dto.product.mapper;
 
-import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
-import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
+import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
+import com.abranlezama.ecommercestore.dto.product.ProductDTO;
 import com.abranlezama.ecommercestore.model.Product;
-import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.AddProductDTOMother;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -20,7 +20,7 @@ class ProductMapperTest {
         Product product = ProductMother.complete().build();
 
         // When
-        ProductResponseDTO dtoResponse = mapper.mapProductToDTO(product);
+        ProductDTO dtoResponse = mapper.mapProductToDTO(product);
 
         // Then
         assertThat(dtoResponse.id()).isEqualTo(product.getId());
@@ -35,7 +35,7 @@ class ProductMapperTest {
         Product product = null;
 
         // When
-        ProductResponseDTO dtoResponse = mapper.mapProductToDTO(product);
+        ProductDTO dtoResponse = mapper.mapProductToDTO(product);
 
         // Then
         assertThat(dtoResponse).isNull();
@@ -44,7 +44,7 @@ class ProductMapperTest {
     @Test
     void shouldConvertRequestToAddProductToProductEntity() {
         // Given
-        AddProductRequestDTO requestDto = AddProductRequestDTOMother.create().build();
+        AddProductDTO requestDto = AddProductDTOMother.create().build();
 
         // When
         Product product = mapper.mapAddProductRequestToEntity(requestDto);

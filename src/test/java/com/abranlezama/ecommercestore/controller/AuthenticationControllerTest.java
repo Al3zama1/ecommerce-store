@@ -1,10 +1,10 @@
 package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
-import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.AuthenticationDTOMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,7 +86,7 @@ class AuthenticationControllerTest {
     @Test
     void shouldCallAuthenticationServiceToAuthenticateUser() throws Exception {
         // Given
-        AuthenticationRequestDTO dto = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO dto = AuthenticationDTOMother.complete().build();
 
         given(authenticationService.authenticateUser(dto)).willReturn("token");
 

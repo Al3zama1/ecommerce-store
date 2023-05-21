@@ -1,8 +1,8 @@
 package com.abranlezama.ecommercestore.controller;
 
-import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
-import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
-import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
+import com.abranlezama.ecommercestore.dto.product.ProductDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductDTO;
 import com.abranlezama.ecommercestore.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -28,7 +28,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public List<ProductResponseDTO> getProducts(
+    public List<ProductDTO> getProducts(
             @PositiveOrZero @RequestParam(value = "page", defaultValue = "0") int page,
             @Positive @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
             @RequestParam(value = "categories", defaultValue = "") Set<String> categories) {
@@ -38,7 +38,7 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
     public ResponseEntity<Void> createProduct(Authentication authentication,
-                                              @Valid @RequestBody AddProductRequestDTO requestDto) {
+                                              @Valid @RequestBody AddProductDTO requestDto) {
         long productId = productService.createProduct(authentication.getName(), requestDto);
         return ResponseEntity.created(URI.create("/products/" + productId)).build();
     }
@@ -53,9 +53,9 @@ public class ProductController {
 
     @PatchMapping
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
-    public ProductResponseDTO updateProduct(Authentication authentication,
-                                            @Valid @RequestBody UpdateProductRequestDTO requestDto,
-                                            @Positive @RequestParam("productId") Long productId) {
+    public ProductDTO updateProduct(Authentication authentication,
+                                    @Valid @RequestBody UpdateProductDTO requestDto,
+                                    @Positive @RequestParam("productId") Long productId) {
         return productService.updateProduct(authentication.getName(),  productId, requestDto);
     }
 }

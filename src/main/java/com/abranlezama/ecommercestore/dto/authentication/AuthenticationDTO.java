@@ -7,7 +7,7 @@ import lombok.Builder;
 
 
 @Builder
-public record AuthenticationRequestDTO(
+public record AuthenticationDTO(
         @Email String email,
         @NotNull @Size(min = 8, max = 15) String password
 ) {

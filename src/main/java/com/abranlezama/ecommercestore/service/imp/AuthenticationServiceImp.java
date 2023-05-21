@@ -1,10 +1,10 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
-import com.abranlezama.ecommercestore.event.UserActivationDetails;
+import com.abranlezama.ecommercestore.event.UserActivationDTO;
 import com.abranlezama.ecommercestore.exception.*;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.repository.CustomerRepository;
@@ -77,7 +77,7 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     }
 
     @Override
-    public String authenticateUser(AuthenticationRequestDTO dto) {
+    public String authenticateUser(AuthenticationDTO dto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
         );
@@ -126,7 +126,7 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
     private void sendAccountActivationEmail(User user, Customer customer, String token) {
         // send event to mailService
-        UserActivationDetails emailDetails = UserActivationDetails.builder()
+        UserActivationDTO emailDetails = UserActivationDTO.builder()
                 .userEmail(user.getEmail())
                 .name(customer.getFirstName())
                 .token(token)

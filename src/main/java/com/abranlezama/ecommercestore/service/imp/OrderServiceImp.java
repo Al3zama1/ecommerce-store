@@ -29,4 +29,9 @@ public class OrderServiceImp implements OrderService {
                 .map(orderMapper::mapOrderToDto)
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public long createOrder(String userEmail) {
+        return 0;
+    }
 }

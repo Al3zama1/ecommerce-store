@@ -12,8 +12,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OrderController.class)
@@ -46,6 +49,26 @@ class OrderControllerTest {
 
         // Then
         then(orderService).should().getCustomerOrders(USER_EMAIL, page, pageSize);
+    }
+
+    @Test
+    @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
+    void shouldCreateCustomerOrder() throws Exception {
+        // Given
+        long orderId = 1L;
+        String userEmail = "duke.last@gmail.com";
+
+        given(orderService.createOrder(userEmail)).willReturn(orderId);
+
+
+        // When
+        this.mockMvc.perform(post("/orders"))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
+                .andExpect(header().string("Location", "/orders/" + orderId));
+
+        // Then
+        then(orderService).should().createOrder(userEmail);
     }
 
 }

@@ -7,4 +7,5 @@ import java.util.Set;
 public interface OrderService {
 
     Set<OrderDTO> getCustomerOrders(String userEmail, int page, int pageSize);
+    long createOrder(String userEmail);
 }

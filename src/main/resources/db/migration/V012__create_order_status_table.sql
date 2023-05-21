@@ -3,3 +3,9 @@ CREATE TABLE order_status(
     status VARCHAR(50) NOT NULL UNIQUE,
     PRIMARY KEY (id)
  );
+
+INSERT INTO order_status(status)
+VALUES
+('PROCESSING'),
+('SHIPPED'),
+('DELIVERED')

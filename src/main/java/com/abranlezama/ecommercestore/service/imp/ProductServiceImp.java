@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
@@ -50,7 +50,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public Long createProduct(String userEmail, AddProductRequestDTO requestDto) {
+    public Long createProduct(String userEmail, AddProductDTO requestDto) {
         // convert dto to product
         Product product = productMapper.mapAddProductRequestToEntity(requestDto);
 

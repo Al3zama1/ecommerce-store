@@ -2,7 +2,7 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
-import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.model.*;
@@ -111,7 +111,7 @@ public class ProductControllerIT {
     void shouldCreateNewProduct() throws Exception {
         // Given
         registerEmployee();
-        AddProductRequestDTO createRequest = AddProductRequestDTOMother
+        AddProductDTO createRequest = AddProductDTOMother
                 .create()
                 .categories(Set.of("electronics", "education"))
                 .build();

@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.controller;
 
-import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductResponseDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
 import com.abranlezama.ecommercestore.service.ProductService;
@@ -38,7 +38,7 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
     public ResponseEntity<Void> createProduct(Authentication authentication,
-                                              @Valid @RequestBody AddProductRequestDTO requestDto) {
+                                              @Valid @RequestBody AddProductDTO requestDto) {
         long productId = productService.createProduct(authentication.getName(), requestDto);
         return ResponseEntity.created(URI.create("/products/" + productId)).build();
     }

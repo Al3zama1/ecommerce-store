@@ -1,9 +1,9 @@
 package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
-import com.abranlezama.ecommercestore.dto.product.AddProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
-import com.abranlezama.ecommercestore.objectmother.AddProductRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.AddProductDTOMother;
 import com.abranlezama.ecommercestore.objectmother.UpdateProductRequestDTOMOther;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.ProductService;
@@ -83,7 +83,7 @@ class ProductControllerTest {
     void shouldCallProductServiceToAddNewProduct() throws Exception {
         // Given
         String userEmail = "duke.last@gmail.com";
-        AddProductRequestDTO requestDto = new AddProductRequestDTO(
+        AddProductDTO requestDto = new AddProductDTO(
                 "Xbox",
                 "Next gen console",
                 600f,
@@ -108,7 +108,7 @@ class ProductControllerTest {
     @WithMockUser(roles = "CUSTOMER")
     void shouldBlockUnauthorizedUsersFromAccessingCreateProductEndpoint() throws Exception {
         // GIVEN
-        AddProductRequestDTO requestDto = AddProductRequestDTOMother.create().build();
+        AddProductDTO requestDto = AddProductDTOMother.create().build();
 
         // When
         this.mockMvc.perform(post("/products")

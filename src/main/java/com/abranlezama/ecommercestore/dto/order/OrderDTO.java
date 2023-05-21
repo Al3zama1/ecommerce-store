@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record OrderResponseDTO(
+public record OrderDTO(
         Long id,
         Float totalCost,
         String orderStatus,

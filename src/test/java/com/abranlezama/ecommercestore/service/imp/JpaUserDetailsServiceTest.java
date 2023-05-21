@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
 class JpaUserDetailsServiceTest {
@@ -34,6 +35,9 @@ class JpaUserDetailsServiceTest {
 
         // When
         cut.loadUserByUsername(userEmail);
+
+        // Then
+        then(userRepository).should().findByEmail(userEmail);
     }
 
     @Test
@@ -47,6 +51,9 @@ class JpaUserDetailsServiceTest {
         assertThatThrownBy(() -> cut.loadUserByUsername(userEmail))
                 .hasMessage(ExceptionMessages.AUTHENTICATION_FAILED)
                 .isInstanceOf(UsernameNotFoundException.class);
+
+        // Then
+        then(userRepository).should().findByEmail(userEmail);
     }
 
 

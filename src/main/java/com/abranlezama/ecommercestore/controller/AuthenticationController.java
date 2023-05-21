@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.controller;
 
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
@@ -28,7 +28,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody AuthenticationRequestDTO requestDTO) {
+    public String login(@Valid @RequestBody AuthenticationDTO requestDTO) {
         return authenticationService.authenticateUser(requestDTO);
     }
 

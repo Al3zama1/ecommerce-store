@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.service.imp;
 
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.dto.authentication.RequestActivationTokenDTO;
 import com.abranlezama.ecommercestore.dto.authentication.mapper.AuthenticationMapper;
@@ -77,7 +77,7 @@ public class AuthenticationServiceImp  implements AuthenticationService {
     }
 
     @Override
-    public String authenticateUser(AuthenticationRequestDTO dto) {
+    public String authenticateUser(AuthenticationDTO dto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
         );

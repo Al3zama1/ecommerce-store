@@ -1,13 +1,13 @@
 package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationDTO;
 import com.abranlezama.ecommercestore.dto.cart.AddItemToCartDto;
 import com.abranlezama.ecommercestore.dto.cart.CartDTO;
 import com.abranlezama.ecommercestore.dto.cart.CartItemDTO;
 import com.abranlezama.ecommercestore.dto.cart.mapper.CartMapper;
 import com.abranlezama.ecommercestore.model.*;
-import com.abranlezama.ecommercestore.objectmother.AuthenticationRequestDTOMother;
+import com.abranlezama.ecommercestore.objectmother.AuthenticationDTOMother;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
@@ -67,7 +67,7 @@ public class CartControllerIT {
     void shouldReturnCustomerCarts() throws Exception {
         // Given
         generateTestInfrastructure();
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
         String token = obtainToken(authRequest);
 
         // When, Then
@@ -85,7 +85,7 @@ public class CartControllerIT {
     void shouldAddProductToShoppingCart() throws Exception{
         // Given
         generateTestInfrastructure();
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
         Product product = productRepository.save(ProductMother.complete().id(null).build());
         AddItemToCartDto addItemToCartDto = new AddItemToCartDto(product.getId(), 4);
         String token = obtainToken(authRequest);
@@ -117,7 +117,7 @@ public class CartControllerIT {
     void shouldUpdateCartProduct() throws Exception {
         // Given
         generateTestInfrastructure();
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
         int updatedQuantity = 3;
         Product product = productRepository.save(ProductMother.complete().id(null).build());
         Cart cart = cartRepository.findByCustomer_User_Email(authRequest.email()).orElseThrow();
@@ -148,7 +148,7 @@ public class CartControllerIT {
     void shouldRemoveCartProduct() throws Exception {
         // Given
         generateTestInfrastructure();
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
 
         Product product = productRepository.save(ProductMother.complete().id(null).build());
         Cart cart = cartRepository.findByCustomer_User_Email(authRequest.email()).orElseThrow();
@@ -171,7 +171,7 @@ public class CartControllerIT {
         assertThat(cartDto.cartTotal()).isEqualTo(0);
     }
 
-    private String obtainToken(AuthenticationRequestDTO authRequest) throws Exception {
+    private String obtainToken(AuthenticationDTO authRequest) throws Exception {
         EntityExchangeResult<String> response = this.webTestClient
                 .post()
                 .uri("/auth/login")

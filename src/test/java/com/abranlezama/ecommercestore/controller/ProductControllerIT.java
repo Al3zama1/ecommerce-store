@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
-import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
+import com.abranlezama.ecommercestore.dto.authentication.AuthenticationDTO;
 import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductDTO;
 import com.abranlezama.ecommercestore.dto.product.UpdateProductDTO;
@@ -115,7 +115,7 @@ public class ProductControllerIT {
                 .create()
                 .categories(Set.of("electronics", "education"))
                 .build();
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
 
         String token = obtainToken(authRequest);
 
@@ -166,7 +166,7 @@ public class ProductControllerIT {
         product = productRepository.save(product);
         long productId = product.getId();
 
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
         String token = obtainToken(authRequest);
 
         // When
@@ -193,7 +193,7 @@ public class ProductControllerIT {
 
         // register employee and obtain token
         registerEmployee();
-        AuthenticationRequestDTO authRequest = AuthenticationRequestDTOMother.complete().build();
+        AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
         String token = obtainToken(authRequest);
 
         // request with category of sports
@@ -235,7 +235,7 @@ public class ProductControllerIT {
         userRepository.save(user);
     }
 
-    private String obtainToken(AuthenticationRequestDTO authRequest) throws Exception {
+    private String obtainToken(AuthenticationDTO authRequest) throws Exception {
         return this.webTestClient
                 .post()
                 .uri("/auth/login")

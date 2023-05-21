@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
-import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductDTO;
 import com.abranlezama.ecommercestore.dto.product.mapper.ProductMapper;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.ProductNotFoundException;
@@ -151,7 +151,7 @@ class ProductServiceImpTest {
         String userEmail = "duke.last@gmail.com";
         long productId = 1;
         Product product = ProductMother.complete().build();
-        UpdateProductRequestDTO requestDto = UpdateProductRequestDTO.builder()
+        UpdateProductDTO requestDto = UpdateProductDTO.builder()
                 .name("Soccer Ball")
                 .description("Next generation soccer ball")
                 .price(40F)
@@ -179,7 +179,7 @@ class ProductServiceImpTest {
         // Given
         String userEmail = "duke.last@gmail.com";
         long productId = 1;
-        UpdateProductRequestDTO requestDto = UpdateProductRequestDTO.builder().build();
+        UpdateProductDTO requestDto = UpdateProductDTO.builder().build();
 
         // verify product exists
         given(productRepository.findById(productId)).willReturn(Optional.empty());

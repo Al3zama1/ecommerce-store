@@ -2,7 +2,7 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductDTO;
-import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductDTO;
 import com.abranlezama.ecommercestore.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -54,7 +54,7 @@ public class ProductController {
     @PatchMapping
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
     public ProductDTO updateProduct(Authentication authentication,
-                                    @Valid @RequestBody UpdateProductRequestDTO requestDto,
+                                    @Valid @RequestBody UpdateProductDTO requestDto,
                                     @Positive @RequestParam("productId") Long productId) {
         return productService.updateProduct(authentication.getName(),  productId, requestDto);
     }

@@ -2,7 +2,7 @@ package com.abranlezama.ecommercestore.service;
 
 import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductDTO;
-import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductDTO;
 
 import java.util.List;
 import java.util.Set;
@@ -15,5 +15,5 @@ public interface ProductService {
 
     void removeProduct(String userEmail, Long productId);
 
-    ProductDTO updateProduct(String userEmail, long productId, UpdateProductRequestDTO requestDto);
+    ProductDTO updateProduct(String userEmail, long productId, UpdateProductDTO requestDto);
 }

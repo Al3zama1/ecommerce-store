@@ -4,7 +4,7 @@ import com.abranlezama.ecommercestore.config.PostgresContainerConfig;
 import com.abranlezama.ecommercestore.dto.authentication.AuthenticationRequestDTO;
 import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
 import com.abranlezama.ecommercestore.dto.product.ProductDTO;
-import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductDTO;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.*;
 import com.abranlezama.ecommercestore.repository.*;
@@ -197,7 +197,7 @@ public class ProductControllerIT {
         String token = obtainToken(authRequest);
 
         // request with category of sports
-        UpdateProductRequestDTO updateRequest = UpdateProductRequestDTOMOther.complete().build();
+        UpdateProductDTO updateRequest = UpdateProductDTOMOther.complete().build();
 
         // When
         this.webTestClient

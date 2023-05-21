@@ -2,9 +2,9 @@ package com.abranlezama.ecommercestore.controller;
 
 import com.abranlezama.ecommercestore.config.SecurityConfiguration;
 import com.abranlezama.ecommercestore.dto.product.AddProductDTO;
-import com.abranlezama.ecommercestore.dto.product.UpdateProductRequestDTO;
+import com.abranlezama.ecommercestore.dto.product.UpdateProductDTO;
 import com.abranlezama.ecommercestore.objectmother.AddProductDTOMother;
-import com.abranlezama.ecommercestore.objectmother.UpdateProductRequestDTOMOther;
+import com.abranlezama.ecommercestore.objectmother.UpdateProductDTOMOther;
 import com.abranlezama.ecommercestore.service.AuthenticationService;
 import com.abranlezama.ecommercestore.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -158,7 +158,7 @@ class ProductControllerTest {
         // Given
         String userEmail = "duke.last@gmail.com";
         long productId = 1;
-        UpdateProductRequestDTO requestDto = UpdateProductRequestDTOMOther.complete().build();
+        UpdateProductDTO requestDto = UpdateProductDTOMOther.complete().build();
 
         // When
         this.mockMvc.perform(patch("/products")

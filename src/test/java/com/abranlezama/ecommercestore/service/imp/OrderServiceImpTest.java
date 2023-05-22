@@ -5,10 +5,7 @@ import com.abranlezama.ecommercestore.exception.EmptyOrderException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
-import com.abranlezama.ecommercestore.repository.CartRepository;
-import com.abranlezama.ecommercestore.repository.OrderItemRepository;
-import com.abranlezama.ecommercestore.repository.OrderRepository;
-import com.abranlezama.ecommercestore.repository.OrderStatusRepository;
+import com.abranlezama.ecommercestore.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,6 +32,8 @@ class OrderServiceImpTest {
     private OrderRepository orderRepository;
     @Mock
     private OrderStatusRepository orderStatusRepository;
+    @Mock
+    CartItemRepository cartItemRepository;
     @Mock
     private OrderItemRepository orderItemRepository;
     @Mock

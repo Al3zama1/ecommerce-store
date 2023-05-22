@@ -5,10 +5,7 @@ import com.abranlezama.ecommercestore.dto.order.mapper.OrderMapper;
 import com.abranlezama.ecommercestore.exception.EmptyOrderException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.model.*;
-import com.abranlezama.ecommercestore.repository.CartRepository;
-import com.abranlezama.ecommercestore.repository.OrderItemRepository;
-import com.abranlezama.ecommercestore.repository.OrderRepository;
-import com.abranlezama.ecommercestore.repository.OrderStatusRepository;
+import com.abranlezama.ecommercestore.repository.*;
 import com.abranlezama.ecommercestore.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +25,7 @@ public class OrderServiceImp implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final CartRepository cartRepository;
-    private final OrderItemRepository orderItemRepository;
+    private final CartItemRepository cartItemRepository;
     private final OrderMapper orderMapper;
 
     @Override
@@ -77,6 +74,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     private void resetCustomerCart(Cart cart) {
+        cartItemRepository.deleteAll(cart.getCartItems());
         cart.getCartItems().clear();
         cart.setTotalCost(0F);
         cartRepository.save(cart);

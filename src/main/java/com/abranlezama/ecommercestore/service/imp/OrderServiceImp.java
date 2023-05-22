@@ -13,12 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OrderServiceImp implements OrderService {
 
@@ -57,6 +59,9 @@ public class OrderServiceImp implements OrderService {
                 .customer(cart.getCustomer())
                 .build();
         order = orderRepository.save(order);
+
+        // reset customer shopping cart
+        resetCustomerCart(cart);
 
         return order.getId();
     }

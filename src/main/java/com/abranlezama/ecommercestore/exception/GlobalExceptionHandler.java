@@ -42,6 +42,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(EmptyOrderException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleEmptyOrderException(EmptyOrderException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(EmailTakenException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<Object> handleEmailTakenException(EmailTakenException ex, WebRequest request) {

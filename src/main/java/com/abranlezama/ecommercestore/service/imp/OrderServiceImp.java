@@ -2,6 +2,8 @@ package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.order.OrderDTO;
 import com.abranlezama.ecommercestore.dto.order.mapper.OrderMapper;
+import com.abranlezama.ecommercestore.exception.EmptyOrderException;
+import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.repository.CartRepository;
 import com.abranlezama.ecommercestore.repository.OrderRepository;
@@ -40,6 +42,8 @@ public class OrderServiceImp implements OrderService {
         // retrieve customer cart
         Cart cart = cartRepository.findByCustomer_User_Email(userEmail)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        if (cart.getCartItems().size() == 0) throw new EmptyOrderException(ExceptionMessages.EMPTY_ORDER);
 
         // generate order
         OrderStatus orderStatus = orderStatusRepository.findByStatus(OrderStatusType.PROCESSING)

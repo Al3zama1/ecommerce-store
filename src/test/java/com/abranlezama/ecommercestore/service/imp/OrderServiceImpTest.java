@@ -1,10 +1,10 @@
 package com.abranlezama.ecommercestore.service.imp;
 
 import com.abranlezama.ecommercestore.dto.order.mapper.OrderMapper;
-import com.abranlezama.ecommercestore.model.Cart;
-import com.abranlezama.ecommercestore.model.Order;
-import com.abranlezama.ecommercestore.model.OrderStatus;
-import com.abranlezama.ecommercestore.model.OrderStatusType;
+import com.abranlezama.ecommercestore.exception.EmptyOrderException;
+import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.model.*;
+import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import com.abranlezama.ecommercestore.repository.CartRepository;
 import com.abranlezama.ecommercestore.repository.OrderRepository;
 import com.abranlezama.ecommercestore.repository.OrderStatusRepository;
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -61,8 +62,9 @@ class OrderServiceImpTest {
     void shouldCreateCustomerOrder() {
         // Given
         String userEmail = "duke.last@gmail.com";
+        CartItem cartItem = CartItem.builder().product(ProductMother.complete().build()).build();
 
-        Cart cart = Cart.builder().cartItems(Set.of()).build();
+        Cart cart = Cart.builder().cartItems(Set.of(cartItem)).build();
 
         given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
         given(orderStatusRepository.findByStatus(OrderStatusType.PROCESSING))
@@ -78,6 +80,24 @@ class OrderServiceImpTest {
 
         // Then
         then(orderRepository).should().save(any(Order.class));
+    }
+
+    @Test
+    void shouldThrowEmptyOrderExceptionWhenCreatingEmptyOrder() {
+        // Given
+        String userEmail = "duke.last@gmail.com";
+
+        Cart cart = Cart.builder().cartItems(Set.of()).build();
+
+        given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
+
+        // When
+        assertThatThrownBy(() -> cut.createOrder(userEmail))
+                .hasMessage(ExceptionMessages.EMPTY_ORDER)
+                .isInstanceOf(EmptyOrderException.class);
+
+        // Then
+        then(orderRepository).shouldHaveNoInteractions();
     }
 
 }

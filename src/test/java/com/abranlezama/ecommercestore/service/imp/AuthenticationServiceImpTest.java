@@ -90,6 +90,7 @@ class AuthenticationServiceImpTest {
         given(roleRepository.findByRole(RoleType.CUSTOMER)).willReturn(Optional.of(new Role()));
         given(clock.instant()).willReturn(fixedclock.instant());
         given(clock.getZone()).willReturn(fixedclock.getZone());
+        given(userRepository.save(any(User.class))).willAnswer(invocation -> invocation.getArgument(0));
         given(userActivationRepository.save(userActivation)).willAnswer(invocation -> {
             UserActivation savedUserActivation = invocation.getArgument(0);
             savedUserActivation.setToken(uuidToken);

@@ -44,14 +44,11 @@ public class OrderServiceImp implements OrderService {
     @Override
     public long createOrder(String userEmail) {
         // retrieve customer cart
-        Cart cart = cartRepository.findByCustomer_User_Email(userEmail)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
-
+        Cart cart = retrieveCustomerCart(userEmail);
         if (cart.getCartItems().size() == 0) throw new EmptyOrderException(ExceptionMessages.EMPTY_ORDER);
 
-        // generate order
-        OrderStatus orderStatus = orderStatusRepository.findByStatus(OrderStatusType.PROCESSING)
-                .orElseThrow(() -> new RuntimeException("Order status not found"));
+        // retrieve order status
+        OrderStatus orderStatus = retrieveOrderStatus(OrderStatusType.PROCESSING);
 
         // create and save order
         Order order = Order.builder()
@@ -60,13 +57,23 @@ public class OrderServiceImp implements OrderService {
                 .orderStatus(orderStatus)
                 .customer(cart.getCustomer())
                 .build();
+
         order.setOrderItems(createOrderItems(cart, order));
         order = orderRepository.save(order);
 
         // reset customer shopping cart
         resetCustomerCart(cart);
-
         return order.getId();
+    }
+
+    private Cart retrieveCustomerCart(String userEmail) {
+       return cartRepository.findByCustomer_User_Email(userEmail)
+               .orElseThrow(() -> new RuntimeException("Cart not found"));
+    }
+
+    private OrderStatus retrieveOrderStatus(OrderStatusType orderStatusType) {
+        return orderStatusRepository.findByStatus(orderStatusType)
+                .orElseThrow(() -> new RuntimeException("Order status not found."));
     }
 
     private void resetCustomerCart(Cart cart) {

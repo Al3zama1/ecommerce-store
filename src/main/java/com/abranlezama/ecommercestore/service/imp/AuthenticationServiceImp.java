@@ -47,26 +47,13 @@ public class AuthenticationServiceImp  implements AuthenticationService {
 
     @Override
     public void registerCustomer(RegisterCustomerDTO registerDto) {
-        // ensure password and verify password match
-        if (!registerDto.password().equals(registerDto.verifyPassword())) {
-            throw new UnequalPasswordsException(ExceptionMessages.DIFFERENT_PASSWORDS);
-        }
+        // register user
+        User user = registerUser(registerDto, RoleType.CUSTOMER);
 
-        // verify user with same email does not exit
-        boolean existsUser = userRepository.existsByEmail(registerDto.email());
-        if (existsUser) throw new EmailTakenException(ExceptionMessages.EMAIL_TAKEN);
-
-        // generate user and customer from dto
-        User user = authenticationMapper.mapToUser(registerDto);
+        // generate customer from dto
         Customer customer = authenticationMapper.mapToCustomer(registerDto);
 
-        // encrypt user/customer password
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // assign customer/user role of customer
-        assignRoleToUser(user, RoleType.CUSTOMER);
-
-        // save customer - user record will be persisted as well through cascading
+        // register customer
         customer.setUser(user);
         customer.setCart(Cart.builder().totalCost(0F).build());
         customerRepository.save(customer);
@@ -74,6 +61,28 @@ public class AuthenticationServiceImp  implements AuthenticationService {
         // generate and send account activation event
         String token = generateAccountActivationToken(user);
         sendAccountActivationEmail(user, customer, token);
+    }
+
+    private User registerUser(RegisterCustomerDTO registerDto, RoleType roleType) {
+        // verify password and verifyPassword match
+        if (!registerDto.password().equals(registerDto.verifyPassword())) {
+            throw new UnequalPasswordsException(ExceptionMessages.DIFFERENT_PASSWORDS);
+        }
+
+        // verify user with same email does not exist already
+        boolean existsUser = userRepository.existsByEmail(registerDto.email());
+        if (existsUser) throw new EmailTakenException(ExceptionMessages.EMAIL_TAKEN);
+
+        // generate user from dto
+        User user = authenticationMapper.mapToUser(registerDto);
+
+        // encrypt user password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // assign role to user
+        assignRoleToUser(user, roleType);
+
+        return userRepository.save(user);
     }
 
     @Override

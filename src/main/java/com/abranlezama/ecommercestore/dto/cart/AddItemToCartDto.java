@@ -6,6 +6,6 @@ import lombok.Builder;
 @Builder
 public record AddItemToCartDto(
         @Positive Long productId,
-        @Positive Integer quantity
+        @Positive Short quantity
 
 ) { }

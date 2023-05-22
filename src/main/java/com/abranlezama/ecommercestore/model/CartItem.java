@@ -28,7 +28,7 @@ public class CartItem {
     private Cart cart;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private Short quantity;
 
     @Override
     public boolean equals(Object o) {

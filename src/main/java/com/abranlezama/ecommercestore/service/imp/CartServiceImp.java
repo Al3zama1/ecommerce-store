@@ -34,7 +34,7 @@ public class CartServiceImp implements CartService {
     }
 
     @Override
-    public void addProductToCart(String userEmail, long productId, int quantity) {
+    public void addProductToCart(String userEmail, long productId, short quantity) {
         // retrieve customer cart
         Cart cart = retrieveCustomerCart(userEmail);
 
@@ -45,7 +45,7 @@ public class CartServiceImp implements CartService {
                 .orElse(null);
 
         if (cartItem != null) {
-            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItem.setQuantity((short) (cartItem.getQuantity() + quantity));
             cart.setTotalCost(computeCartTotal(cart));
             cartRepository.save(cart);
             return;
@@ -62,7 +62,7 @@ public class CartServiceImp implements CartService {
     }
 
     @Override
-    public void updateCartProduct(String userEmail, long productId, int quantity) {
+    public void updateCartProduct(String userEmail, long productId, short quantity) {
         // get customer cart
         Cart cart = retrieveCustomerCart(userEmail);
         // get cart product to be updated

@@ -96,7 +96,7 @@ class CartControllerTest {
         // Given
         AddItemToCartDto dto = AddItemToCartDto.builder()
                 .productId(1L)
-                .quantity(2)
+                .quantity((short) 2)
                 .build();
 
         // When
@@ -117,7 +117,7 @@ class CartControllerTest {
     void shouldUpdateCartProductQuantity() throws Exception {
         // Given
         long productId = 1L;
-        int quantity = 3;
+        short quantity = 3;
 
         // When
         this.mockMvc.perform(patch("/cart")

@@ -23,7 +23,7 @@ class CartMapperTest {
         Product product = ProductMother.complete().build();
         CartItem cartItem = CartItem.builder()
                 .product(product)
-                .quantity(2)
+                .quantity((short) 2)
                 .build();
 
         // When

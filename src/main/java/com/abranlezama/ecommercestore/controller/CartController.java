@@ -37,7 +37,7 @@ public class CartController {
     @PatchMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateCartProduct(@Positive @RequestParam("productId") Long productId,
-                                  @Positive @RequestParam("quantity") Integer quantity,
+                                  @Positive @RequestParam("quantity") Short quantity,
                                   Authentication authentication) {
         cartService.updateCartProduct(authentication.getName(), productId, quantity);
     }

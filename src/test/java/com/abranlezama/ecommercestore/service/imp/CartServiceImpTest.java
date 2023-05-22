@@ -85,7 +85,7 @@ class CartServiceImpTest {
         Product product = ProductMother.complete().build();
         String userEmail = "duke.last@gmail.com";
         long productId = 1L;
-        int quantity = 3;
+        short quantity = 3;
 
         given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
@@ -105,12 +105,12 @@ class CartServiceImpTest {
         // Give
         Product product = ProductMother.complete().id(1L).build();
         Cart cart = Cart.builder().build();
-        CartItem cartItem = new CartItem(product, cart, 1);
+        CartItem cartItem = new CartItem(product, cart, (short) 1);
         cart.setCartItems(Set.of(cartItem));
 
         String userEmail = "duke.last@gmail.com";
         long productId = 1L;
-        int quantity = 3;
+        short quantity = 3;
 
         given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
 
@@ -124,7 +124,7 @@ class CartServiceImpTest {
         CartItem savedCartItem = savedCart.getCartItems().stream().findFirst().orElseThrow();
 
         assertThat(savedCartItem.getProduct()).isEqualTo(product);
-        assertThat(savedCartItem.getQuantity()).isEqualTo(4);
+        assertThat(savedCartItem.getQuantity()).isEqualTo((short) 4);
         assertThat(savedCart.getTotalCost()).isEqualTo(4 * product.getPrice());
     }
 
@@ -134,7 +134,7 @@ class CartServiceImpTest {
         Cart cart = Cart.builder().cartItems(Set.of()).build();
         String userEmail = "duke.last@gmail.com";
         long productId = 1L;
-        int quantity = 3;
+        short quantity = 3;
 
         given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
         given(productRepository.findById(productId)).willReturn(Optional.empty());
@@ -154,11 +154,11 @@ class CartServiceImpTest {
         // Given
         String userEmail = "duke.last@gmail.com";
         long productId = 1L;
-        int quantity = 3;
+        short quantity = 3;
 
         Product product = ProductMother.complete().build();
         Cart cart = Cart.builder().totalCost(product.getPrice()).build();
-        CartItem cartItem = CartItem.builder().cart(cart).product(product).quantity(3).build();
+        CartItem cartItem = CartItem.builder().cart(cart).product(product).quantity((short) 3).build();
         cart.setCartItems(Set.of(cartItem));
 
         given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
@@ -179,7 +179,7 @@ class CartServiceImpTest {
         // Given
         String userEmail = "duke.last@gmail.com";
         long productId = 1L;
-        int quantity = 3;
+        short quantity = 3;
 
         Cart cart = Cart.builder().cartItems(Set.of()).build();
 

@@ -54,9 +54,12 @@ public class CartControllerIT {
     private RoleRepository roleRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @BeforeEach
     void setUp() {
+        orderRepository.deleteAll();
         this.cartRepository.deleteAll();
         this.customerRepository.deleteAll();
         this.userRepository.deleteAll();
@@ -87,7 +90,7 @@ public class CartControllerIT {
         generateTestInfrastructure();
         AuthenticationDTO authRequest = AuthenticationDTOMother.complete().build();
         Product product = productRepository.save(ProductMother.complete().id(null).build());
-        AddItemToCartDto addItemToCartDto = new AddItemToCartDto(product.getId(), 4);
+        AddItemToCartDto addItemToCartDto = new AddItemToCartDto(product.getId(), (short) 4);
         String token = obtainToken(authRequest);
 
         // When
@@ -121,7 +124,7 @@ public class CartControllerIT {
         int updatedQuantity = 3;
         Product product = productRepository.save(ProductMother.complete().id(null).build());
         Cart cart = cartRepository.findByCustomer_User_Email(authRequest.email()).orElseThrow();
-        cartItemRepository.save(CartItem.builder().cart(cart).product(product).quantity(1).build());
+        cartItemRepository.save(CartItem.builder().cart(cart).product(product).quantity((short) 1).build());
         String token = obtainToken(authRequest);
 
         // When
@@ -139,7 +142,7 @@ public class CartControllerIT {
 
         assertThat(cartDto.cartItems().size()).isEqualTo(1);
         assertThat(cartItemDto.name()).isEqualTo(product.getName());
-        assertThat(cartItemDto.quantity()).isEqualTo(3);
+        assertThat(cartItemDto.quantity()).isEqualTo((short) 3);
         assertThat(cartItemDto.productId()).isEqualTo(product.getId());
         assertThat(cartDto.cartTotal()).isEqualTo(product.getPrice() * updatedQuantity);
     }
@@ -152,7 +155,7 @@ public class CartControllerIT {
 
         Product product = productRepository.save(ProductMother.complete().id(null).build());
         Cart cart = cartRepository.findByCustomer_User_Email(authRequest.email()).orElseThrow();
-        cartItemRepository.save(CartItem.builder().cart(cart).product(product).quantity(1).build());
+        cartItemRepository.save(CartItem.builder().cart(cart).product(product).quantity((short) 1).build());
         String token = obtainToken(authRequest);
 
         // When

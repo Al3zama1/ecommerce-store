@@ -60,9 +60,8 @@ public class OrderServiceImp implements OrderService {
                 .orderStatus(orderStatus)
                 .customer(cart.getCustomer())
                 .build();
+        order.setOrderItems(createOrderItems(cart, order));
         order = orderRepository.save(order);
-
-        createOrderItems(cart, order);
 
         // reset customer shopping cart
         resetCustomerCart(cart);
@@ -76,8 +75,8 @@ public class OrderServiceImp implements OrderService {
         cartRepository.save(cart);
     }
 
-    private void createOrderItems(Cart cart, Order order) {
-        Set<OrderItem> orderItems = cart.getCartItems().stream()
+    private Set<OrderItem> createOrderItems(Cart cart, Order order) {
+        return cart.getCartItems().stream()
                 .map(cartItem -> OrderItem.builder()
                         .order(order)
                         .quantity(cartItem.getQuantity())
@@ -85,6 +84,5 @@ public class OrderServiceImp implements OrderService {
                         .price(cartItem.getProduct().getPrice())
                         .build())
                 .collect(Collectors.toSet());
-        orderItemRepository.saveAll(orderItems);
     }
 }

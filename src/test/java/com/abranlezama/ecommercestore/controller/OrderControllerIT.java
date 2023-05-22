@@ -8,6 +8,8 @@ import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
 import com.abranlezama.ecommercestore.repository.*;
 import com.abranlezama.ecommercestore.service.TokenService;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +38,10 @@ public class OrderControllerIT {
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -49,6 +56,15 @@ public class OrderControllerIT {
     @Autowired
     private TokenService tokenService;
 
+    @BeforeEach
+    void setUp() {
+        orderRepository.deleteAll();
+        customerRepository.deleteAll();
+        userRepository.deleteAll();
+        productRepository.deleteAll();
+
+    }
+
     @Test
     void shouldRetrieveCustomerOrders() {
         // Given
@@ -61,22 +77,25 @@ public class OrderControllerIT {
         customerRepository.save(customer);
 
         // generate authentication token
-        String jwtToken = generateJwtToken(user.getEmail(), "12345678");
+        String jwtToken = generateJwtToken(user.getEmail());
 
         // generate and save product
         Product product = productRepository.save(ProductMother.complete().build());
 
         // generate and ave order
-        OrderItem orderItem = OrderItem.builder().product(product).quantity((short) 2).build();
         OrderStatus orderStatus = orderStatusRepository.findByStatus(OrderStatusType.PROCESSING).orElseThrow();
         Order order = Order.builder()
                 .customer(customer)
                 .orderStatus(orderStatus)
-                .orderItems(Set.of(orderItem))
+                .totalCost(0F)
                 .datePlaced(LocalDateTime.now())
-                .totalCost(product.getPrice() * orderItem.getQuantity())
                 .build();
         order = orderRepository.save(order);
+
+        OrderItem orderItem = OrderItem.builder().order(order).product(product).price(product.getPrice()).quantity((short) 2).build();
+        order.setOrderItems(Set.of(orderItem));
+        order.setTotalCost(product.getPrice() * orderItem.getQuantity());
+        orderRepository.save(order);
 
         // When
         List<OrderDTO> orders = this.webTestClient
@@ -99,9 +118,50 @@ public class OrderControllerIT {
         assertThat(orders.get(0).dateDelivered()).isEqualTo(order.getDateDelivered());
     }
 
-    private String generateJwtToken(String userEmail, String password) {
+    @Test
+    void shouldCreateCustomerOrder() {
+        // Given
+
+        // user and customer generation
+        Role role = roleRepository.findByRole(RoleType.CUSTOMER).orElseThrow();
+        User user = UserMother.complete().isEnabled(true).roles(Set.of(role)).build();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Customer customer = CustomerMother.complete()
+                .cart(Cart.builder().cartItems(new HashSet<>()).totalCost(0F).build()).user(user)
+                .build();
+        customer = customerRepository.save(customer);
+
+        // generate and save product
+        Product product = productRepository.save(ProductMother.complete().build());
+
+        // update customer cart
+        Cart cart = customer.getCart();
+        CartItem cartItem = CartItem.builder().product(product).quantity((short) 2).build();
+        cartItem.setCart(cart);
+        cart.getCartItems().add(cartItem);
+        cart.setTotalCost(product.getPrice() * cartItem.getQuantity());
+
+        cartRepository.save(cart);
+
+        // generate authentication token
+        String jwtToken = generateJwtToken(user.getEmail());
+
+        // When
+        this.webTestClient
+                .post()
+                .uri("/orders")
+                .header("Authorization", "Bearer " + jwtToken)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().exists("Location")
+                .expectHeader().value("Location", Matchers.containsString("/orders/"));
+
+
+    }
+
+    private String generateJwtToken(String userEmail) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userEmail, password)
+                new UsernamePasswordAuthenticationToken(userEmail, "12345678")
         );
 
         return tokenService.generateJwt(authentication);

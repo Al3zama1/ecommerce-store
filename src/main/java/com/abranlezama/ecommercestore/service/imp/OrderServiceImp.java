@@ -6,6 +6,7 @@ import com.abranlezama.ecommercestore.exception.EmptyOrderException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.repository.CartRepository;
+import com.abranlezama.ecommercestore.repository.OrderItemRepository;
 import com.abranlezama.ecommercestore.repository.OrderRepository;
 import com.abranlezama.ecommercestore.repository.OrderStatusRepository;
 import com.abranlezama.ecommercestore.service.OrderService;
@@ -27,6 +28,7 @@ public class OrderServiceImp implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final CartRepository cartRepository;
+    private final OrderItemRepository orderItemRepository;
     private final OrderMapper orderMapper;
 
     @Override
@@ -53,12 +55,14 @@ public class OrderServiceImp implements OrderService {
 
         // create and save order
         Order order = Order.builder()
+                .totalCost(cart.getTotalCost())
                 .datePlaced(LocalDateTime.now())
                 .orderStatus(orderStatus)
-                .orderItems(createOrderItems(cart))
                 .customer(cart.getCustomer())
                 .build();
         order = orderRepository.save(order);
+
+        createOrderItems(cart, order);
 
         // reset customer shopping cart
         resetCustomerCart(cart);
@@ -72,13 +76,15 @@ public class OrderServiceImp implements OrderService {
         cartRepository.save(cart);
     }
 
-    private Set<OrderItem> createOrderItems(Cart cart) {
-        return cart.getCartItems().stream()
+    private void createOrderItems(Cart cart, Order order) {
+        Set<OrderItem> orderItems = cart.getCartItems().stream()
                 .map(cartItem -> OrderItem.builder()
+                        .order(order)
                         .quantity(cartItem.getQuantity())
                         .product(cartItem.getProduct())
                         .price(cartItem.getProduct().getPrice())
                         .build())
                 .collect(Collectors.toSet());
+        orderItemRepository.saveAll(orderItems);
     }
 }

@@ -6,6 +6,7 @@ import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.model.*;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
 import com.abranlezama.ecommercestore.repository.CartRepository;
+import com.abranlezama.ecommercestore.repository.OrderItemRepository;
 import com.abranlezama.ecommercestore.repository.OrderRepository;
 import com.abranlezama.ecommercestore.repository.OrderStatusRepository;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -33,6 +35,8 @@ class OrderServiceImpTest {
     private OrderRepository orderRepository;
     @Mock
     private OrderStatusRepository orderStatusRepository;
+    @Mock
+    private OrderItemRepository orderItemRepository;
     @Mock
     private OrderMapper orderMapper;
     @Mock
@@ -63,8 +67,10 @@ class OrderServiceImpTest {
         // Given
         String userEmail = "duke.last@gmail.com";
         CartItem cartItem = CartItem.builder().product(ProductMother.complete().build()).build();
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem);
 
-        Cart cart = Cart.builder().cartItems(Set.of(cartItem)).build();
+        Cart cart = Cart.builder().cartItems(cartItems).build();
 
         given(cartRepository.findByCustomer_User_Email(userEmail)).willReturn(Optional.of(cart));
         given(orderStatusRepository.findByStatus(OrderStatusType.PROCESSING))

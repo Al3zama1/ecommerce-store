@@ -26,7 +26,7 @@ public class Order {
     private LocalDateTime dateDelivered;
     @OneToOne
     private OrderStatus orderStatus;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @ToString.Exclude
     private Set<OrderItem> orderItems;
     @OneToOne(fetch = FetchType.LAZY)

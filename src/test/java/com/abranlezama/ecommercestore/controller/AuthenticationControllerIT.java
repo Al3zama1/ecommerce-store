@@ -12,10 +12,7 @@ import com.abranlezama.ecommercestore.model.UserActivation;
 import com.abranlezama.ecommercestore.objectmother.AuthenticationDTOMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.objectmother.UserMother;
-import com.abranlezama.ecommercestore.repository.CustomerRepository;
-import com.abranlezama.ecommercestore.repository.RoleRepository;
-import com.abranlezama.ecommercestore.repository.UserActivationRepository;
-import com.abranlezama.ecommercestore.repository.UserRepository;
+import com.abranlezama.ecommercestore.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
@@ -23,7 +20,7 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import jakarta.mail.internet.MimeMessage;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,12 +62,18 @@ public class AuthenticationControllerIT {
     private RoleRepository roleRepository;
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
-    @AfterEach
-    void cleanUp() {
+    @BeforeEach
+    void setUp() {
+        orderRepository.deleteAll();
         customerRepository.deleteAll();
         userActivationRepository.deleteAll();
         userRepository.deleteAll();
+        productRepository.deleteAll();
     }
 
     @RegisterExtension
@@ -212,7 +215,7 @@ public class AuthenticationControllerIT {
         Role role = roleRepository.findByRole(RoleType.CUSTOMER).orElseThrow();
         User user = UserMother.complete().roles(Set.of(role)).build();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        user = userRepository.save(user);
 
         UserActivation userActivation = UserActivation.builder().user(user).createdDate(LocalDateTime.now()).build();
         userActivation = userActivationRepository.save(userActivation);

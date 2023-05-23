@@ -56,12 +56,14 @@ public class CartControllerIT {
     private CartItemRepository cartItemRepository;
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private UserActivationRepository userActivationRepository;
 
     @BeforeEach
     void setUp() {
-        orderRepository.deleteAll();
-        this.cartRepository.deleteAll();
+        this.orderRepository.deleteAll();
         this.customerRepository.deleteAll();
+        this.userActivationRepository.deleteAll();
         this.userRepository.deleteAll();
         this.productRepository.deleteAll();
     }

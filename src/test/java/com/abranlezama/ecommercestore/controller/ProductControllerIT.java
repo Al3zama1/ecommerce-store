@@ -48,11 +48,17 @@ public class ProductControllerIT {
     private UserRepository userRepository;
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private UserActivationRepository userActivationRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @BeforeEach
     void setUp() {
+        orderRepository.deleteAll();
         customerRepository.deleteAll();
         productRepository.deleteAll();
+        userActivationRepository.deleteAll();
         userRepository.deleteAll();
     }
 

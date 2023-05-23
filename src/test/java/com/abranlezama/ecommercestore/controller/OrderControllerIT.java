@@ -55,14 +55,18 @@ public class OrderControllerIT {
     private AuthenticationManager authenticationManager;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private UserActivationRepository userActivationRepository;
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
     @BeforeEach
     void setUp() {
         orderRepository.deleteAll();
         customerRepository.deleteAll();
+        userActivationRepository.deleteAll();
         userRepository.deleteAll();
         productRepository.deleteAll();
-
     }
 
     @Test
@@ -155,8 +159,6 @@ public class OrderControllerIT {
                 .expectStatus().isCreated()
                 .expectHeader().exists("Location")
                 .expectHeader().value("Location", Matchers.containsString("/orders/"));
-
-
     }
 
     private String generateJwtToken(String userEmail) {

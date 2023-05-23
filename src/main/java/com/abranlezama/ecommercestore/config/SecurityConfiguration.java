@@ -24,12 +24,12 @@ public class SecurityConfiguration {
                     request.requestMatchers("/products").permitAll();
                     request.requestMatchers("/auth/**").permitAll();
                     request.anyRequest().authenticated();
-                });
-        http.oauth2ResourceServer()
-                .jwt()
-                .jwtAuthenticationConverter(jwtAuthenticationConverter);
-        http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                })
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oauth -> oauth
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter)));
 
         return http.build();
     }

@@ -36,42 +36,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${custom.stacktrace.trace}")
     private boolean printStackTrace;
 
-    @ExceptionHandler(AccountActivationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleAccountActivationException(AccountActivationException ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
-    }
-
-    @ExceptionHandler(EmptyOrderException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleEmptyOrderException(EmptyOrderException ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
-    }
-
-    @ExceptionHandler(EmailTakenException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<Object> handleEmailTakenException(EmailTakenException ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.CONFLICT, request);
-    }
-
-    @ExceptionHandler(UserNotFound.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Object> handleCustomerNotFoundException(UserNotFound ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.NOT_FOUND, request);
-    }
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.NOT_FOUND, request);
-    }
-
-    @ExceptionHandler(UnequalPasswordsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleUnEqualPasswordsException(UnequalPasswordsException ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
-    }
-
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {

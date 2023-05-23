@@ -44,6 +44,7 @@ public class User {
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.enabled = user.isEnabled();
+        this.roles = user.getRoles();
     }
 
 

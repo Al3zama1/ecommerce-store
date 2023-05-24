@@ -52,7 +52,7 @@ class CustomerAuthServiceImpTest {
         });
 
         // When
-        cut.registerCustomer(registerDto);
+        cut.register(registerDto);
 
         // Then
         then(customerRepository).should().save(customerArgumentCaptor.capture());
@@ -67,7 +67,7 @@ class CustomerAuthServiceImpTest {
                 .build();
 
         // When
-        assertThatThrownBy(() -> cut.registerCustomer(registerDto))
+        assertThatThrownBy(() -> cut.register(registerDto))
                 .hasMessage(ExceptionMessages.DIFFERENT_PASSWORDS)
                 .isInstanceOf(BadRequestException.class);
 
@@ -83,7 +83,7 @@ class CustomerAuthServiceImpTest {
         given(customerRepository.existsByEmail(registerDto.email())).willReturn(true);
 
         // When
-        assertThatThrownBy(() -> cut.registerCustomer(registerDto))
+        assertThatThrownBy(() -> cut.register(registerDto))
                 .hasMessage(ExceptionMessages.EMAIL_TAKEN)
                 .isInstanceOf(ConflictException.class);
 

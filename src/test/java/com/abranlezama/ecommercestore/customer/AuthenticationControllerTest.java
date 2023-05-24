@@ -3,6 +3,7 @@ package com.abranlezama.ecommercestore.customer;
 import com.abranlezama.ecommercestore.config.SecurityConfig;
 import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
+import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,7 +37,7 @@ class AuthenticationControllerTest {
         RegisterCustomerDTO registerCustomerDto = RegisterCustomerDTOMother.complete().build();
         long userId = 1L;
 
-        given(authenticationService.registerCustomer(registerCustomerDto)).willReturn(1L);
+        given(authenticationService.register(registerCustomerDto)).willReturn(1L);
 
         // When
         this.mockMvc.perform(post("/api/v1/register/customer")
@@ -48,6 +48,22 @@ class AuthenticationControllerTest {
 
 
         // Then
-        then(authenticationService).should().registerCustomer(registerCustomerDto);
+        then(authenticationService).should().register(registerCustomerDto);
+    }
+
+
+    @Test
+    void shouldAuthenticateCustomer() throws Exception {
+        // Given
+        AuthenticationDTO authDto = new AuthenticationDTO("duke.last@gmail.com", "12345678");
+
+        // When
+        this.mockMvc.perform(post("/api/v1/login/customer")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(authDto)))
+                .andExpect(status().isOk());
+
+        // Then
+        then(authenticationService).should().authenticate(authDto);
     }
 }

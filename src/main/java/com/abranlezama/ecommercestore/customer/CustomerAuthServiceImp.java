@@ -5,6 +5,7 @@ import com.abranlezama.ecommercestore.customer.mapper.CustomerMapper;
 import com.abranlezama.ecommercestore.exception.BadRequestException;
 import com.abranlezama.ecommercestore.exception.ConflictException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
+import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +21,7 @@ public class CustomerAuthServiceImp implements CustomerAuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public long registerCustomer(RegisterCustomerDTO registerCustomerDto) {
+    public long register(RegisterCustomerDTO registerCustomerDto) {
         // verify that provided password match
         if (!registerCustomerDto.password().equals(registerCustomerDto.verifyPassword()))
             throw new BadRequestException(ExceptionMessages.DIFFERENT_PASSWORDS);
@@ -35,5 +36,10 @@ public class CustomerAuthServiceImp implements CustomerAuthService {
 
         customer = customerRepository.save(customer);
         return customer.getId();
+    }
+
+    @Override
+    public String authenticate(AuthenticationDTO authDto) {
+        return null;
     }
 }

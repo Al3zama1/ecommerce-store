@@ -1,6 +1,7 @@
 package com.abranlezama.ecommercestore.customer;
 
 import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,13 @@ public class AuthenticationController {
 
     @PostMapping("/register/customer")
     public ResponseEntity<Void> registerCustomer(@Valid @RequestBody RegisterCustomerDTO registerCustomerDto) {
-        long userId = authenticationService.registerCustomer(registerCustomerDto);
+        long userId = authenticationService.register(registerCustomerDto);
         URI uri = URI.create("/customers/" + userId);
         return ResponseEntity.created(uri).build();
+    }
+
+    @PostMapping("/login/customer")
+    public String authenticate(@Valid @RequestBody AuthenticationDTO authDto) {
+        return authenticationService.authenticate(authDto);
     }
 }

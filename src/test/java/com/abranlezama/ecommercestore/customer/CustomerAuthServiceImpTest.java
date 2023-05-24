@@ -7,6 +7,8 @@ import com.abranlezama.ecommercestore.exception.ConflictException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
+import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
+import com.abranlezama.ecommercestore.token.TokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,6 +16,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +36,10 @@ class CustomerAuthServiceImpTest {
     private CustomerMapper customerMapper;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private AuthenticationManager authenticationManager;
+    @Mock
+    private TokenService tokenService;
     @Captor
     ArgumentCaptor<Customer> customerArgumentCaptor;
     @InjectMocks
@@ -89,5 +97,17 @@ class CustomerAuthServiceImpTest {
 
         // Then
         then(customerRepository).should(never()).save(any());
+    }
+
+    @Test
+    void shouldAuthenticateCustomerWithValidCredentials() {
+        // Given
+        AuthenticationDTO authDto = new AuthenticationDTO("duke.last@gmail.com", "12345678");
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
+        // When
+        cut.authenticate(authDto);
+
+        // Then
+        then(authenticationManager).should().authenticate(token);
     }
 }

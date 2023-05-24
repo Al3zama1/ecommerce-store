@@ -1,10 +1,8 @@
-package com.abranlezama.ecommercestore.controller;
+package com.abranlezama.ecommercestore.customer;
 
 import com.abranlezama.ecommercestore.config.SecurityConfig;
-import com.abranlezama.ecommercestore.customer.AuthenticationController;
 import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
-import com.abranlezama.ecommercestore.objectmother.RegisterDTOMother;
-import com.abranlezama.ecommercestore.customer.CustomerAuthService;
+import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,15 +34,15 @@ class AuthenticationControllerTest {
     @Test
     void shouldCallCustomerRegisterEndpoint() throws Exception {
         // Given
-        RegisterCustomerDTO registerCustomerDto = RegisterDTOMother.customer().build();
+        RegisterCustomerDTO registerCustomerDto = RegisterCustomerDTOMother.complete().build();
         long userId = 1L;
 
         given(authenticationService.registerCustomer(registerCustomerDto)).willReturn(1L);
 
         // When
         this.mockMvc.perform(post("/api/v1/register/customer")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(registerCustomerDto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerCustomerDto)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", is("/customers/" + 1L)));
 
@@ -51,5 +50,4 @@ class AuthenticationControllerTest {
         // Then
         then(authenticationService).should().registerCustomer(registerCustomerDto);
     }
-
 }

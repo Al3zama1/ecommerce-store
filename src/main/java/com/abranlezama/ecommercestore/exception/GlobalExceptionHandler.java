@@ -36,6 +36,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${custom.stacktrace.trace}")
     private boolean printStackTrace;
 
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Object> handleConflictException(ConflictException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {

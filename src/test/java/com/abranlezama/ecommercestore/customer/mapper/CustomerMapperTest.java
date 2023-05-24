@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.customer.mapper;
 
 import com.abranlezama.ecommercestore.customer.Customer;
 import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -15,12 +16,7 @@ class CustomerMapperTest {
     @Test
     void shouldConvertRegisterCustomerDTOToCustomerEntity() {
         // Given
-        RegisterCustomerDTO dto = RegisterCustomerDTO.builder()
-                .name("Duke Last")
-                .email("duke.last@gmail.com")
-                .password("12345678")
-                .verifyPassword("12345678")
-                .build();
+        RegisterCustomerDTO dto = RegisterCustomerDTOMother.complete().build();
 
         // When
         Customer customer = mapper.mapRegisterDtoToCustomer(dto);

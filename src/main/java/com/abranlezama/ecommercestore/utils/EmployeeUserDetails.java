@@ -1,6 +1,6 @@
-package com.abranlezama.ecommercestore.service;
+package com.abranlezama.ecommercestore.utils;
 
-import com.abranlezama.ecommercestore.model.User;
+import com.abranlezama.ecommercestore.model.Employee;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,11 +8,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class UserService {
-    final public static class SecurityUser extends User implements UserDetails {
+public class EmployeeUserDetails {
+    final public static class SecurityEmployee extends Employee implements UserDetails {
 
-        public SecurityUser(User user) {
-            super(user);
+        public SecurityEmployee(Employee employee) {
+            super(employee);
         }
 
         @Override

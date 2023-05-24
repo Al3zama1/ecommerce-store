@@ -1,13 +1,13 @@
 package com.abranlezama.ecommercestore.repository;
 
-import com.abranlezama.ecommercestore.model.User;
+import com.abranlezama.ecommercestore.model.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
-    Optional<User> findByEmail(String userEmail);
+    Optional<Employee> findByEmail(String employeeEmail);
 }

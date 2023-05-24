@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "users")
+@Table(name = "employees")
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Getter
 @Setter
 @Builder
-public class User {
+public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,13 +32,13 @@ public class User {
     private boolean enabled;
 
     @ManyToMany
-    @JoinTable(name = "user_roles",
-    joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
-    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role_id"}))
+    @JoinTable(name = "employee_roles",
+            joinColumns = @JoinColumn(name = "employee_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"employee_id", "role_id"}))
     private List<Role> roles;
 
-    public User(User user) {
+    public Employee(Employee user) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
@@ -47,13 +47,12 @@ public class User {
         this.roles = user.getRoles();
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id);
+        Employee employee = (Employee) o;
+        return Objects.equals(id, employee.id);
     }
 
     @Override

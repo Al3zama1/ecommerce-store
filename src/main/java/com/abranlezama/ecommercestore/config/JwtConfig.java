@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 
 @Configuration
 @RequiredArgsConstructor
-public class JwtConfiguration {
+public class JwtConfig {
 
     private final RSAKeyProperties keys;
 

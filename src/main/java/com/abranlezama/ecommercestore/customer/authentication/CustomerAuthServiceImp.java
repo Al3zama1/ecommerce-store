@@ -5,8 +5,8 @@ import com.abranlezama.ecommercestore.customer.CustomerRepository;
 import com.abranlezama.ecommercestore.exception.BadRequestException;
 import com.abranlezama.ecommercestore.exception.ConflictException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
-import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 import com.abranlezama.ecommercestore.jwttoken.TokenService;
+import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,11 +18,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomerAuthServiceImp implements CustomerAuthService {
 
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager customerAuthManager;
     private final CustomerRepository customerRepository;
     private final CustomerRegistrationMapper customerRegistrationMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+
 
     @Override
     public long register(RegisterCustomerDTO registerCustomerDto) {
@@ -45,7 +46,7 @@ public class CustomerAuthServiceImp implements CustomerAuthService {
     @Override
     public String authenticate(AuthenticationDTO authDto) {
         // retrieve customer associated with email
-        Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = customerAuthManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password())
         );
         return tokenService.generateJwt(authentication);

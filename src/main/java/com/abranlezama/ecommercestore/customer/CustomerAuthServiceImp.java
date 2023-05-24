@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.customer;
 
-import com.abranlezama.ecommercestore.customer.dto.authentication.CustomerRegisterDTO;
+import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ public class CustomerAuthServiceImp implements CustomerAuthService {
 
     private final AuthenticationManager authenticationManager;
     @Override
-    public long registerCustomer(CustomerRegisterDTO customerRegisterDto) {
+    public long registerCustomer(RegisterCustomerDTO registerCustomerDto) {
         return 0;
     }
 }

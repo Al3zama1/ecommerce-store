@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record CustomerRegisterDTO(
+public record RegisterCustomerDTO(
         @NotBlank String name,
         @Email String email,
         @Size(min = 8, max = 15) String password,

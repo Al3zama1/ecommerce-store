@@ -1,8 +1,8 @@
 package com.abranlezama.ecommercestore.customer;
 
-import com.abranlezama.ecommercestore.customer.dto.authentication.CustomerRegisterDTO;
+import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
 
 public interface CustomerAuthService {
 
-    long registerCustomer(CustomerRegisterDTO customerRegisterDto);
+    long registerCustomer(RegisterCustomerDTO registerCustomerDto);
 }

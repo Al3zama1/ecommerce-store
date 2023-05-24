@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.customer;
 
-import com.abranlezama.ecommercestore.customer.dto.authentication.CustomerRegisterDTO;
+import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ public class AuthenticationController {
     private final CustomerAuthService authenticationService;
 
     @PostMapping("/register/customer")
-    public ResponseEntity<Void> registerCustomer(@Valid @RequestBody CustomerRegisterDTO customerRegisterDto) {
-        long userId = authenticationService.registerCustomer(customerRegisterDto);
+    public ResponseEntity<Void> registerCustomer(@Valid @RequestBody RegisterCustomerDTO registerCustomerDto) {
+        long userId = authenticationService.registerCustomer(registerCustomerDto);
         URI uri = URI.create("/customers/" + userId);
         return ResponseEntity.created(uri).build();
     }

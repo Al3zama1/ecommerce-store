@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.model;
 
-import com.abranlezama.ecommercestore.utils.UserRoleType;
+import com.abranlezama.ecommercestore.utils.EmployeeRoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +21,7 @@ public class Role {
     Short id;
 
     @Enumerated(EnumType.STRING)
-    UserRoleType role;
+    EmployeeRoleType role;
 
     @Override
     public boolean equals(Object o) {

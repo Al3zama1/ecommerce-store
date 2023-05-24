@@ -1,10 +1,10 @@
 package com.abranlezama.ecommercestore.objectmother;
 
-import com.abranlezama.ecommercestore.dto.authentication.RegisterDTO;
+import com.abranlezama.ecommercestore.customer.dto.authentication.CustomerRegisterDTO;
 
 public class RegisterDTOMother {
-    public static RegisterDTO.RegisterDTOBuilder customer() {
-        return RegisterDTO.builder()
+    public static CustomerRegisterDTO.CustomerRegisterDTOBuilder customer() {
+        return CustomerRegisterDTO.builder()
                 .name("duke Last")
                 .email("duke.last@gmail.com")
                 .password("12345678")

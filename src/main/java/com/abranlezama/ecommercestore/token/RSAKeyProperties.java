@@ -1,4 +1,4 @@
-package com.abranlezama.ecommercestore.utils;
+package com.abranlezama.ecommercestore.token;
 
 import lombok.Getter;
 import lombok.Setter;

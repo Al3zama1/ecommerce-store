@@ -1,6 +1,5 @@
-package com.abranlezama.ecommercestore.service.imp;
+package com.abranlezama.ecommercestore.token;
 
-import com.abranlezama.ecommercestore.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

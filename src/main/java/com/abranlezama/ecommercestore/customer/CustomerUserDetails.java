@@ -1,25 +1,21 @@
-package com.abranlezama.ecommercestore.utils;
+package com.abranlezama.ecommercestore.customer;
 
-import com.abranlezama.ecommercestore.model.Employee;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Set;
 
-public class EmployeeUserDetails {
-    final public static class SecurityEmployee extends Employee implements UserDetails {
+public class CustomerUserDetails {
+    final public static class SecurityCustomer extends Customer implements UserDetails {
 
-        public SecurityEmployee(Employee employee) {
-            super(employee);
+        public SecurityCustomer(Customer customer) {
+            super(customer);
         }
-
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return super.getRoles().stream()
-                    .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
-                    .collect(Collectors.toSet());
+            return Set.of(new SimpleGrantedAuthority("CUSTOMER"));
         }
 
         @Override

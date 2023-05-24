@@ -1,4 +1,4 @@
-package com.abranlezama.ecommercestore.model;
+package com.abranlezama.ecommercestore.employee;
 
 import jakarta.persistence.*;
 import lombok.*;

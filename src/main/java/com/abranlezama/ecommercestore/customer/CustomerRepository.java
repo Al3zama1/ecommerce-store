@@ -1,6 +1,5 @@
-package com.abranlezama.ecommercestore.repository;
+package com.abranlezama.ecommercestore.customer;
 
-import com.abranlezama.ecommercestore.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.abranlezama.ecommercestore.service;
+package com.abranlezama.ecommercestore.token;
 
 import org.springframework.security.core.Authentication;
 

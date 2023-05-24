@@ -1,4 +1,4 @@
-package com.abranlezama.ecommercestore.dto.authentication;
+package com.abranlezama.ecommercestore.customer.dto.authentication;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record RegisterDTO(
+public record CustomerRegisterDTO(
         @NotBlank String name,
         @Email String email,
         @Size(min = 8, max = 15) String password,

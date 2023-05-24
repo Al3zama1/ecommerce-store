@@ -1,4 +1,4 @@
-package com.abranlezama.ecommercestore.token;
+package com.abranlezama.ecommercestore.jwttoken;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;

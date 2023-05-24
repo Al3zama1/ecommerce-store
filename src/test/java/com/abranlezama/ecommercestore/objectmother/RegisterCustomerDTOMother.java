@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.objectmother;
 
-import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
+import com.abranlezama.ecommercestore.customer.authentication.RegisterCustomerDTO;
 
 public class RegisterCustomerDTOMother {
     public static RegisterCustomerDTO.RegisterCustomerDTOBuilder complete() {

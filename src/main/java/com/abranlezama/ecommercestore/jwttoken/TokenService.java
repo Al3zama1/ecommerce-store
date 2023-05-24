@@ -1,4 +1,4 @@
-package com.abranlezama.ecommercestore.token;
+package com.abranlezama.ecommercestore.jwttoken;
 
 import org.springframework.security.core.Authentication;
 

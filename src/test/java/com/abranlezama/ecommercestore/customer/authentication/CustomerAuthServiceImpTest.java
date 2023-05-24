@@ -1,14 +1,14 @@
-package com.abranlezama.ecommercestore.customer;
+package com.abranlezama.ecommercestore.customer.authentication;
 
-import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
-import com.abranlezama.ecommercestore.customer.mapper.CustomerMapper;
+import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.CustomerRepository;
 import com.abranlezama.ecommercestore.exception.BadRequestException;
 import com.abranlezama.ecommercestore.exception.ConflictException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
-import com.abranlezama.ecommercestore.token.TokenService;
+import com.abranlezama.ecommercestore.jwttoken.TokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -33,7 +33,7 @@ class CustomerAuthServiceImpTest {
     @Mock
     private CustomerRepository customerRepository;
     @Mock
-    private CustomerMapper customerMapper;
+    private CustomerRegistrationMapper customerRegistrationMapper;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
@@ -52,7 +52,7 @@ class CustomerAuthServiceImpTest {
         Customer customer = CustomerMother.complete().build();
 
         given(customerRepository.existsByEmail(registerDto.email())).willReturn(false);
-        given(customerMapper.mapRegisterDtoToCustomer(registerDto)).willReturn(customer);
+        given(customerRegistrationMapper.mapRegisterDtoToCustomer(registerDto)).willReturn(customer);
         given(customerRepository.save(customer)).willAnswer(invocation -> {
             Customer savedCustomer = invocation.getArgument(0);
             savedCustomer.setId(1L);
@@ -111,3 +111,4 @@ class CustomerAuthServiceImpTest {
         then(authenticationManager).should().authenticate(token);
     }
 }
+

@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.config;
 
-import com.abranlezama.ecommercestore.token.RSAKeyProperties;
+import com.abranlezama.ecommercestore.jwttoken.RSAKeyProperties;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;

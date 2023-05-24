@@ -1,6 +1,5 @@
-package com.abranlezama.ecommercestore.customer;
+package com.abranlezama.ecommercestore.customer.authentication;
 
-import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 
 public interface CustomerAuthService {

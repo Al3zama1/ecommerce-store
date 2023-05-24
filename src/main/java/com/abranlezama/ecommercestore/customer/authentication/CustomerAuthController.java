@@ -1,6 +1,5 @@
-package com.abranlezama.ecommercestore.customer;
+package com.abranlezama.ecommercestore.customer.authentication;
 
-import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class AuthenticationController {
+public class CustomerAuthController {
 
     private final CustomerAuthService authenticationService;
 

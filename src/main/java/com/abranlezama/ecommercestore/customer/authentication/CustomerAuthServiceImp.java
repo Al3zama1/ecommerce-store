@@ -1,12 +1,12 @@
-package com.abranlezama.ecommercestore.customer;
+package com.abranlezama.ecommercestore.customer.authentication;
 
-import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
-import com.abranlezama.ecommercestore.customer.mapper.CustomerMapper;
+import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.CustomerRepository;
 import com.abranlezama.ecommercestore.exception.BadRequestException;
 import com.abranlezama.ecommercestore.exception.ConflictException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
-import com.abranlezama.ecommercestore.token.TokenService;
+import com.abranlezama.ecommercestore.jwttoken.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,7 @@ public class CustomerAuthServiceImp implements CustomerAuthService {
 
     private final AuthenticationManager authenticationManager;
     private final CustomerRepository customerRepository;
-    private final CustomerMapper customerMapper;
+    private final CustomerRegistrationMapper customerRegistrationMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
@@ -35,7 +35,7 @@ public class CustomerAuthServiceImp implements CustomerAuthService {
         if (emailExists) throw new ConflictException(ExceptionMessages.EMAIL_TAKEN);
 
         // generate customer from dto and encrypt password
-        Customer customer = customerMapper.mapRegisterDtoToCustomer(registerCustomerDto);
+        Customer customer = customerRegistrationMapper.mapRegisterDtoToCustomer(registerCustomerDto);
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 
         customer = customerRepository.save(customer);

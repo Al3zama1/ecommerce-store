@@ -1,7 +1,6 @@
-package com.abranlezama.ecommercestore.customer.mapper;
+package com.abranlezama.ecommercestore.customer.authentication;
 
 import com.abranlezama.ecommercestore.customer.Customer;
-import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -9,9 +8,9 @@ import org.mapstruct.factory.Mappers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class CustomerMapperTest {
+class CustomerRegistrationMapperTest {
 
-    CustomerMapper mapper = Mappers.getMapper(CustomerMapper.class);
+    CustomerRegistrationMapper mapper = Mappers.getMapper(CustomerRegistrationMapper.class);
 
     @Test
     void shouldConvertRegisterCustomerDTOToCustomerEntity() {

@@ -1,7 +1,6 @@
-package com.abranlezama.ecommercestore.customer;
+package com.abranlezama.ecommercestore.customer.authentication;
 
 import com.abranlezama.ecommercestore.config.SecurityConfig;
-import com.abranlezama.ecommercestore.customer.dto.authentication.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,15 +13,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(AuthenticationController.class)
+
+@WebMvcTest(CustomerAuthController.class)
 @Import(SecurityConfig.class)
-class AuthenticationControllerTest {
+class CustomerAuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -59,8 +60,8 @@ class AuthenticationControllerTest {
 
         // When
         this.mockMvc.perform(post("/api/v1/login/customer")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(authDto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authDto)))
                 .andExpect(status().isOk());
 
         // Then

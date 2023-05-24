@@ -5,10 +5,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +20,11 @@ public class ProductController {
     @GetMapping
     public List<ProductDTO> retrieveProducts(@PositiveOrZero @RequestParam(value = "page", defaultValue = "0") int page,
                                              @Positive @RequestParam(value = "pageSize", defaultValue = "20") int pageSize) {
-        return productService.retrieveProduct(page, pageSize);
+        return productService.retrieveProducts(page, pageSize);
+    }
+
+    @GetMapping("/{productId}")
+    public ProductDTO retrieveProduct(@Positive @PathVariable Long productId) {
+        return productService.retrieveProduct(productId);
     }
 }

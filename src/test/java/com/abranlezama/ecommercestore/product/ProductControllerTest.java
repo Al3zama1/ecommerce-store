@@ -24,8 +24,8 @@ class ProductControllerTest {
     private ProductService productService;
 
     @Nested
-    @DisplayName("product(s) retrieval")
-    class ProductRetrieval {
+    @DisplayName("products retrieval")
+    class ProductsRetrieval {
         @Test
         @DisplayName("return HTTP status OK(200) with products when params is valid")
         void returnHttpStatusOkWithProductsWhenValidParams() throws Exception {
@@ -40,11 +40,11 @@ class ProductControllerTest {
                     .andExpect(status().isOk());
 
             // Then
-            then(productService).should().retrieveProduct(page, pageSize);
+            then(productService).should().retrieveProducts(page, pageSize);
         }
 
         @Test
-        @DisplayName("return HTTP status OK(200) when params are missing")
+        @DisplayName("return HTTP status OK(200) with products when params are missing")
         void returnHttpStatusOkWithProductWhenParamsAreMissing() throws Exception {
             // Given
 
@@ -53,11 +53,11 @@ class ProductControllerTest {
                     .andExpect(status().isOk());
 
             // Then
-            then(productService).should().retrieveProduct(0, 20);
+            then(productService).should().retrieveProducts(0, 20);
         }
 
         @Test
-        @DisplayName("return HTTp status UnprocessableEntity(422) when params are invalid")
+        @DisplayName("return HTTP status UnprocessableEntity(422) when params are invalid")
         void returnHttpStatusUnprocessableEntityWhenParamsAreInvalid() throws Exception {
             // Given
             int page = 0;
@@ -67,6 +67,39 @@ class ProductControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products")
                             .param("page", String.valueOf(page))
                             .param("pageSize", String.valueOf(pageSize)))
+                    .andExpect(status().isUnprocessableEntity());
+
+            // Then
+            then(productService).shouldHaveNoInteractions();
+        }
+    }
+
+    @Nested
+    @DisplayName("product retrieval")
+    class ProductRetrieval {
+
+        @Test
+        @DisplayName("return HTTP status OK(200) with product when valid path variable")
+        void returnHttpStatusOKWithProductWhenValidInput() throws Exception {
+            // Given
+            long productId = 1L;
+
+            // When
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/{productId}", productId))
+                    .andExpect(status().isOk());
+
+            // Then
+            then(productService).should().retrieveProduct(productId);
+        }
+
+        @Test
+        @DisplayName("return HTTP status UnprocessableEntity(422) when invalid path variable")
+        void returnHttpStatusUnprocessableEntityWhenInvalidPathVariable() throws Exception {
+            // Given
+            long productId = -1L;
+
+            // When
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/{productId}", productId))
                     .andExpect(status().isUnprocessableEntity());
 
             // Then

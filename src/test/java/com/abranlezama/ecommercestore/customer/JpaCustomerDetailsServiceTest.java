@@ -1,6 +1,7 @@
 package com.abranlezama.ecommercestore.customer;
 
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("customer user details service")
 class JpaCustomerDetailsServiceTest {
 
     @Mock
@@ -24,6 +26,7 @@ class JpaCustomerDetailsServiceTest {
     private JpaCustomerDetailsService cut;
 
     @Test
+    @DisplayName("return UserDetails when username is found")
     void shouldFindAndReturnCustomerAsUserDetails() {
         // Given
         Customer customer = CustomerMother.complete().build();
@@ -41,6 +44,7 @@ class JpaCustomerDetailsServiceTest {
     }
 
     @Test
+    @DisplayName("throw UsernameNotFoundException when username is not found")
     void shouldThrowUsernameNotFoundExceptionWhenProvidedCustomerEmailDoesNotExist() {
         // Given
         String customerEmail = "duke.last@gmail.com";

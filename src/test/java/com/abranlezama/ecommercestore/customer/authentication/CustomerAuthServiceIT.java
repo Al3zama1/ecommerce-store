@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 @ActiveProfiles("integration-test")
 @Import(PostgresContainerConfig.class)
+@DisplayName("customer authentication service IT")
 public class CustomerAuthServiceIT {
 
     @Autowired

@@ -9,6 +9,7 @@ import com.abranlezama.ecommercestore.objectmother.CustomerMother;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import com.abranlezama.ecommercestore.sharedto.AuthenticationDTO;
 import com.abranlezama.ecommercestore.jwttoken.TokenService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -28,6 +29,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("customer authentication service")
 class CustomerAuthServiceImpTest {
 
     @Mock
@@ -46,6 +48,7 @@ class CustomerAuthServiceImpTest {
     private CustomerAuthServiceImp cut;
 
     @Test
+    @DisplayName("register customer")
     void shouldRegisterCustomer() {
         // Given
         RegisterCustomerDTO registerDto = RegisterCustomerDTOMother.complete().build();
@@ -68,6 +71,7 @@ class CustomerAuthServiceImpTest {
     }
 
     @Test
+    @DisplayName("cancel customer registration due to not matching passwords")
     void shouldThrowBadRequestExceptionWhenProvidedPasswordsDoNotMatch() {
         // Given
         RegisterCustomerDTO registerDto = RegisterCustomerDTOMother.complete()
@@ -84,6 +88,7 @@ class CustomerAuthServiceImpTest {
     }
 
     @Test
+    @DisplayName("cancel customer registration when email conflict")
     void shouldThrowConflictExceptionWhenRegisterEmailIsTaken() {
         // Given
         RegisterCustomerDTO registerDto = RegisterCustomerDTOMother.complete().build();
@@ -100,6 +105,7 @@ class CustomerAuthServiceImpTest {
     }
 
     @Test
+    @DisplayName("authenticate customer with valid credentials")
     void shouldAuthenticateCustomerWithValidCredentials() {
         // Given
         AuthenticationDTO authDto = new AuthenticationDTO("duke.last@gmail.com", "12345678");

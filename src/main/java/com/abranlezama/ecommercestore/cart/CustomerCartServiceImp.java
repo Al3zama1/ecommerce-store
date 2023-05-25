@@ -63,6 +63,11 @@ public class CustomerCartServiceImp implements CustomerCartService{
         cartRepository.save(cart);
     }
 
+    @Override
+    public void removeItemFromCustomerCart(long productId, String customerEmail) {
+
+    }
+
     private CartItem getCustomerCartItem(Cart cart, long productId) {
         return cart.getCartItems().stream()
                 .filter(cartItem -> cartItem.getProduct().getId() == productId)

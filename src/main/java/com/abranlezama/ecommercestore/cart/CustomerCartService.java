@@ -10,4 +10,6 @@ public interface CustomerCartService {
     void addProductToCart(AddProductToCartDTO addTdo, String customerEmail);
 
     void updateCartItem(UpdateCartItemDTO updateDto, String customerEmail);
+
+    void removeItemFromCustomerCart(long productId, String customerEmail);
 }

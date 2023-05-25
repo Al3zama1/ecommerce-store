@@ -119,4 +119,36 @@ class CustomerCartControllerTest {
         // Then
         then(customerCartService).should().updateCartItem(updateDto, customerEmail);
     }
+
+    @Test
+    @DisplayName("return HTTP status NO_CONTENT(204) when removing cart item")
+    @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
+    void returnHttpStatus204WhenRemovingCustomerCartItem() throws Exception {
+        // Given
+        long productId = 1L;
+        String customerEmail = "duke.last@gmail.com";
+
+        // When
+        this.mockMvc.perform(delete("/api/v1/customers/cart/{productId}", productId))
+                .andExpect(status().isNoContent());
+
+        // Then
+        then(customerCartService).should().removeItemFromCustomerCart(productId, customerEmail);
+    }
+
+    @Test
+    @DisplayName("return HTTP status UnprocessableEntity(422) when removing cart item with invalid input")
+    @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
+    void returnHttpStatusUnprocessableEntityWhenRemovingCartItemWithInvalidInput() throws Exception {
+        // Given
+        long productId = -1L;
+        String customerEmail = "duke.last@gmail.com";
+
+        // When
+        this.mockMvc.perform(delete("/api/v1/customers/cart/{productId}", productId))
+                .andExpect(status().isUnprocessableEntity());
+
+        // Then
+        then(customerCartService).shouldHaveNoInteractions();
+    }
 }

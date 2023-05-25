@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.cart;
 
 import com.abranlezama.ecommercestore.cart.dto.AddProductToCartDTO;
 import com.abranlezama.ecommercestore.cart.dto.CartDTO;
+import com.abranlezama.ecommercestore.cart.dto.UpdateCartItemDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -23,5 +24,11 @@ public class CustomerCartController {
     public void addProductToCustomerCart(Authentication authentication,
                                          @Valid @RequestBody AddProductToCartDTO addDto) {
         this.customerCartService.addProductToCart(addDto, authentication.getName());
+    }
+
+    @PatchMapping
+    public void updateCustomerCartItem(Authentication authentication,
+                                       @Valid @RequestBody UpdateCartItemDTO updateDto) {
+        this.customerCartService.updateCartItem(updateDto, authentication.getName());
     }
 }

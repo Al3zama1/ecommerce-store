@@ -1,6 +1,7 @@
 package com.abranlezama.ecommercestore.cart;
 
 import com.abranlezama.ecommercestore.cart.dto.AddProductToCartDTO;
+import com.abranlezama.ecommercestore.cart.dto.UpdateCartItemDTO;
 import com.abranlezama.ecommercestore.config.CustomerSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -17,8 +18,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.then;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CustomerCartController.class)
@@ -85,7 +85,7 @@ class CustomerCartControllerTest {
     }
 
     @Test
-    @DisplayName("add product to customer cart")
+    @DisplayName("return HTTP status OK(200) when product is added to customer cart")
     @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
     void addProductToCustomerCartWhenValidInput() throws Exception {
         // Given
@@ -100,5 +100,23 @@ class CustomerCartControllerTest {
 
         // Then
         then(customerCartService).should().addProductToCart(addDto, customerEmail);
+    }
+
+    @Test
+    @DisplayName("return HTTP status OK(200) when updating cart product with valid data")
+    @WithMockUser(username = "duke.last@gmail.com", roles = "CUSTOMER")
+    void returnHttpStatusOKWhenUpdatingCartProductWithValidInput() throws Exception {
+        // Given
+        UpdateCartItemDTO updateDto = new UpdateCartItemDTO(1L, (short) 5);
+        String customerEmail = "duke.last@gmail.com";
+
+        // When
+        this.mockMvc.perform(patch("/api/v1/customers/cart")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isOk());
+
+        // Then
+        then(customerCartService).should().updateCartItem(updateDto, customerEmail);
     }
 }

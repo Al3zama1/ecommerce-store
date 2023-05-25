@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.cart;
 
 import com.abranlezama.ecommercestore.cart.dto.AddProductToCartDTO;
 import com.abranlezama.ecommercestore.cart.dto.CartDTO;
+import com.abranlezama.ecommercestore.cart.dto.UpdateCartItemDTO;
 import com.abranlezama.ecommercestore.exception.ConflictException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.NotFoundException;
@@ -45,6 +46,11 @@ public class CustomerCartServiceImp implements CustomerCartService{
         cart.getCartItems().add(cartItem);
         cart.setTotalCost(calculateCustomerCartTotal(cart));
         cartRepository.save(cart);
+    }
+
+    @Override
+    public void updateCartItem(UpdateCartItemDTO updateDto, String customeremail) {
+
     }
 
     private Cart getCustomerCart(String customerEmail) {

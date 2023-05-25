@@ -2,6 +2,7 @@ package com.abranlezama.ecommercestore.cart;
 
 import com.abranlezama.ecommercestore.config.CustomerSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CustomerCartController.class)
 @Import(CustomerSecurityConfig.class)
+@DisplayName("customer cart")
 class CustomerCartControllerTest {
 
     @Autowired
@@ -28,6 +30,38 @@ class CustomerCartControllerTest {
     private JwtAuthenticationConverter jwtAuthenticationConverter;
     @MockBean
     private JwtDecoder jwtDecoder;
+
+
+    @Nested
+    @DisplayName("block non customers from accessing cart")
+    class BlockNonCustomersFromCart {
+
+        @Test
+        @DisplayName("return HTTP status 401 when not authenticated")
+        void return401WhenNotNotAuthenticated() throws Exception {
+            // Given
+
+            // When
+            mockMvc.perform(get("/api/v1/customers/cart"))
+                    .andExpect(status().isUnauthorized());
+
+            // Then
+            then(customerCartService).shouldHaveNoInteractions();
+        }
+        @Test
+        @DisplayName("return HTTP status 403 when not a customer")
+        @WithMockUser(username = "duke.last@gmail.com")
+        void return403WhenNotAuthorizedToAccessCart() throws Exception {
+            // Given
+
+            // When
+            mockMvc.perform(get("/api/v1/customers/cart"))
+                    .andExpect(status().isForbidden());
+
+            // Then
+            then(customerCartService).shouldHaveNoInteractions();
+        }
+    }
 
     @Test
     @DisplayName("return HTTP status OK(200) with cart")
@@ -43,5 +77,4 @@ class CustomerCartControllerTest {
         // Then
         then(customerCartService).should().retrieveCustomerCart(customerEmail);
     }
-
 }

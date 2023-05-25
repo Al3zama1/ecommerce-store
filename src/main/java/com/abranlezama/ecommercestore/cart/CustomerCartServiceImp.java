@@ -1,5 +1,6 @@
 package com.abranlezama.ecommercestore.cart;
 
+import com.abranlezama.ecommercestore.cart.dto.AddProductToCartDTO;
 import com.abranlezama.ecommercestore.cart.dto.CartDTO;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.NotFoundException;
@@ -20,5 +21,10 @@ public class CustomerCartServiceImp implements CustomerCartService{
                 .orElseThrow(() -> new NotFoundException(ExceptionMessages.CART_NOT_FOUND));
 
         return cartMapper.mapCartToDto(cart);
+    }
+
+    @Override
+    public void addProductToCart(AddProductToCartDTO addTdo) {
+
     }
 }

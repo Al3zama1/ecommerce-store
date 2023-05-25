@@ -1,11 +1,11 @@
 package com.abranlezama.ecommercestore.cart;
 
+import com.abranlezama.ecommercestore.cart.dto.AddProductToCartDTO;
 import com.abranlezama.ecommercestore.cart.dto.CartDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/customers/cart")
@@ -16,6 +16,11 @@ public class CustomerCartController {
 
     @GetMapping
     public CartDTO retrieveCustomerCart(Authentication authentication) {
-        return customerCartService.retrieveCustomerCart(authentication.getName());
+        return this.customerCartService.retrieveCustomerCart(authentication.getName());
+    }
+
+    @PostMapping
+    public void addProductToCustomerCart(@Valid @RequestBody AddProductToCartDTO addDto) {
+        this.customerCartService.addProductToCart(addDto);
     }
 }

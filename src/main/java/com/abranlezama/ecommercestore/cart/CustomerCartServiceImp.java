@@ -49,8 +49,25 @@ public class CustomerCartServiceImp implements CustomerCartService{
     }
 
     @Override
-    public void updateCartItem(UpdateCartItemDTO updateDto, String customeremail) {
+    public void updateCartItem(UpdateCartItemDTO updateDto, String customerEmail) {
+        // get customer cart and item to update
+        Cart cart = getCustomerCart(customerEmail);
+        CartItem cartItem = getCustomerCartItem(cart, updateDto.productId());
 
+        // ensure enough inventory
+        if (updateDto.quantity() > cartItem.getProduct().getStockQuantity()) throw new ConflictException(ExceptionMessages.PRODUCT_OUT_OF_STOCK);
+
+        // make updated
+        cartItem.setQuantity(updateDto.quantity());
+        cart.setTotalCost(calculateCustomerCartTotal(cart));
+        cartRepository.save(cart);
+    }
+
+    private CartItem getCustomerCartItem(Cart cart, long productId) {
+        return cart.getCartItems().stream()
+                .filter(cartItem -> cartItem.getProduct().getId() == productId)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(ExceptionMessages.CART_ITEM_NOT_FOUND));
     }
 
     private Cart getCustomerCart(String customerEmail) {

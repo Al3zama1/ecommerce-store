@@ -9,5 +9,5 @@ public interface CustomerCartService {
     CartDTO retrieveCustomerCart(String customerEmail);
     void addProductToCart(AddProductToCartDTO addTdo, String customerEmail);
 
-    void updateCartItem(UpdateCartItemDTO updateDto, String customeremail);
+    void updateCartItem(UpdateCartItemDTO updateDto, String customerEmail);
 }

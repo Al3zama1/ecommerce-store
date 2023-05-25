@@ -90,6 +90,7 @@ class CustomerCartControllerTest {
     void addProductToCustomerCartWhenValidInput() throws Exception {
         // Given
         AddProductToCartDTO addDto = new AddProductToCartDTO(1L, (short) 4);
+        String customerEmail = "duke.last@gmail.com";
 
         // When
         this.mockMvc.perform(post("/api/v1/customers/cart")
@@ -98,6 +99,6 @@ class CustomerCartControllerTest {
                 .andExpect(status().isOk());
 
         // Then
-        then(customerCartService).should().addProductToCart(addDto);
+        then(customerCartService).should().addProductToCart(addDto, customerEmail);
     }
 }

@@ -20,7 +20,8 @@ public class CustomerCartController {
     }
 
     @PostMapping
-    public void addProductToCustomerCart(@Valid @RequestBody AddProductToCartDTO addDto) {
-        this.customerCartService.addProductToCart(addDto);
+    public void addProductToCustomerCart(Authentication authentication,
+                                         @Valid @RequestBody AddProductToCartDTO addDto) {
+        this.customerCartService.addProductToCart(addDto, authentication.getName());
     }
 }

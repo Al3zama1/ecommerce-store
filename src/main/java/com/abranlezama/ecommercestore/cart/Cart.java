@@ -23,7 +23,7 @@ public class Cart {
     @Column(nullable = false)
     Float totalCost;
 
-    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<CartItem> cartItems;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)

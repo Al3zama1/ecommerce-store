@@ -22,7 +22,7 @@ public class CustomerSecurityConfig {
     @Order(1)
     public SecurityFilterChain customerSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/api/v1/customers")
+                .securityMatcher("/api/v1/customers/**")
                 .authorizeHttpRequests(request -> request
                         .anyRequest().hasRole("CUSTOMER"))
                 .sessionManagement(session -> session

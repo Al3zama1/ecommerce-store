@@ -1,5 +1,7 @@
 package com.abranlezama.ecommercestore.customer.authentication;
 
+import com.abranlezama.ecommercestore.cart.Cart;
+import com.abranlezama.ecommercestore.cart.CartRepository;
 import com.abranlezama.ecommercestore.customer.Customer;
 import com.abranlezama.ecommercestore.customer.CustomerRepository;
 import com.abranlezama.ecommercestore.exception.BadRequestException;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class CustomerAuthServiceImp implements CustomerAuthService {
 
     private final AuthenticationManager customerAuthManager;
+    private final CartRepository cartRepository;
     private final CustomerRepository customerRepository;
     private final CustomerRegistrationMapper customerRegistrationMapper;
     private final PasswordEncoder passwordEncoder;
@@ -40,6 +43,10 @@ public class CustomerAuthServiceImp implements CustomerAuthService {
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 
         customer = customerRepository.save(customer);
+
+        // assign customer a cart
+        cartRepository.save(Cart.builder().customer(customer).totalCost(0F).build());
+
         return customer.getId();
     }
 

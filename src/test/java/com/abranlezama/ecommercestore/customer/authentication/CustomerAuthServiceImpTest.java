@@ -1,5 +1,6 @@
 package com.abranlezama.ecommercestore.customer.authentication;
 
+import com.abranlezama.ecommercestore.cart.CartRepository;
 import com.abranlezama.ecommercestore.customer.Customer;
 import com.abranlezama.ecommercestore.customer.CustomerRepository;
 import com.abranlezama.ecommercestore.exception.BadRequestException;
@@ -38,6 +39,8 @@ class CustomerAuthServiceImpTest {
     private CustomerRegistrationMapper customerRegistrationMapper;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private CartRepository cartRepository;
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock

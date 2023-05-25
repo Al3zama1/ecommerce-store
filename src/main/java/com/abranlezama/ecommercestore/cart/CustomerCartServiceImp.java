@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomerCartServiceImp implements CustomerCartService{
 
     private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final CartMapper cartMapper;
     @Override
@@ -65,7 +66,16 @@ public class CustomerCartServiceImp implements CustomerCartService{
 
     @Override
     public void removeItemFromCustomerCart(long productId, String customerEmail) {
+        // get customer cart and cart item to remove
+        Cart cart = getCustomerCart(customerEmail);
+        CartItem cartItem = getCustomerCartItem(cart, productId);
 
+        // remove cart item
+        cartItemRepository.delete(cartItem);
+        // update cart
+        cart.getCartItems().remove(cartItem);
+        cart.setTotalCost(calculateCustomerCartTotal(cart));
+        cartRepository.save(cart);
     }
 
     private CartItem getCustomerCartItem(Cart cart, long productId) {

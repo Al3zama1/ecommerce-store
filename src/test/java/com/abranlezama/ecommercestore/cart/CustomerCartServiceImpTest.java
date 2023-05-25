@@ -38,6 +38,8 @@ class CustomerCartServiceImpTest {
     @Mock
     private CartRepository cartRepository;
     @Mock
+    private CartItemRepository cartItemRepository;
+    @Mock
     private ProductRepository productRepository;
     @Mock
     private CartMapper cartMapper;
@@ -234,7 +236,42 @@ class CustomerCartServiceImpTest {
             // Then
             then(cartRepository).should(never()).save(any(Cart.class));
         }
+    }
 
+    @Nested
+    @DisplayName("customer cart item removal")
+    class RemoveCustomerCartItem {
 
+        @Test
+        @DisplayName("remove cart item when it is in cart")
+        void removeItemFromCustomerCartWhenItemIsInCart() {
+            // Given
+            long productId = 1L;
+            String customerEmail = "duke.last@gmail.com";
+
+            Product product = ProductMother.complete().build();
+            CartItem cartItem = CartItem.builder()
+                    .quantity((short)3)
+                    .product(product)
+                    .build();
+            Cart cart = Cart.builder()
+                    .cartItems(new HashSet<>())
+                    .totalCost(cartItem.getQuantity() * product.getPrice())
+                    .build();
+            cart.getCartItems().add(cartItem);
+
+            given(cartRepository.findByCustomer_Email(customerEmail)).willReturn(Optional.of(cart));
+
+            // When
+            cut.removeItemFromCustomerCart(productId, customerEmail);
+
+            // Then
+            then(cartItemRepository).should().delete(cartItem);
+            then(cartRepository).should().save(cartArgumentCaptor.capture());
+            Cart savedCart = cartArgumentCaptor.getValue();
+
+            assertThat(savedCart.getCartItems().size()).isEqualTo(0);
+            assertThat(savedCart.getTotalCost()).isEqualTo(0F);
+        }
     }
 }

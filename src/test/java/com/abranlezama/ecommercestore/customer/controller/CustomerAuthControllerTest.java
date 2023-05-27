@@ -53,7 +53,7 @@ class CustomerAuthControllerTest {
                 given(authenticationService.register(registerCustomerDto)).willReturn(1L);
 
                 // When
-                mockMvc.perform(post("/api/v1/register/customer")
+                mockMvc.perform(post("/api/v1/register/customers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(registerCustomerDto)))
                         .andExpect(status().isCreated())
@@ -80,7 +80,7 @@ class CustomerAuthControllerTest {
                 given(authenticationService.register(registerCustomerDto)).willReturn(1L);
 
                 // When
-                mockMvc.perform(post("/api/v1/register/customer")
+                mockMvc.perform(post("/api/v1/register/customers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(registerCustomerDto)))
                         .andExpect(status().isUnprocessableEntity());
@@ -105,7 +105,7 @@ class CustomerAuthControllerTest {
                 AuthenticationDTO authDto = new AuthenticationDTO("duke.last@gmail.com", "12345678");
 
                 // When
-                mockMvc.perform(post("/api/v1/login/customer")
+                mockMvc.perform(post("/api/v1/login/customers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authDto)))
                         .andExpect(status().isOk());
@@ -125,7 +125,7 @@ class CustomerAuthControllerTest {
                 AuthenticationDTO authDto = new AuthenticationDTO("duke.last@gmail.com", "1234567");
 
                 // When
-                mockMvc.perform(post("/api/v1/login/customer")
+                mockMvc.perform(post("/api/v1/login/customers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authDto)))
                         .andExpect(status().isUnprocessableEntity());

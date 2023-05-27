@@ -20,14 +20,14 @@ public class CustomerAuthController {
 
     private final CustomerAuthService authenticationService;
 
-    @PostMapping("/register/customer")
+    @PostMapping("/register/customers")
     public ResponseEntity<Void> registerCustomer(@Valid @RequestBody RegisterCustomerDTO registerCustomerDto) {
         long userId = authenticationService.register(registerCustomerDto);
         URI uri = URI.create("/customers/" + userId);
         return ResponseEntity.created(uri).build();
     }
 
-    @PostMapping("/login/customer")
+    @PostMapping("/login/customers")
     public String authenticate(@Valid @RequestBody AuthenticationDTO authDto) {
         return authenticationService.authenticate(authDto);
     }

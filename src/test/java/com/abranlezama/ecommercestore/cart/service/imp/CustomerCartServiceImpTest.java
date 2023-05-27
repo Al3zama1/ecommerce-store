@@ -277,5 +277,29 @@ class CustomerCartServiceImpTest {
             assertThat(savedCart.getCartItems().size()).isEqualTo(0);
             assertThat(savedCart.getTotalCost()).isEqualTo(0F);
         }
+
+        @Test
+        @DisplayName("throw CartItemNotFoundException when item is not in cart")
+        void throwCartItemNotFoundExceptionWhenItemIsNotInCart() {
+            // Given
+            long productId = 1L;
+            String customerEmail = "duke.last@gmail.com";
+
+            Product product = ProductMother.complete().build();
+            Cart cart = Cart.builder()
+                    .cartItems(new HashSet<>())
+                    .totalCost(0F)
+                    .build();
+
+            given(cartRepository.findByCustomer_Email(customerEmail)).willReturn(Optional.of(cart));
+
+            // When
+            assertThatThrownBy(() -> cut.removeItemFromCustomerCart(productId, customerEmail))
+                    .hasMessage(ExceptionMessages.CART_ITEM_NOT_FOUND)
+                    .isInstanceOf(NotFoundException.class);
+
+            // Then
+            then(cartItemRepository).shouldHaveNoInteractions();
+        }
     }
 }

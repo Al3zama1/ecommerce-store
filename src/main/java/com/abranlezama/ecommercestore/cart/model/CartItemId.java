@@ -1,4 +1,4 @@
-package com.abranlezama.ecommercestore.cart;
+package com.abranlezama.ecommercestore.cart.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

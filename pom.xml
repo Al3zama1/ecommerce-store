@@ -189,9 +189,12 @@
                     <!-- exclude classes that have no business logic -->
                     <excludes>
                         <exclude>**/dto/*.class</exclude>
+                        <exclude>**/sharedto/*.class</exclude>
                         <exclude>**/model/*.class</exclude>
                         <exclude>**/exception/*.class</exclude>
                         <exclude>**/config/*.class</exclude>
+                        <exclude>**/util/*.class</exclude>
+                        <exclude>**/event/*.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

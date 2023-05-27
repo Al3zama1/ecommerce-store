@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.customer.mapper;
 
-import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.model.Customer;
 import com.abranlezama.ecommercestore.customer.dto.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.objectmother.RegisterCustomerDTOMother;
 import org.junit.jupiter.api.DisplayName;

@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.customer.service.imp;
 
 import com.abranlezama.ecommercestore.cart.repository.CartRepository;
-import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.model.Customer;
 import com.abranlezama.ecommercestore.customer.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.customer.dto.RegisterCustomerDTO;
 import com.abranlezama.ecommercestore.customer.mapper.CustomerRegistrationMapper;

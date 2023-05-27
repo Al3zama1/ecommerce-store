@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.customer.service.imp;
 
-import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.model.Customer;
 import com.abranlezama.ecommercestore.customer.util.CustomerUserDetails;
 import com.abranlezama.ecommercestore.customer.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;

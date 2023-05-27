@@ -1,11 +1,11 @@
 package com.abranlezama.ecommercestore.cart.mapper;
 
-import com.abranlezama.ecommercestore.cart.Cart;
-import com.abranlezama.ecommercestore.cart.CartItem;
+import com.abranlezama.ecommercestore.cart.model.Cart;
+import com.abranlezama.ecommercestore.cart.model.CartItem;
 import com.abranlezama.ecommercestore.cart.dto.CartDTO;
 import com.abranlezama.ecommercestore.cart.dto.CartItemDTO;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
-import com.abranlezama.ecommercestore.product.Product;
+import com.abranlezama.ecommercestore.product.model.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.objectmother;
 
-import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.model.Customer;
 
 public class CustomerMother {
 

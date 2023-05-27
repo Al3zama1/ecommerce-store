@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.cart.service.imp;
 
-import com.abranlezama.ecommercestore.cart.Cart;
-import com.abranlezama.ecommercestore.cart.CartItem;
+import com.abranlezama.ecommercestore.cart.model.Cart;
+import com.abranlezama.ecommercestore.cart.model.CartItem;
 import com.abranlezama.ecommercestore.cart.dto.AddProductToCartDTO;
 import com.abranlezama.ecommercestore.cart.dto.CartDTO;
 import com.abranlezama.ecommercestore.cart.dto.UpdateCartItemDTO;
@@ -12,7 +12,7 @@ import com.abranlezama.ecommercestore.cart.service.CustomerCartService;
 import com.abranlezama.ecommercestore.exception.ConflictException;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.NotFoundException;
-import com.abranlezama.ecommercestore.product.Product;
+import com.abranlezama.ecommercestore.product.model.Product;
 import com.abranlezama.ecommercestore.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

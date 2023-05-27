@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.employee.util;
 
-import com.abranlezama.ecommercestore.employee.Employee;
+import com.abranlezama.ecommercestore.employee.model.Employee;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

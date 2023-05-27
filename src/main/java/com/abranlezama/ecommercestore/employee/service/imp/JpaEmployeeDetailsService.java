@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.employee.service.imp;
 
-import com.abranlezama.ecommercestore.employee.Employee;
+import com.abranlezama.ecommercestore.employee.model.Employee;
 import com.abranlezama.ecommercestore.employee.util.EmployeeUserDetails;
 import com.abranlezama.ecommercestore.employee.repository.EmployeeRepository;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;

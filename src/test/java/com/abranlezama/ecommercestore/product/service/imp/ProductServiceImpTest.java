@@ -3,7 +3,7 @@ package com.abranlezama.ecommercestore.product.service.imp;
 import com.abranlezama.ecommercestore.exception.ExceptionMessages;
 import com.abranlezama.ecommercestore.exception.NotFoundException;
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
-import com.abranlezama.ecommercestore.product.Product;
+import com.abranlezama.ecommercestore.product.model.Product;
 import com.abranlezama.ecommercestore.product.repository.ProductRepository;
 import com.abranlezama.ecommercestore.product.mapper.ProductMapper;
 import org.junit.jupiter.api.DisplayName;

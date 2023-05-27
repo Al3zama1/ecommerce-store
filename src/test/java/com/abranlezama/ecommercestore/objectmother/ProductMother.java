@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.objectmother;
 
-import com.abranlezama.ecommercestore.product.Product;
+import com.abranlezama.ecommercestore.product.model.Product;
 
 public class ProductMother {
 

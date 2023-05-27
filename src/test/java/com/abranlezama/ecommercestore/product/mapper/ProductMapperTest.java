@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.product.mapper;
 
 import com.abranlezama.ecommercestore.objectmother.ProductMother;
-import com.abranlezama.ecommercestore.product.Product;
+import com.abranlezama.ecommercestore.product.model.Product;
 import com.abranlezama.ecommercestore.product.dto.ProductDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

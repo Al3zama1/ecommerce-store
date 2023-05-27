@@ -1,6 +1,6 @@
 package com.abranlezama.ecommercestore.customer.mapper;
 
-import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.model.Customer;
 import com.abranlezama.ecommercestore.customer.dto.RegisterCustomerDTO;
 import org.mapstruct.Mapper;
 

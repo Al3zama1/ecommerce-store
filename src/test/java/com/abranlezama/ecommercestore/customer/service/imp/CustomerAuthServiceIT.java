@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.customer.service.imp;
 
 import com.abranlezama.ecommercestore.PostgresContainerConfig;
-import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.model.Customer;
 import com.abranlezama.ecommercestore.customer.repository.CustomerRepository;
 import com.abranlezama.ecommercestore.customer.service.CustomerAuthService;
 import com.abranlezama.ecommercestore.objectmother.CustomerMother;

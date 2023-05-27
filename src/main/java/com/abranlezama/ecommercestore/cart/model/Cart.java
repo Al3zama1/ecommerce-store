@@ -1,6 +1,6 @@
-package com.abranlezama.ecommercestore.cart;
+package com.abranlezama.ecommercestore.cart.model;
 
-import com.abranlezama.ecommercestore.customer.Customer;
+import com.abranlezama.ecommercestore.customer.model.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 

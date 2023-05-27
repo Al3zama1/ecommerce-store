@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.cart.mapper;
 
-import com.abranlezama.ecommercestore.cart.Cart;
-import com.abranlezama.ecommercestore.cart.CartItem;
+import com.abranlezama.ecommercestore.cart.model.Cart;
+import com.abranlezama.ecommercestore.cart.model.CartItem;
 import com.abranlezama.ecommercestore.cart.dto.CartDTO;
 import com.abranlezama.ecommercestore.cart.dto.CartItemDTO;
 import org.mapstruct.Mapper;

@@ -1,5 +1,6 @@
 package com.abranlezama.ecommercestore.employee;
 
+import com.abranlezama.ecommercestore.employee.util.EmployeeRoleType;
 import jakarta.persistence.*;
 import lombok.*;
 

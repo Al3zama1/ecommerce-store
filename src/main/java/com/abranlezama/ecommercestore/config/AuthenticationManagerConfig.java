@@ -1,7 +1,7 @@
 package com.abranlezama.ecommercestore.config;
 
-import com.abranlezama.ecommercestore.customer.JpaCustomerDetailsService;
-import com.abranlezama.ecommercestore.employee.JpaEmployeeDetailsService;
+import com.abranlezama.ecommercestore.customer.service.imp.JpaCustomerDetailsService;
+import com.abranlezama.ecommercestore.employee.service.imp.JpaEmployeeDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

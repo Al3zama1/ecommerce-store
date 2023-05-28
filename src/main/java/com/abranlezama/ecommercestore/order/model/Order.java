@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "orders")
@@ -28,6 +29,8 @@ public class Order {
     private OrderStatus status;
     @OneToOne(fetch = FetchType.LAZY)
     private Customer customer;
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<OrderItem> orderItems;
 
     @Override
     public boolean equals(Object o) {
